@@ -12,3 +12,9 @@ Login_Window::~Login_Window()
 {
     delete ui;
 }
+
+void Login_Window::on_exitButton_clicked()
+{
+
+}
+
