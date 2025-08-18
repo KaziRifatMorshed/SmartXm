@@ -1,0 +1,65 @@
+# ninja log v6
+7	66	7772084539169143	Notepad_autogen/timestamp	4290df03044507b9
+67	1794	7772084539762151	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+7	66	7772084539169143	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+446	2090	7772071169627864	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+7	66	7772084539169143	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+7	66	7772084539169143	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+447	2102	7772071169637840	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+1794	1926	7772084557036083	Notepad.exe	b838ea362791b452
+8	66	7772085786407374	Notepad_autogen/timestamp	4290df03044507b9
+8	66	7772085786407374	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+8	66	7772085786407374	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+8	66	7772085786407374	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+67	1816	7772085786998079	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+1816	1939	7772085804491513	Notepad.exe	b838ea362791b452
+9	425	7772089505198622	Notepad_autogen/timestamp	4290df03044507b9
+9	425	7772089505198622	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+9	425	7772089505198622	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+9	425	7772089505198622	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+427	2098	7772089505528623	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+426	2098	7772089505518627	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+428	2422	7772089505538621	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+2422	2544	7772089525483125	Notepad.exe	b838ea362791b452
+7	72	7772090593885791	Notepad_autogen/timestamp	4290df03044507b9
+7	72	7772090593885791	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+7	72	7772090593885791	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+7	72	7772090593885791	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+8	73	7772091064778687	Notepad_autogen/timestamp	4290df03044507b9
+8	73	7772091064778687	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+8	73	7772091064778687	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+8	73	7772091064778687	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+73	1820	7772091065433867	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+1820	1955	7772091082895387	Notepad.exe	b838ea362791b452
+8	427	7772093665998967	Notepad_autogen/timestamp	4290df03044507b9
+8	427	7772093665998967	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+8	427	7772093665998967	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+8	427	7772093665998967	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+427	1966	7772093666324063	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+429	1967	7772093666329651	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+9	444	7772102210940837	Notepad_autogen/timestamp	4290df03044507b9
+9	444	7772102210940837	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+9	444	7772102210940837	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+9	444	7772102210940837	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+445	2104	7772102211280917	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+444	2162	7772102211270868	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+8	73	7772103568952457	Notepad_autogen/timestamp	4290df03044507b9
+8	73	7772103568952457	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+8	73	7772103568952457	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+8	73	7772103568952457	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+74	1847	7772103569612437	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+1847	1986	7772103587350559	Notepad.exe	b838ea362791b452
+7	458	7772103932196927	Notepad_autogen/timestamp	4290df03044507b9
+7	458	7772103932196927	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+7	458	7772103932196927	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+7	458	7772103932196927	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+459	2145	7772103932546014	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+460	2166	7772103932561129	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+7	452	7772104332556708	Notepad_autogen/timestamp	4290df03044507b9
+7	452	7772104332556708	Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+7	452	7772104332556708	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/timestamp	4290df03044507b9
+7	452	7772104332556708	D:/230201/QT GUI/Notepad/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/Notepad_autogen/mocs_compilation.cpp	4290df03044507b9
+453	2125	7772104332916769	CMakeFiles/Notepad.dir/main.cpp.obj	44b95655d0ddbcb8
+452	2143	7772104332906769	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	50246632773e4f76
+454	2422	7772104332926772	CMakeFiles/Notepad.dir/notepad.cpp.obj	c9965e38471c550d
+2422	2558	7772104352605173	Notepad.exe	b838ea362791b452
