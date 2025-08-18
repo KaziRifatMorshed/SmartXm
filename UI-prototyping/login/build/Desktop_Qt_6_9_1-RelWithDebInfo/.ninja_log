@@ -1,0 +1,10 @@
+# ninja log v6
+1	169	1755504702008330530	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/CMakeFiles/cmake.verify_globs	a3a4fa3593638da2
+169	660	1755504702658408430	login_autogen/timestamp	1668ef1ee93fb117
+169	660	1755504702658408430	login_autogen/mocs_compilation.cpp	1668ef1ee93fb117
+169	660	1755504702658408430	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/timestamp	1668ef1ee93fb117
+169	660	1755504702658408430	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/mocs_compilation.cpp	1668ef1ee93fb117
+662	4221	1755504702668409628	CMakeFiles/login.dir/login_autogen/mocs_compilation.cpp.o	c3f6a761bd5825a6
+663	4384	1755504702668409628	CMakeFiles/login.dir/main.cpp.o	ee8577fdc29564ae
+663	4615	1755504702668409628	CMakeFiles/login.dir/login_window.cpp.o	4533325b28fce733
+4616	4924	1755504706622216751	login	47ce525820e8ba5b
