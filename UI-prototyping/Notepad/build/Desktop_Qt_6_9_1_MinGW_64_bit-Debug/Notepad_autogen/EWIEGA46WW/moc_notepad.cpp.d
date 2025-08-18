@@ -1,5 +1,5 @@
-C:/Users/Anonymous_HF/Desktop/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/Notepad_autogen/EWIEGA46WW/moc_notepad.cpp: C:/Users/Anonymous_HF/Desktop/Notepad/notepad.h \
-  C:/Users/Anonymous_HF/Desktop/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/Notepad_autogen/moc_predefs.h \
+C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/Notepad_autogen/EWIEGA46WW/moc_notepad.cpp: C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/notepad.h \
+  C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/Notepad_autogen/moc_predefs.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q17memory.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q20iterator.h \

@@ -1,11 +1,20 @@
 #include "notepad.h"
 #include "ui_notepad.h"
+#include "toast.h"
 #include <QDir>
 #include <QFileInfo>
 #include <QFile>
 #include <QFileDialog>
 #include <qmessagebox.h>
+#include <QTextEdit>
+#include <QApplication>
 #include <QTextStream>
+#include <QProcess>
+#include <QFontMetricsF>
+#include <QWheelEvent>
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerpython.h>
 
 notepad::notepad(QWidget *parent)
     : QMainWindow(parent)
@@ -13,7 +22,39 @@ notepad::notepad(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("SmartXam: Code Editor");
+    ui->Editor->setUtf8(true);
+    ui->Editor->setFont(QFont("Monospace", 12));
+    ui->Editor->setMarginsFont(QFont("Monospace", 10));
+    ui->Editor->setMarginWidth(0, 30);
+    ui->Editor->setMarginLineNumbers(0, true);
+    ui->Editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    ui->Editor->setTabWidth(4);
+    ui->Editor->setIndentationsUseTabs(false);
+    ui->Editor->setAutoIndent(true);
+
+    this->setWindowTitle("SmartXm: Code Editor");
+
+    ui->DebugOutput->setReadOnly(true);
+
+    ui->Editor->installEventFilter(this);
+    ui->Input->installEventFilter(this);
+    ui->Output->installEventFilter(this);
+    ui->DebugOutput->installEventFilter(this);
+
+    ui->EditorLabel->setText("<b>* Untitled</b>");
+
+    ui->Editor->setFont(QFont("Monospace"));
+    ui->Input->setFont(QFont("Monospace"));
+    ui->Output->setFont(QFont("Monospace"));
+    ui->DebugOutput->setFont(QFont("Monospace"));
+
+    QFontMetricsF fm(ui->Editor->font());
+    qreal spaceWidth = fm.horizontalAdvance(' ');
+    qreal tabStopWidth = 4 * spaceWidth;
+
+    // ui->Editor->setTabStopDistance(tabStopWidth);
+    ui->Input->setTabStopDistance(tabStopWidth);
+    ui->Output->setTabStopDistance(tabStopWidth);
 
     QString dirPath = QDir::homePath() + "/Desktop";
 
@@ -30,6 +71,7 @@ notepad::notepad(QWidget *parent)
     QAction *saveAction = new QAction("Save", this);
     QAction *currentFileAction = new QAction("Print", this);
     QAction *saveAsAction = new QAction("Save As", this);
+    QAction *runAction = new QAction("Run", this);
 
     connect(newAction, &QAction::triggered, this, &notepad::newFile);
     connect(openAction, &QAction::triggered, this, &notepad::openFileNoPath);
@@ -43,12 +85,61 @@ notepad::notepad(QWidget *parent)
     });
     connect(currentFileAction, &QAction::triggered, this, &notepad::printCurrentFile);
     connect(saveAsAction, &QAction::triggered, this, &notepad::saveAs);
+    connect(runAction, &QAction::triggered, this, &notepad::run);
 
     ui->menuFile->addAction(newAction);
     ui->menuFile->addAction(openAction);
     ui->menuFile->addAction(saveAction);
     ui->menuFile->addAction(currentFileAction);
     ui->menuFile->addAction(saveAsAction);
+    ui->menuFile->addAction(runAction);
+}
+
+void notepad::setLexer()
+{
+    QString ext = getFileExtension(currentFile);
+
+    if (ext == "cpp") {
+        QsciLexerCPP *lexer = new QsciLexerCPP(ui->Editor);
+        lexer->setDefaultFont(ui->Editor->font());
+        ui->Editor->setLexer(lexer);
+    }
+    else if (ext == "py") {
+        QsciLexerPython *lexer = new QsciLexerPython(ui->Editor);
+        lexer->setDefaultFont(ui->Editor->font());
+        ui->Editor->setLexer(lexer);
+    }
+    else {
+        ui->Editor->setLexer(nullptr);
+    }
+}
+
+bool notepad::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::Wheel) {
+        QWheelEvent *wheelEvent = dynamic_cast <QWheelEvent *> (event);
+
+        if (wheelEvent->modifiers() & Qt::ControlModifier) {
+            if (auto *textEdit = qobject_cast <QTextEdit *> (obj)) {
+                int currentZoom = textEdit->fontPointSize();
+
+                if (currentZoom == 0) {
+                    currentZoom = 12;
+                }
+
+                if (wheelEvent->angleDelta().y() > 0 && currentZoom < 48) {
+                    textEdit->zoomIn(1);
+                }
+                else if (wheelEvent->angleDelta().y() < 0 && currentZoom > 6) {
+                    textEdit->zoomOut(1);
+                }
+
+                return true;
+            }
+        }
+    }
+
+    return QMainWindow::eventFilter(obj, event);
 }
 
 notepad::~notepad()
@@ -56,10 +147,56 @@ notepad::~notepad()
     delete ui;
 }
 
+QString notepad::shortenFileName(QString fileName)
+{
+    if (fileName.isEmpty()) {
+        return QString();
+    }
+
+    QString shortName;
+
+    for (int i = fileName.length() - 1; i >= 0; i--) {
+        if (fileName.at(i) == '/') {
+            break;
+        }
+        else {
+            shortName += fileName.at(i);
+        }
+    }
+
+    std::reverse(shortName.data(), shortName.data() + shortName.length());
+
+    return shortName;
+}
+
+QString notepad::getFileExtension(QString fileName)
+{
+    QString ext;
+
+    for (int i = fileName.length() - 1; i >= 0; i--) {
+        if (fileName.at(i) == '.') {
+            break;
+        }
+        else {
+            ext += fileName.at(i);
+        }
+    }
+
+    std::reverse(ext.data(), ext.data() + ext.length());
+
+    return ext;
+}
+
+void notepad::setEditorName(QString name)
+{
+    ui->EditorLabel->setText(name);
+}
+
 void notepad::newFile()
 {
     currentFile.clear();
     ui->Editor->setText(QString());
+    ui->EditorLabel->setText("<b>* Untitled</b>");
 }
 
 void notepad::openFileNoPath()
@@ -85,7 +222,11 @@ void notepad::openFileNoPath()
 
     currentFile = fileName;
 
+    setEditorName(shortenFileName(currentFile));
+
     file.close();
+
+    setLexer();
 }
 
 void notepad::openFile(QString path)
@@ -118,7 +259,11 @@ void notepad::openFile(QString path)
 
     currentFile = fileName;
 
+    setEditorName(shortenFileName(currentFile));
+
     file.close();
+
+    setLexer();
 }
 
 void notepad::saveAs()
@@ -144,6 +289,10 @@ void notepad::saveAs()
     file.close();
 
     currentFile = fileName;
+
+    setEditorName(shortenFileName(currentFile));
+
+    ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
 
 void notepad::save()
@@ -159,6 +308,10 @@ void notepad::save()
         fileName = currentFile;
     }
 
+    if (notepad::getFileContent(fileName) == ui->Editor->text()) {
+        return;
+    }
+
     QFile file(fileName);
 
     if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
@@ -168,12 +321,138 @@ void notepad::save()
     }
 
     QTextStream out(&file);
-    QString text = ui->Editor->toPlainText();
+    QString text = ui->Editor->text();
     out << text;
     file.close();
+
+    ToastManager::showMessage(this, "File saved as: " + currentFile);
+}
+
+void notepad::run()
+{
+    save();
+
+    QString sourceFile = currentFile;
+    QString ext = getFileExtension(currentFile);
+
+    ToastManager::showMessage(this, "Running " + ext + " file");
+
+    ui->DebugOutput->setText(QString());
+    ui->Output->setText(QString());
+
+    if (ext == "cpp") {
+#ifdef Q_OS_WIN
+        QString exeFile = "program.exe";
+#else
+        QString exeFile = "./program";
+#endif
+
+        QProcess *compiler = new QProcess(this);
+
+        compiler->setProcessChannelMode(QProcess::SeparateChannels);
+
+        connect(compiler, &QProcess::readyReadStandardOutput, [=]() {
+            ui->DebugOutput->setText(compiler->readAllStandardOutput());
+        });
+        connect(compiler, &QProcess::readyReadStandardError, [=]() {
+            ui->DebugOutput->setText(compiler->readAllStandardError());
+        });
+
+        connect(compiler, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                this, [=](int exitCode, QProcess::ExitStatus) {
+                    if (exitCode != 0) {
+                        ui->DebugOutput->append("Compilation Failed");
+                        compiler->deleteLater();
+                        return;
+                    }
+
+                    QProcess *program = new QProcess(this);
+                    program->setProcessChannelMode(QProcess::SeparateChannels);
+
+                    connect(program, &QProcess::readyReadStandardOutput, [=]() {
+                        ui->Output->setText(program->readAllStandardOutput());
+                    });
+
+                    connect(program, &QProcess::readyReadStandardError, [=]() {
+                        ui->DebugOutput->setText(program->readAllStandardError());
+                    });
+
+                    connect(program, &QProcess::started, [=]() {
+                        QString userInput = ui->Input->toPlainText();
+                        if (!userInput.isEmpty()) {
+                            program->write(userInput.toUtf8());
+                            program->closeWriteChannel();
+                        }
+                    });
+
+                    program->start(exeFile);
+                    compiler->deleteLater();
+                });
+
+#ifdef Q_OS_WIN
+        compiler->start("g++", QStringList() << sourceFile << "-o" << exeFile << "-Wall");
+#else
+        compiler->start("g++", QStringList() << sourceFile << "-o" << "./program" << "-Wall");
+#endif
+    }
+    else if (ext == "py") {
+        QProcess *program = new QProcess(this);
+
+        program->setProcessChannelMode(QProcess::SeparateChannels);
+
+        connect(program, &QProcess::readyReadStandardOutput, [=]() {
+            ui->Output->setText(program->readAllStandardOutput());
+        });
+
+        connect(program, &QProcess::readyReadStandardError, [=]() {
+            ui->DebugOutput->setText(program->readAllStandardError());
+        });
+
+        connect(program, &QProcess::started, [=]() {
+            QString userInput = ui->Input->toPlainText();
+            if (!userInput.isEmpty()) {
+                program->write(userInput.toUtf8());
+                program->closeWriteChannel();
+            }
+        });
+
+#ifdef Q_OS_WIN
+        program->start("python", QStringList() << sourceFile);
+#else
+        program->start("python3", QStringList() << sourceFile);
+#endif
+    }
+    else {
+        ToastManager::showMessage(this, "Unsupported file type: " + ext);
+    }
+
+    if (ui->Input->toPlainText().isEmpty()) {
+        ui->DebugOutput->append("No input provided");
+    }
+
+    if (ui->DebugOutput->toPlainText().isEmpty()) {
+        ui->DebugOutput->append("Code Executed Successfully!");
+    }
 }
 
 void notepad::printCurrentFile()
 {
     QMessageBox::information(this, "Filename", currentFile);
+}
+
+QString notepad::getFileContent(QString path)
+{
+    QFile file(path);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot read file: " + file.errorString());
+
+        return QString();
+    }
+
+    QString text = file.readAll();
+
+    file.close();
+
+    return text;
 }

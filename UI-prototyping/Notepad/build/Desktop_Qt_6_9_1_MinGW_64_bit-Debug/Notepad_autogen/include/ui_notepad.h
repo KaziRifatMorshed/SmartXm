@@ -24,6 +24,7 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QWidget>
+#include "Qsci/qsciscintilla.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -38,7 +39,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QGridLayout *gridLayout_4;
     QLabel *EditorLabel;
-    QTextEdit *Editor;
+    QsciScintilla *Editor;
     QSplitter *splitter;
     QWidget *layoutWidget1;
     QGridLayout *gridLayout;
@@ -87,10 +88,10 @@ public:
 
         gridLayout_4->addWidget(EditorLabel, 0, 0, 1, 1);
 
-        Editor = new QTextEdit(layoutWidget);
+        Editor = new QsciScintilla(layoutWidget);
         Editor->setObjectName("Editor");
         Editor->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents);
-        Editor->setLineWrapMode(QTextEdit::LineWrapMode::WidgetWidth);
+        Editor->setWrapMode(QsciScintilla::WrapWhitespace);
 
         gridLayout_4->addWidget(Editor, 1, 0, 1, 1);
 

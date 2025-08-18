@@ -48,7 +48,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QTextEdit" name="Editor">
+           <widget class="QsciScintilla" name="Editor">
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
             </property>
@@ -159,6 +159,13 @@
    <addaction name="menuFile"/>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QsciScintilla</class>
+   <extends>QTextEdit</extends>
+   <header>Qsci/qsciscintilla.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

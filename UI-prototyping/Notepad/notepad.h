@@ -18,18 +18,26 @@ public:
     notepad(QWidget *parent = nullptr);
     ~notepad();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
 private slots:
     void newFile();
     void openFileNoPath();
     void openFile(QString path);
     void save();
     void saveAs();
-    // void run();
+    void run();
     void printCurrentFile();
 
 private:
     Ui::notepad *ui;
     QFileSystemModel *model;
     QString currentFile;
+    QString shortenFileName(QString fileName);
+    QString getFileContent(QString path);
+    void setEditorName(QString name);
+    QString getFileExtension(QString fileName);
+    void setLexer();
 };
 #endif // NOTEPAD_H
