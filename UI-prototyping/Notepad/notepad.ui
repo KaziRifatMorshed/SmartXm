@@ -53,7 +53,7 @@
              <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
             </property>
             <property name="lineWrapMode">
-             <enum>QTextEdit::LineWrapMode::WidgetWidth</enum>
+             <enum>QTextEdit::LineWrapMode::NoWrap</enum>
             </property>
            </widget>
           </item>

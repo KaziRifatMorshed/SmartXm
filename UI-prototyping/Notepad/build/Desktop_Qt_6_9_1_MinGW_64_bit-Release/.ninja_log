@@ -1,0 +1,14 @@
+# ninja log v6
+10	1041	7772486092904593	Notepad_autogen/timestamp	4b8483da7bb09906
+10	1041	7772486092904593	Notepad_autogen/mocs_compilation.cpp	4b8483da7bb09906
+10	1041	7772486092904593	C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Release/Notepad_autogen/timestamp	4b8483da7bb09906
+10	1041	7772486092904593	C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Release/Notepad_autogen/mocs_compilation.cpp	4b8483da7bb09906
+1051	4056	7772486093634585	CMakeFiles/Notepad.dir/toast.cpp.obj	61f9a62db6ca1a75
+1048	4108	7772486093604591	CMakeFiles/Notepad.dir/main.cpp.obj	ec593af082c7070d
+1047	4280	7772486093594591	CMakeFiles/Notepad.dir/Notepad_autogen/mocs_compilation.cpp.obj	f24e2f55690c851a
+15	147	7772486556990001	Notepad_autogen/timestamp	4b8483da7bb09906
+15	147	7772486556990001	Notepad_autogen/mocs_compilation.cpp	4b8483da7bb09906
+15	147	7772486556990001	C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Release/Notepad_autogen/timestamp	4b8483da7bb09906
+15	147	7772486556990001	C:/Users/Seam/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/build/Desktop_Qt_6_9_1_MinGW_64_bit-Release/Notepad_autogen/mocs_compilation.cpp	4b8483da7bb09906
+148	4519	7772486558310003	CMakeFiles/Notepad.dir/notepad.cpp.obj	ca7c4771db0a0401
+4520	4710	7772486602029999	Notepad.exe	f9c28df498279ad7
