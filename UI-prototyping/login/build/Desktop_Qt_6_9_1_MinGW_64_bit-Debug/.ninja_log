@@ -1,0 +1,12 @@
+# ninja log v6
+5	106	7771965349894265	C:/Users/Anonymous_HF/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/cmake.verify_globs	e25fba0cc2779d64
+1498	3685	7771944118514570	CMakeFiles/login.dir/login_autogen/mocs_compilation.cpp.obj	3b608f6b5f4a071d
+92	1494	7771944118154446	C:/Users/Anonymous_HF/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/timestamp	e08ac20a01086fc8
+92	1494	7771944118154446	login_autogen/timestamp	e08ac20a01086fc8
+1499	4421	7771944118534934	CMakeFiles/login.dir/login_window.cpp.obj	31006152a5ef0ea
+1499	3583	7771944118524643	CMakeFiles/login.dir/main.cpp.obj	9c1c04ba35a661e4
+4421	4548	7771944147744585	login.exe	a6aa57095389571e
+92	1494	7771944118154446	login_autogen/mocs_compilation.cpp	e08ac20a01086fc8
+92	1494	7771944118154446	C:/Users/Anonymous_HF/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/mocs_compilation.cpp	e08ac20a01086fc8
+106	687	7771965356034398	build.ninja	566ee0986e1f93ff
+4	96	7771965356304403	C:/Users/Anonymous_HF/Desktop/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/cmake.verify_globs	e25fba0cc2779d64
