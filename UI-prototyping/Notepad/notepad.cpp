@@ -56,7 +56,7 @@ notepad::notepad(QWidget *parent)
     ui->Input->setTabStopDistance(tabStopWidth);
     ui->Output->setTabStopDistance(tabStopWidth);
 
-    QString dirPath = QDir::homePath() + "/Desktop";
+    QString dirPath = QDir::homePath() + "/Desktop/Test-Notepad";
 
     model = new QFileSystemModel(this);
     model->setRootPath(dirPath);

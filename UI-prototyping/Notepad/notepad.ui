@@ -148,7 +148,7 @@
      <x>0</x>
      <y>0</y>
      <width>869</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -163,7 +163,7 @@
   <customwidget>
    <class>QsciScintilla</class>
    <extends>QTextEdit</extends>
-   <header>Qsci/qsciscintilla.h</header>
+   <header location="global">Qsci/qsciscintilla.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
