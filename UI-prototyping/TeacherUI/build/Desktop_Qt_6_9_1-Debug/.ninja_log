@@ -1,0 +1,10 @@
+# ninja log v6
+12	43	1755509513852126729	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/TeacherUI/build/Desktop_Qt_6_9_1-Debug/CMakeFiles/cmake.verify_globs	2d6e467645688857
+44	394	1755509514228830558	TeacherUI_autogen/timestamp	86d926b575069ed1
+44	394	1755509514228830558	TeacherUI_autogen/mocs_compilation.cpp	86d926b575069ed1
+44	394	1755509514228830558	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/TeacherUI/build/Desktop_Qt_6_9_1-Debug/TeacherUI_autogen/timestamp	86d926b575069ed1
+44	394	1755509514228830558	/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/TeacherUI/build/Desktop_Qt_6_9_1-Debug/TeacherUI_autogen/mocs_compilation.cpp	86d926b575069ed1
+395	2381	1755509514235497882	CMakeFiles/TeacherUI.dir/TeacherUI_autogen/mocs_compilation.cpp.o	852da98987a5d0ff
+395	2628	1755509514235497882	CMakeFiles/TeacherUI.dir/main.cpp.o	7e60dcd96f40cb54
+395	2900	1755509514235497882	CMakeFiles/TeacherUI.dir/teachermanagementwindow.cpp.o	2a985b509246320d
+2900	3283	1755509516739078194	TeacherUI	7fb932d1838c02db
