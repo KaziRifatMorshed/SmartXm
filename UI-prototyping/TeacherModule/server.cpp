@@ -63,11 +63,23 @@ void Server::stop() {
     if (!running) return;
     running = false;
     status = "STOPPED";
+    std::cout << "STOPPING SERVER" << std::endl;
+
+    // Close the listening socket to unblock accept()
     close(server_fd);
+
+    // Close all client sockets
+    {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        for (auto& ci : clients) {
+            close(ci.socfd);
+        }
+        clients.clear();
+    }
+
+    // Join threads
     if (acceptThread.joinable()) acceptThread.join();
     if (printerThread.joinable()) printerThread.join();
-    // Optionally, close all client sockets here
-    std::cout << "STOPPING SERVER" << std::endl;
 }
 
 std::vector<ClientInfo> Server::getClients() {
@@ -89,6 +101,7 @@ void Server::acceptLoop() {
         socklen_t client_addr_len = sizeof(client_addr);
 
         int client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
+        if (!running) break;
         if (client_socket < 0) {
             if (running) perror("failed to accept connection");
             continue;
@@ -139,7 +152,7 @@ void Server::acceptLoop() {
 
 void Server::handleClient(int client_socket) {
     Msg msg;
-    while (true) {
+    while (running) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
         if (valread <= 0) {
             std::cout << "Client (socket_id=" << client_socket << ") disconnected!" << std::endl;
