@@ -1,5 +1,8 @@
 #include "teachermodule.h"
 #include "ui_teachermodule.h"
+#include "server.cpp"
+
+Server server;
 
 TeacherModule::TeacherModule(QWidget *parent)
     : QMainWindow(parent)
@@ -12,3 +15,19 @@ TeacherModule::~TeacherModule()
 {
     delete ui;
 }
+
+void TeacherModule::on_StartServer_toolButton_clicked()
+{
+    if(server.getStatus() != "RUNNING"){
+        server.start();
+    }
+}
+
+
+void TeacherModule::on_StopServer_toolButton_2_clicked()
+{
+    if(server.getStatus() == "RUNNING"){
+        server.stop();
+    }
+}
+

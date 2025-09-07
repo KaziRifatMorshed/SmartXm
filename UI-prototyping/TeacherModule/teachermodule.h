@@ -17,6 +17,11 @@ public:
     TeacherModule(QWidget *parent = nullptr);
     ~TeacherModule();
 
+private slots:
+    void on_StartServer_toolButton_clicked();
+
+    void on_StopServer_toolButton_2_clicked();
+
 private:
     Ui::TeacherModule *ui;
 };

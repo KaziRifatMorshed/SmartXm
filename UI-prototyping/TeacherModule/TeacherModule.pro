@@ -10,10 +10,14 @@ CONFIG += c++23
 
 SOURCES += \
     main.cpp \
-    teachermodule.cpp
+    teachermodule.cpp \
+    server.cpp
 
 HEADERS += \
-    teachermodule.h
+    Server.h \
+    teachermodule.h \
+    Msg.h \
+    ClientInfo.h
 
 FORMS += \
     teachermodule.ui
