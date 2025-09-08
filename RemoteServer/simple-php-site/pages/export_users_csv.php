@@ -23,7 +23,7 @@ echo implode(
         // Escape double quotes and wrap in quotes
         return '"' . str_replace('"', '""', $h) . '"';
     }, $headers),
-) . "\n";
+) . "<br>";
 
 // Fetch all users
 $stmt = $pdo->query(
@@ -36,6 +36,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         array_map(function ($v) {
             return '"' . str_replace('"', '""', $v) . '"';
         }, $row),
-    ) . "\n";
+    ) . "<br>";
 }
 ?>
