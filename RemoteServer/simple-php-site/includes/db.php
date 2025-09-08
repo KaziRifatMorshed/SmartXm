@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Dummy data for users table
+
+INSERT INTO users (name, email, password, student_id, role) VALUES
+('Alice Smith', 'alice.smith@example.com', 'password123', 'S10001', 'Student'),
+('Bob Johnson', 'bob.johnson@example.com', 'mypassword', 'S10002', 'Student'),
+('Carol Williams', 'carol.williams@example.com', 'securepass', 'S10003', 'Student'),
+('David Brown', 'david.brown@example.com', 'letmein', 'T20001', 'Teacher'),
+('Eve Davis', 'eve.davis@example.com', 'passw0rd', 'S10004', 'Student'),
+('Frank Miller', 'frank.miller@example.com', 'qwerty', 'T20002', 'Teacher');
+
 */
 
 ?>
