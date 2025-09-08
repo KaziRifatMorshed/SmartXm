@@ -1,13 +1,13 @@
 /**
  * @file helper.cpp
- * @brief Helper utility for managing keylogger and clipboard monitor processes.
+ * @brief Helper utility for managing keylogger, clipboard monitor, and USB monitor processes.
  * 
- * This utility starts both the keylogger and clipboard monitor processes,
+ * This utility starts the keylogger, clipboard monitor, and USB monitor processes,
  * runs them for a specified duration, and then gracefully terminates them.
  * It's designed to be used as part of the SmartXm exam monitoring system.
  * 
  * The helper manages process lifecycle including:
- * - Starting keylogger and clipboard monitor executables
+ * - Starting keylogger, clipboard monitor, and USB monitor executables
  * - Running them concurrently for monitoring duration
  * - Graceful shutdown via custom Windows messages
  * - Fallback to process termination if graceful shutdown fails
@@ -27,15 +27,15 @@
 
 using namespace std;  // Use the standard namespace for convenience
 
-/// @brief Custom Windows message to stop the keylogger and clipboard monitor
+/// @brief Custom Windows message to request graceful shutdown of child processes
 #define WM_STOP (WM_USER + 1)
 
 // ============================================================================
 // Configuration Constants
 // ============================================================================
 
-/// @brief Default monitoring duration in milliseconds (30 seconds)
-const DWORD DEFAULT_MONITORING_DURATION_MS = 30000;
+/// @brief Default monitoring duration in milliseconds (60 seconds)
+const DWORD DEFAULT_MONITORING_DURATION_MS = 60000;
 
 /// @brief Timeout for graceful process shutdown in milliseconds (5 seconds)
 const DWORD PROCESS_SHUTDOWN_TIMEOUT_MS = 5000;
@@ -43,13 +43,15 @@ const DWORD PROCESS_SHUTDOWN_TIMEOUT_MS = 5000;
 /// @brief Base directory for log files
 const string LOG_DIRECTORY = "Logs/";
 
-/// @brief Base directory for executable files
+/// @brief Executable paths
 const string KEYLOGGER_EXECUTABLE = "Keylogger/keylogger.exe";
 const string CLIPMON_EXECUTABLE = "ClipMon/clipmon.exe";
+const string USBMON_EXECUTABLE  = "USBMon/usbmon.exe";
 
-/// @brief Thread ID file paths for external process control
+/// @brief Thread ID file paths for external process control (not used here)
 const string KEYLOGGER_THREAD_ID_FILE = "ThreadId/keyloggerThread.id";
 const string CLIPMON_THREAD_ID_FILE = "ThreadId/clipMonThread.id";
+const string USBMON_THREAD_ID_FILE = "ThreadId/usbMonThread.id";
 
 // ============================================================================
 // Process Management Structure
@@ -81,9 +83,9 @@ struct ProcessInfo {
 
 /**
  * @brief Generates a timestamp-based log filename.
- * @param prefix The prefix for the log file (e.g., "keylogger", "clipboard")
- * @param extension The file extension (e.g., ".key", ".clip")
- * @return Formatted filename with timestamp
+ * @param prefix The prefix for the log file (currently unused)
+ * @param extension The file extension (e.g., ".key", ".clip", ".usb")
+ * @return Formatted filename with timestamp under LOG_DIRECTORY
  */
 string generateLogFileName(const string& prefix, const string& extension) {
     time_t now = time(0);
@@ -170,15 +172,15 @@ void cleanupProcess(ProcessInfo& processInfo) {
  * @return Exit status code (0 for success, 1 for failure)
  * 
  * This function orchestrates the exam monitoring process by:
- * 1. Generating timestamped log filenames for both processes
- * 2. Creating ProcessInfo structures for keylogger and clipboard monitor
- * 3. Starting both processes using the createProcess function
+ * 1. Generating timestamped log filenames for all processes
+ * 2. Creating ProcessInfo structures for keylogger, clipboard monitor, and USB monitor
+ * 3. Starting all processes using the createProcess function
  * 4. Running them concurrently for the specified monitoring duration
- * 5. Gracefully shutting down both processes using shutdownProcessGracefully
+ * 5. Gracefully shutting down all processes using shutdownProcessGracefully
  * 6. Cleaning up process handles and resources
  * 
  * The monitoring duration is configurable via DEFAULT_MONITORING_DURATION_MS.
- * Both processes log their output to timestamped files in the Logs directory.
+ * All processes log their output to timestamped files in the Logs directory.
  * 
  * @note Uses extracted functions for better maintainability and error handling
  * @note Process communication uses Windows PostThreadMessage() for graceful shutdown
@@ -190,14 +192,17 @@ int main() {
     // Generate timestamped log filenames
     string keyloggerLogFile = generateLogFileName("", ".key");
     string clipmonLogFile = generateLogFileName("", ".clip");
+    string usbmonLogFile  = generateLogFileName("", ".usb");
     
     // Create process information structures
     ProcessInfo keyloggerProcess(KEYLOGGER_EXECUTABLE, keyloggerLogFile, "Keylogger");
     ProcessInfo clipmonProcess(CLIPMON_EXECUTABLE, clipmonLogFile, "ClipMon");
+    ProcessInfo usbmonProcess(USBMON_EXECUTABLE, usbmonLogFile, "USBMon");
     
     // Track which processes were successfully started for proper cleanup
     bool keyloggerStarted = false;
     bool clipmonStarted = false;
+    bool usbmonStarted  = false;
     
     // Start keylogger process
     if (!createProcess(keyloggerProcess)) {
@@ -213,17 +218,30 @@ int main() {
         return 1;
     }
     clipmonStarted = true;
+
+    // Start USB monitor process
+    if (!createProcess(usbmonProcess)) {
+        // If USB monitor fails, clean up previously started processes and exit
+        shutdownProcessGracefully(clipmonProcess);
+        cleanupProcess(clipmonProcess);
+        shutdownProcessGracefully(keyloggerProcess);
+        cleanupProcess(keyloggerProcess);
+        return 1;
+    }
+    usbmonStarted = true;
     
-    // Both processes started successfully - run monitoring for specified duration
+    // All processes started successfully - run monitoring for specified duration
     Sleep(DEFAULT_MONITORING_DURATION_MS);
     
-    // Gracefully shutdown both processes
+    // Gracefully shutdown all processes
     bool keyloggerGraceful = shutdownProcessGracefully(keyloggerProcess);
-    bool clipmonGraceful = shutdownProcessGracefully(clipmonProcess);
+    bool clipmonGraceful   = shutdownProcessGracefully(clipmonProcess);
+    bool usbmonGraceful    = shutdownProcessGracefully(usbmonProcess);
     
     // Clean up process handles
     cleanupProcess(keyloggerProcess);
     cleanupProcess(clipmonProcess);
+    cleanupProcess(usbmonProcess);
     
     return 0; // Exit successfully
 }
