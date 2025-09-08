@@ -10,6 +10,7 @@ CONFIG += c++23
 
 SOURCES += \
     main.cpp \
+    server_linux.cpp \
     teachermodule.cpp \
     server.cpp
 
