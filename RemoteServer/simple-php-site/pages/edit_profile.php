@@ -57,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             // Update user
             if ($password) {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $update = $pdo->prepare(
                     "UPDATE users SET name=?, email=?, student_id=?, role=?, password=? WHERE id=?",
                 );
@@ -66,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $email,
                     $student_id,
                     $role,
-                    $hashed_password,
+                    $password,
                     $user_id,
                 ]);
             } else {
