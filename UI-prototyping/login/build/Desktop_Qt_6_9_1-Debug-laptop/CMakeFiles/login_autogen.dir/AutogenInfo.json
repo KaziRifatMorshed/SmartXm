@@ -479,6 +479,18 @@
 	"HEADERS" : 
 	[
 		[
+			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/Client.h",
+			"MU",
+			"EWIEGA46WW/moc_Client.cpp",
+			null
+		],
+		[
+			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/ClientInfo.h",
+			"MU",
+			"EWIEGA46WW/moc_ClientInfo.cpp",
+			null
+		],
+		[
 			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/login_window.h",
 			"MU",
 			"EWIEGA46WW/moc_login_window.cpp",
@@ -544,6 +556,16 @@
 	"SETTINGS_FILE" : "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/CMakeFiles/login_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[
+			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client_linux.cpp",
+			"MU",
+			null
+		],
 		[
 			"/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/login_window.cpp",
 			"MU",

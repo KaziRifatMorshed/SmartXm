@@ -41,11 +41,22 @@ endif()
 # _directory_contents at /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/cmake/Qt6LinguistTools/Qt6LinguistToolsMacros.cmake:55 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/*.cpp")
 set(OLD_GLOB
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/EWIEGA46WW/moc_login_window.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/mocs_compilation.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/CMakeFiles/4.0.3-dirty/CompilerIdCXX/CMakeCXXCompilerId.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/login_autogen/EWIEGA46WW/moc_login_window.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/login_autogen/mocs_compilation.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-MinSizeRel/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/EWIEGA46WW/moc_login_window.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/mocs_compilation.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Release/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/CMakeFiles/3.30.5/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/EWIEGA46WW/moc_login_window.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/mocs_compilation.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client.cpp"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client_linux.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/login_window.cpp"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/main.cpp"
   )
@@ -66,8 +77,17 @@ endif()
 # _directory_contents at /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/cmake/Qt6LinguistTools/Qt6LinguistToolsMacros.cmake:55 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/*.h")
 set(OLD_GLOB
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/Client.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/ClientInfo.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/Msg.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/include/ui_login_window.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/moc_predefs.h"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/login_autogen/include/ui_login_window.h"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/login_autogen/moc_predefs.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/include/ui_login_window.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/login_autogen/moc_predefs.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/include/ui_login_window.h"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/login_autogen/moc_predefs.h"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/login_window.h"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
@@ -159,9 +179,12 @@ endif()
 # _directory_contents at /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/cmake/Qt6LinguistTools/Qt6LinguistToolsMacros.cmake:55 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/*.qs")
 set(OLD_GLOB
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/.qtc/package-manager/maintenance_tool_provider.qs"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug/.qtc/package-manager/maintenance_tool_provider.qs"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-MinSizeRel/.qtc/package-manager/maintenance_tool_provider.qs"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-RelWithDebInfo/.qtc/package-manager/maintenance_tool_provider.qs"
   "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Release/.qtc/package-manager/maintenance_tool_provider.qs"
+  "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/.qtc/package-manager/maintenance_tool_provider.qs"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

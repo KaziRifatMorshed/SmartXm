@@ -73,6 +73,22 @@ build CMakeFiles/login.dir/login_window.cpp.o: CXX_COMPILER__login_unscanned_Deb
   OBJECT_DIR = CMakeFiles/login.dir
   OBJECT_FILE_DIR = CMakeFiles/login.dir
 
+build CMakeFiles/login.dir/client.cpp.o: CXX_COMPILER__login_unscanned_Debug /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client.cpp || cmake_object_order_depends_target_login
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/login.dir/client.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++23 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/include -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui
+  OBJECT_DIR = CMakeFiles/login.dir
+  OBJECT_FILE_DIR = CMakeFiles/login.dir
+
+build CMakeFiles/login.dir/client_linux.cpp.o: CXX_COMPILER__login_unscanned_Debug /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/client_linux.cpp || cmake_object_order_depends_target_login
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/login.dir/client_linux.cpp.o.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++23 -fdiagnostics-color=always -fPIC
+  INCLUDES = -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/login/build/Desktop_Qt_6_9_1-Debug-laptop/login_autogen/include -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -isystem /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui
+  OBJECT_DIR = CMakeFiles/login.dir
+  OBJECT_FILE_DIR = CMakeFiles/login.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target login
@@ -81,7 +97,7 @@ build CMakeFiles/login.dir/login_window.cpp.o: CXX_COMPILER__login_unscanned_Deb
 #############################################
 # Link the executable login
 
-build login: CXX_EXECUTABLE_LINKER__login_Debug CMakeFiles/login.dir/login_autogen/mocs_compilation.cpp.o CMakeFiles/login.dir/main.cpp.o CMakeFiles/login.dir/login_window.cpp.o | /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.so.6.9.1 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.so.6.9.1 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.so.6.9.1 || login_autogen login_autogen_timestamp_deps
+build login: CXX_EXECUTABLE_LINKER__login_Debug CMakeFiles/login.dir/login_autogen/mocs_compilation.cpp.o CMakeFiles/login.dir/main.cpp.o CMakeFiles/login.dir/login_window.cpp.o CMakeFiles/login.dir/client.cpp.o CMakeFiles/login.dir/client_linux.cpp.o | /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.so.6.9.1 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.so.6.9.1 /usr/lib/libGLX.so /usr/lib/libOpenGL.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.so.6.9.1 || login_autogen login_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG -g
   LINK_LIBRARIES = -Wl,-rpath,/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib:  /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.so.6.9.1  /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.so.6.9.1  /usr/lib/libGLX.so  /usr/lib/libOpenGL.so  /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.so.6.9.1  -Wl,-rpath-link,/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib
   OBJECT_DIR = CMakeFiles/login.dir

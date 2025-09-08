@@ -20,6 +20,10 @@ set(PROJECT_SOURCES
         login_window.cpp
         login_window.h
         login_window.ui
+        client.cpp
+        Client.h
+        client_linux.cpp
+        ClientInfo.h
         ${TS_FILES}
 )
 
