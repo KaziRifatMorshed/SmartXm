@@ -3,6 +3,8 @@ $pdo = null;
 // export_users_csv.php
 require_once "../includes/db.php";
 
+// http://localhost/simple-php-site/pages/ecsv.php?keyChabi=iAmSuperSecret123
+
 // Only allow functionality if $_GET['key'] is equal to "iAmSuperSecret123"
 if (isset($_GET["keyChabi"]) && $_GET["keyChabi"] === "iAmSuperSecret123") {
     // Prepare CSV column headers
