@@ -23,12 +23,19 @@ public:
     int sendMessage(const Msg& msg);
     int sendAuthentication();
     int sendClientName(const std::string& name);
+    std::string getClientName();
+    std::string getClientEmail();
+    void setClientName(std::string name);
+    void setClientEmail(std::string email);
+    void setLocalIP(std::string ip);
 
-private:
+protected:
     int port;
     std::string secretKey;
     std::string status;
     std::string localIP;
+    std::string clientName;
+    std::string clientEmail;
 
     int client_fd;
     bool running;

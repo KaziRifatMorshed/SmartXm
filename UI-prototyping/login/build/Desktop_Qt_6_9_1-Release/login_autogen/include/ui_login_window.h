@@ -38,7 +38,7 @@ public:
     QWidget *tab;
     QWidget *layoutWidget;
     QGridLayout *gridLayout_3;
-    QLabel *label_2;
+    QLabel *label_status;
     QGridLayout *gridLayout;
     QLabel *SmartXm_logo;
     QLabel *SmartXm_label;
@@ -46,8 +46,8 @@ public:
     QSpacerItem *verticalSpacer;
     QGridLayout *gridLayout_2;
     QLineEdit *emailTextField;
-    QLabel *label_pass;
-    QLineEdit *passTextField;
+    QLabel *label_server_ip;
+    QLineEdit *serverIpTextField;
     QSpacerItem *horizontalSpacer_2;
     QLabel *label_email;
     QSpacerItem *horizontalSpacer;
@@ -87,10 +87,10 @@ public:
         gridLayout_3 = new QGridLayout(layoutWidget);
         gridLayout_3->setObjectName("gridLayout_3");
         gridLayout_3->setContentsMargins(0, 0, 0, 0);
-        label_2 = new QLabel(layoutWidget);
-        label_2->setObjectName("label_2");
+        label_status = new QLabel(layoutWidget);
+        label_status->setObjectName("label_status");
 
-        gridLayout_3->addWidget(label_2, 5, 0, 1, 1);
+        gridLayout_3->addWidget(label_status, 5, 0, 1, 1);
 
         gridLayout = new QGridLayout();
         gridLayout->setObjectName("gridLayout");
@@ -131,15 +131,15 @@ public:
 
         gridLayout_2->addWidget(emailTextField, 1, 2, 1, 1);
 
-        label_pass = new QLabel(layoutWidget);
-        label_pass->setObjectName("label_pass");
+        label_server_ip = new QLabel(layoutWidget);
+        label_server_ip->setObjectName("label_server_ip");
 
-        gridLayout_2->addWidget(label_pass, 2, 1, 1, 1);
+        gridLayout_2->addWidget(label_server_ip, 2, 1, 1, 1);
 
-        passTextField = new QLineEdit(layoutWidget);
-        passTextField->setObjectName("passTextField");
+        serverIpTextField = new QLineEdit(layoutWidget);
+        serverIpTextField->setObjectName("serverIpTextField");
 
-        gridLayout_2->addWidget(passTextField, 2, 2, 1, 1);
+        gridLayout_2->addWidget(serverIpTextField, 2, 2, 1, 1);
 
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
@@ -215,11 +215,11 @@ public:
         Login_Window->setWindowTitle(QCoreApplication::translate("Login_Window", "Login Window", nullptr));
         actionHelp->setText(QCoreApplication::translate("Login_Window", "Help", nullptr));
         actionExit->setText(QCoreApplication::translate("Login_Window", "Exit", nullptr));
-        label_2->setText(QCoreApplication::translate("Login_Window", "<html><head/><body><p align=\"center\">Status: ...</p></body></html>", nullptr));
+        label_status->setText(QCoreApplication::translate("Login_Window", "<html><head/><body><p align=\"center\">Status: ...</p></body></html>", nullptr));
         SmartXm_logo->setText(QString());
         SmartXm_label->setText(QCoreApplication::translate("Login_Window", "SmartXm", nullptr));
         label->setText(QCoreApplication::translate("Login_Window", "Version: xxx", nullptr));
-        label_pass->setText(QCoreApplication::translate("Login_Window", "Password:", nullptr));
+        label_server_ip->setText(QCoreApplication::translate("Login_Window", "Server IP:", nullptr));
         label_email->setText(QCoreApplication::translate("Login_Window", "Email:", nullptr));
         loginButton->setText(QCoreApplication::translate("Login_Window", "Login", nullptr));
         exitButton->setText(QCoreApplication::translate("Login_Window", "Exit", nullptr));

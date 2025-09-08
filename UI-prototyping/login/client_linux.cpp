@@ -152,4 +152,13 @@ int Client::sendMessage(const Msg& msg) {
 std::string Client::fetchLocalIP() {
     return "127.0.0.1";
 }
+
+void Client::setClientName(std::string name){
+    Client::clientName = name;
+}
+
+std::string Client::getClientName(){
+    return clientName;
+}
+
 #endif

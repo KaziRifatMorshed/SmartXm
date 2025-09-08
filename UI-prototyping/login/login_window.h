@@ -2,6 +2,7 @@
 #define LOGIN_WINDOW_H
 
 #include <QMainWindow>
+#include "Client.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,8 +20,10 @@ public:
 
 private slots:
     void on_exitButton_clicked();
+    void on_loginButton_clicked();
 
 private:
     Ui::Login_Window *ui;
+    Client client;
 };
 #endif // LOGIN_WINDOW_H

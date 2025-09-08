@@ -23,7 +23,7 @@ set(PROJECT_SOURCES
         client.cpp
         Client.h
         client_linux.cpp
-        ClientInfo.h
+
         ${TS_FILES}
 )
 

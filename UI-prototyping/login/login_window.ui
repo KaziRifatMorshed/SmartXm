@@ -45,7 +45,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="5" column="0">
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="label_status">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Status: ...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -113,14 +113,14 @@
           <widget class="QLineEdit" name="emailTextField"/>
          </item>
          <item row="2" column="1">
-          <widget class="QLabel" name="label_pass">
+          <widget class="QLabel" name="label_server_ip">
            <property name="text">
-            <string>Password:</string>
+            <string>Server IP:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="2">
-          <widget class="QLineEdit" name="passTextField"/>
+          <widget class="QLineEdit" name="serverIpTextField"/>
          </item>
          <item row="1" column="3" rowspan="2">
           <spacer name="horizontalSpacer_2">
