@@ -7,3 +7,12 @@ SELECT JSON_ARRAYAGG(JSON_OBJECT(
     ...
 )) AS json_result
 FROM your_table;
+
+
+
+LOAD DATA INFILE '/tmp/remoteData.csv'
+INTO TABLE users
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;  -- if your CSV has a header row
