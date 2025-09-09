@@ -1,0 +1,8 @@
+// Assume you have a QTabWidget* tabWidget and QPushButton* nextButton
+
+connect(nextButton, &QPushButton::clicked, this, [tabWidget]() {
+    int current = tabWidget->currentIndex();
+    int total = tabWidget->count();
+    int next = (current + 1) % total;
+    tabWidget->setCurrentIndex(next);
+});
