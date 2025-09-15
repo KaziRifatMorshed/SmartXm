@@ -42,3 +42,9 @@ void WelcomeWindow::on_NextLocalServer_pushButton_4_clicked()
     ui->tabWidget->setCurrentIndex(3);
 }
 
+
+void WelcomeWindow::on_pushButton_2_clicked()
+{
+
+}
+
