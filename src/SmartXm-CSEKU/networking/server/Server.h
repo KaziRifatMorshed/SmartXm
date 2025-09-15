@@ -30,6 +30,7 @@ public:
     std::vector<ClientInfo> getClients();
     std::string getStatus();
     std::string getLocalIP();
+    bool sendFileToAllClients(std::string path);
 
     // For demo: Print clients every interval seconds
     void printClientsLoop(int intervalSeconds = 5);

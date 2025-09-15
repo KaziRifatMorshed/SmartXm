@@ -1,6 +1,8 @@
 #ifdef __linux__
 
 #include "Server.h"
+#include <fstream>
+#include <sstream>
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1), running(false)
@@ -215,6 +217,42 @@ std::string Server::fetchLocalIP() {
     }
     freeifaddrs(ifap);
     return found;
+}
+
+bool Server::sendFileToAllClients(std::string path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << path << std::endl;
+        return false;
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string fileContent = buffer.str();
+    size_t fileSize = fileContent.size();
+
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    for (auto& client : clients) {
+        int client_socket = client.socfd;
+
+        // 1. Send file size
+        ssize_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
+        if (bytesSent != sizeof(fileSize)) {
+            std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
+            continue;
+        }
+
+        // 2. Send file content
+        bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
+        if (bytesSent != fileSize) {
+            std::cerr << "Failed to send file content to client " << client.clientName << std::endl;
+            continue;
+        }
+
+        std::cout << "File '" << path << "' sent to client " << client.clientName << std::endl;
+    }
+
+    return true;
 }
 
 

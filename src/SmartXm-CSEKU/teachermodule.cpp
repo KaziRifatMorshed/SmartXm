@@ -80,8 +80,14 @@ void TeacherModule::on_instruction_send_pushButton_clicked()
         QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
     } else {
         // send file to all connected clients
+        bool t = server.sendFileToAllClients(instructionFileName.toStdString());
         // on successful, show msg
-        QMessageBox::information(this, "Success", "Instruction sent to all connected clients.");
+        if(t){
+            QMessageBox::information(this, "Success", "Instruction sent to all connected clients.");
+        } else {
+            QMessageBox::warning(this, "failed!", "File Send Failed!!!");
+        }
+
     }
 }
 
