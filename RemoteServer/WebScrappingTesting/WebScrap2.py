@@ -23,6 +23,7 @@ time.sleep(3)
 result = driver.page_source
 # Clean up the result
 result = result.replace("<br>", "\n")
+result = result.replace("&amp;", "&")
 result = result.replace('<html><head></head><body>', "")
 result = result.replace('</body></html>', "")
 print(result.strip())

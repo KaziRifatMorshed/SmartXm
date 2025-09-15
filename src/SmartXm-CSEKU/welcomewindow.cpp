@@ -84,16 +84,15 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
 #endif
 
     DownloadDataAndSaveCSV:
+    std::cout << "Downloading Data from Remote Server and Saving CSV file inside db"<< std::endl;
     std::string downCSVdataCMD = "cd " + executablePath.toStdString() + "/db && " + pyFetcherPath.toStdString();
-    std::cout << downCSVdataCMD << std::endl;
+    // std::cout << downCSVdataCMD << std::endl;
     std::string downCSVdataOutput = termiExec(downCSVdataCMD.c_str());
-    std::cout << downCSVdataOutput << std::endl;
+    // std::cout << downCSVdataOutput << std::endl;
 
     DecryptCSVdata:
-    // std::string decryptorCommand = "cd " + pyFetcherPath.toStdString() + " & ";
-    // std::string depryptorOutput = termiExec(decryptorCommand.c_str());
-
-
-    // Encryption encryption = Encryption();
-}
+    Encryption encryption = Encryption("./db/remoteData.csv", "./db/remoteData-dec.csv", 20);
+    std::cout << "Decrypting Data" << std::endl;
+    encryption.decrypt();
+} // working
 
