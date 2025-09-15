@@ -25,7 +25,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="welcome_tab">
        <attribute name="title">
@@ -37,7 +37,7 @@
           <item>
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>logo</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/logo/resources/logo/SmartXm-logo-mid.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -188,7 +188,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,3,0">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4,1">
           <property name="spacing">
            <number>3</number>
           </property>
@@ -225,7 +225,11 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="lineEdit_2">
+              <property name="echoMode">
+               <enum>QLineEdit::EchoMode::Password</enum>
+              </property>
+             </widget>
             </item>
             <item row="2" column="1">
              <widget class="QPushButton" name="pushButton">
@@ -265,7 +269,7 @@
     <item>
      <widget class="QLabel" name="footer_label">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Made with love at Khulna University, Khulna&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Made with ❤︎ at CSE Discipline, Khulna University, Khulna&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
@@ -277,7 +281,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

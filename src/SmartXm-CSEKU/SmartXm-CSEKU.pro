@@ -42,3 +42,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     SmartXm-CSEKU.pro.user \
     SmartXm-CSEKU.pro.user.c7782b4
+
+RESOURCES += \
+    qt_resources.qrc

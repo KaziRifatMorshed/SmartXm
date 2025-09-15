@@ -242,6 +242,7 @@ public:
 
         lineEdit_2 = new QLineEdit(login_tab);
         lineEdit_2->setObjectName("lineEdit_2");
+        lineEdit_2->setEchoMode(QLineEdit::EchoMode::Password);
 
         formLayout->setWidget(1, QFormLayout::ItemRole::FieldRole, lineEdit_2);
 
@@ -257,7 +258,9 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_2);
 
-        horizontalLayout->setStretch(1, 3);
+        horizontalLayout->setStretch(0, 1);
+        horizontalLayout->setStretch(1, 4);
+        horizontalLayout->setStretch(2, 1);
 
         verticalLayout_3->addLayout(horizontalLayout);
 
@@ -278,7 +281,7 @@ public:
         WelcomeWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(WelcomeWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 23));
+        menubar->setGeometry(QRect(0, 0, 800, 22));
         WelcomeWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(WelcomeWindow);
         statusbar->setObjectName("statusbar");
@@ -296,7 +299,7 @@ public:
     {
         WelcomeWindow->setWindowTitle(QCoreApplication::translate("WelcomeWindow", "WelcomeWindow", nullptr));
         welcome_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Welcome to SmartXm</span></p></body></html>", nullptr));
-        label_8->setText(QCoreApplication::translate("WelcomeWindow", "logo", nullptr));
+        label_8->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p><img src=\":/logo/resources/logo/SmartXm-logo-mid.png\"/></p></body></html>", nullptr));
         label_7->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p><span style=\" font-size:24pt; font-weight:700;\">SmartXm</span></p></body></html>", nullptr));
         exit_welcome_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Exit", nullptr));
         teacherWelcome_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Teacher", nullptr));
@@ -321,7 +324,7 @@ public:
         pushButton->setText(QCoreApplication::translate("WelcomeWindow", "Login", nullptr));
         loginStatus_label_9->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:11pt;\">Login Status: (not implemented yet)</span></p></body></html>", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(login_tab), QCoreApplication::translate("WelcomeWindow", "Login", nullptr));
-        footer_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Made with love at Khulna University, Khulna</p></body></html>", nullptr));
+        footer_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Made with \342\235\244\357\270\216 at CSE Discipline, Khulna University, Khulna</p></body></html>", nullptr));
     } // retranslateUi
 
 };
