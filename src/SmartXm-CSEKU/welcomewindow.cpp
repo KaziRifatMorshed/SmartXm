@@ -99,11 +99,17 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
 
 void WelcomeWindow::on_pushButton_clicked()
 {
-    bool temp = false;
-
+    bool temp = true;
+    bool isTeacher = true;
     ///
     if(temp) {
+        if(isTeacher){
+            hide();
+            teacherModuleWindow = new TeacherModule(this);
+            teacherModuleWindow->show();
+        } else {
 
+        }
     }
 }
 
