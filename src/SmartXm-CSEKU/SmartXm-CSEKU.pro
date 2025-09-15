@@ -10,19 +10,27 @@ CONFIG += c++23
 
 SOURCES += \
     main.cpp \
+    networking/server/server.cpp \
+    networking/server/server_linux.cpp \
+    teachermodule.cpp \
     welcomewindow.cpp \
     dependencies/linux/Encryption/encryption.cpp
 
 HEADERS += \
+    ClientInfo.h \
+    Msg.h \
     SQliteDbHandler.h \
     Student.h \
     TerminalExecuter.h \
     csv.h \
+    networking/server/Server.h \
+    teachermodule.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h \
     xamppDBhandler.h
 
 FORMS += \
+    teachermodule.ui \
     welcomewindow.ui
 
 
@@ -30,3 +38,7 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    SmartXm-CSEKU.pro.user \
+    SmartXm-CSEKU.pro.user.c7782b4

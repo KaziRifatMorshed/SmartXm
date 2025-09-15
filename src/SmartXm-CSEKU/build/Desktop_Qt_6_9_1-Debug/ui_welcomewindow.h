@@ -286,7 +286,7 @@ public:
 
         retranslateUi(WelcomeWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(WelcomeWindow);

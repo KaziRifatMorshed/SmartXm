@@ -53,13 +53,19 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../../main.cpp \
+		../../teachermodule.cpp \
 		../../welcomewindow.cpp \
-		../../dependencies/linux/Encryption/encryption.cpp moc_welcomewindow.cpp
+		../../dependencies/linux/Encryption/encryption.cpp moc_teachermodule.cpp \
+		moc_welcomewindow.cpp
 OBJECTS       = main.o \
+		teachermodule.o \
 		welcomewindow.o \
 		encryption.o \
+		moc_teachermodule.o \
 		moc_welcomewindow.o
-DIST          = /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf \
+DIST          = ../../SmartXm-CSEKU.pro.user \
+		../../SmartXm-CSEKU.pro.user.c7782b4 \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/common/unix.conf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/common/linux.conf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/common/sanitize.conf \
@@ -296,11 +302,18 @@ DIST          = /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/exceptions.prf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/yacc.prf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/lex.prf \
-		../../../../SmartXm-CSEKU.pro ../../SQliteDbHandler.h \
+		../../../../SmartXm-CSEKU.pro ../../ClientInfo.h \
+		../../Msg.h \
+		../../SQliteDbHandler.h \
 		../../Student.h \
 		../../TerminalExecuter.h \
+		../../csv.h \
+		../../networking/server/Server.h \
+		../../teachermodule.h \
 		../../welcomewindow.h \
-		../../dependencies/linux/Encryption/encryption.h ../../main.cpp \
+		../../dependencies/linux/Encryption/encryption.h \
+		../../xamppDBhandler.h ../../main.cpp \
+		../../teachermodule.cpp \
 		../../welcomewindow.cpp \
 		../../dependencies/linux/Encryption/encryption.cpp
 QMAKE_TARGET  = SmartXm-CSEKU
@@ -311,7 +324,7 @@ TARGET        = SmartXm-CSEKU
 first: all
 ####### Build rules
 
-SmartXm-CSEKU: ui_welcomewindow.h $(OBJECTS)  
+SmartXm-CSEKU: ui_teachermodule.h ui_welcomewindow.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET)  $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../../SmartXm-CSEKU.pro /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++/qmake.conf /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -816,9 +829,9 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../SQliteDbHandler.h ../../Student.h ../../TerminalExecuter.h ../../welcomewindow.h ../../dependencies/linux/Encryption/encryption.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../main.cpp ../../welcomewindow.cpp ../../dependencies/linux/Encryption/encryption.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../welcomewindow.ui $(DISTDIR)/
+	$(COPY_FILE) --parents ../../ClientInfo.h ../../Msg.h ../../SQliteDbHandler.h ../../Student.h ../../TerminalExecuter.h ../../csv.h ../../networking/server/Server.h ../../teachermodule.h ../../welcomewindow.h ../../dependencies/linux/Encryption/encryption.h ../../xamppDBhandler.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../main.cpp ../../networking/server/server.cpp ../../networking/server/server_linux.cpp ../../teachermodule.cpp ../../welcomewindow.cpp ../../dependencies/linux/Encryption/encryption.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../teachermodule.ui ../../welcomewindow.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -850,9 +863,212 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -Wextra -fPIC -dM -E -o moc_predefs.h /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_welcomewindow.cpp
+compiler_moc_header_make_all: moc_teachermodule.cpp moc_welcomewindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_welcomewindow.cpp
+	-$(DEL_FILE) moc_teachermodule.cpp moc_welcomewindow.cpp
+moc_teachermodule.cpp: ../../teachermodule.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QMainWindow \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcoreglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtversionchecks.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtconfiginclude.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qconfig.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtconfigmacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtdeprecationdefinitions.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcoreexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtdeprecationmarkers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtclasshelpermacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtpreprocessorsupport.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qassert.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtnoop.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtypes.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtversion.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlogging.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qflags.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompare_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qyieldcpu.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qconstructormacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdarwinhelpers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qexceptionhandling.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qforeach.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qttypetraits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfunctionpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmalloc.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qminmax.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnumeric.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qoverload.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qswap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtenvironmentvariables.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtresource.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qttranslation.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtgui-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtguiexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgetsexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qwidget.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnamespace.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompare.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstdlibdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcomparehelpers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20type_traits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtmetamacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfunctionaltools_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobject.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstring.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qchar.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearray.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrefcount.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydata.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpair.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydatapointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydataops.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qxptype_traits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20functional.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20memory.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q17memory.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearrayalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearrayview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringfwd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringliteral.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlatin1stringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qanystringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qutf8stringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringtokenizer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringconverter.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringconverter_base.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiterator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringlist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbasictimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qabstracteventdispatcher.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qeventloop.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdeadlinetimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qelapsedtimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmetatype.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdatastream.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiodevicebase.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfloat16.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmath.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtformat_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiterable.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmetacontainer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainerinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtaggedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qscopeguard.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbindingstorage.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmargins.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q23utility.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20utility.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qaction.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qkeysequence.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qicon.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsize.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpixmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrect.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpoint.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qcolor.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qrgb.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qrgba64.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qshareddata.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qimage.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpixelformat.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtransform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpolygon.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qregion.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qspan.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20iterator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qline.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qvariant.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdebug.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtextstream.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qshareddata_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qset.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qhash.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpalette.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qbrush.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfont.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qendian.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontvariableaxis.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qcursor.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qbitmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qevent.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiodevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qurl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qeventpoint.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qvector2d.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qvectornd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpointingdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qinputdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qscreen.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QList \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QObject \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QRect \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSize \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSizeF \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/QTransform \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnativeinterface.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qscreen_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreapplication_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfuture.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfutureinterface.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmutex.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtsan_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qresultstore.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfuture_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qthreadpool.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qthread.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrunnable.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qexception.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpromise.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qinputmethod.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlocale.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		moc_predefs.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc
+	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc $(DEFINES) --include /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU/build/Desktop_Qt_6_9_1-Debug/moc_predefs.h -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/15.2.1 -I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/15.2.1/backward -I/usr/lib/clang/20/include -I/usr/local/include -I/usr/include ../../teachermodule.h -o moc_teachermodule.cpp
+
 moc_welcomewindow.cpp: ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QMainWindow \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
@@ -1084,6 +1300,7 @@ moc_welcomewindow.cpp: ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
+		../../teachermodule.h \
 		moc_predefs.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc
 	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc $(DEFINES) --include /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU/build/Desktop_Qt_6_9_1-Debug/moc_predefs.h -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/15.2.1 -I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/15.2.1/backward -I/usr/lib/clang/20/include -I/usr/local/include -I/usr/include ../../welcomewindow.h -o moc_welcomewindow.cpp
@@ -1092,9 +1309,13 @@ compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_welcomewindow.h
+compiler_uic_make_all: ui_teachermodule.h ui_welcomewindow.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_welcomewindow.h
+	-$(DEL_FILE) ui_teachermodule.h ui_welcomewindow.h
+ui_teachermodule.h: ../../teachermodule.ui \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/uic
+	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/uic ../../teachermodule.ui -o ui_teachermodule.h
+
 ui_welcomewindow.h: ../../welcomewindow.ui \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/uic
 	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/uic ../../welcomewindow.ui -o ui_welcomewindow.h
@@ -1340,9 +1561,217 @@ main.o: ../../main.cpp ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
+		../../teachermodule.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QApplication \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
+
+teachermodule.o: ../../teachermodule.cpp ../../teachermodule.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QMainWindow \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qmainwindow.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcoreglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtversionchecks.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtconfiginclude.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qconfig.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtconfigmacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtdeprecationdefinitions.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtcoreexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtdeprecationmarkers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtclasshelpermacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtpreprocessorsupport.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qassert.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtnoop.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtypes.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtversion.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlogging.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qflags.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompare_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qyieldcpu.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qconstructormacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdarwinhelpers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qexceptionhandling.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qforeach.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qttypetraits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfunctionpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmalloc.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qminmax.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnumeric.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qoverload.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qswap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtenvironmentvariables.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtresource.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qttranslation.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtgui-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtguiexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtwidgetsexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qwidget.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnamespace.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcompare.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstdlibdetection.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcomparehelpers.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20type_traits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtmetamacros.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfunctionaltools_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobject.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstring.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qchar.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearray.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrefcount.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydata.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpair.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydatapointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qarraydataops.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qxptype_traits.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20functional.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20memory.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q17memory.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearrayalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearrayview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringfwd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringliteral.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlatin1stringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qanystringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qutf8stringview.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringtokenizer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringconverter.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringconverter_base.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiterator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringlist.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbasictimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qabstracteventdispatcher.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qeventloop.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdeadlinetimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qelapsedtimer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmetatype.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdatastream.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiodevicebase.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfloat16.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmath.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtformat_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiterable.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmetacontainer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontainerinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtaggedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qscopeguard.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qbindingstorage.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmargins.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q23utility.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20utility.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qaction.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qkeysequence.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qicon.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsize.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpixmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrect.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpoint.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qcolor.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qrgb.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qrgba64.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qshareddata.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qimage.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpixelformat.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtransform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpolygon.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qregion.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qspan.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q20iterator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qline.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qvariant.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdebug.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtextstream.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qshareddata_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qset.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qhash.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpalette.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qbrush.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfont.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qendian.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontinfo.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qfontvariableaxis.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qcursor.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qbitmap.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qevent.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qiodevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qurl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qeventpoint.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qvector2d.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qvectornd.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpointingdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qinputdevice.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qscreen.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QList \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QObject \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QRect \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSize \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSizeF \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/QTransform \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qnativeinterface.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qscreen_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcoreapplication_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfuture.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfutureinterface.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qmutex.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qtsan_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qresultstore.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qfuture_impl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qthreadpool.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qthread.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qrunnable.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qexception.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qpromise.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qinputmethod.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlocale.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication_platform.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../networking/server/server.cpp \
+		../../networking/server/server_linux.cpp \
+		../../networking/server/Server.h \
+		../../ClientInfo.h \
+		../../Msg.h \
+		ui_teachermodule.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o teachermodule.o ../../teachermodule.cpp
 
 welcomewindow.o: ../../welcomewindow.cpp ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QMainWindow \
@@ -1575,6 +2004,7 @@ welcomewindow.o: ../../welcomewindow.cpp ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
+		../../teachermodule.h \
 		ui_welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QApplication \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qapplication.h \
@@ -1615,6 +2045,9 @@ welcomewindow.o: ../../welcomewindow.cpp ../../welcomewindow.h \
 
 encryption.o: ../../dependencies/linux/Encryption/encryption.cpp ../../dependencies/linux/Encryption/encryption.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o encryption.o ../../dependencies/linux/Encryption/encryption.cpp
+
+moc_teachermodule.o: moc_teachermodule.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_teachermodule.o moc_teachermodule.cpp
 
 moc_welcomewindow.o: moc_welcomewindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_welcomewindow.o moc_welcomewindow.cpp

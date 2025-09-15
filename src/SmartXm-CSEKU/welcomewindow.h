@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <teachermodule.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,9 +33,13 @@ private slots:
 
     void on_sync_remoteS_pushButton_2_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::WelcomeWindow *ui;
     QNetworkAccessManager *m_networkManager;
     void checkConnection();
+
+    TeacherModule *teacherModuleWindow;
 };
 #endif // WELCOMEWINDOW_H
