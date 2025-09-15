@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 
-url = "https://cseku-smartxm.free.nf/pages/ecsv.php?keyChabi=iAmSuperSecret123&i=1"
+url = "https://cseku-smartxm.free.nf/pages/ecsv.php?keyChabi=iAmSuperSecret123&seed=20"
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
