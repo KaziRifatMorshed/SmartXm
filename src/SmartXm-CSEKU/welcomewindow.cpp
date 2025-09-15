@@ -96,3 +96,14 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
     encryption.decrypt();
 } // working
 
+
+void WelcomeWindow::on_pushButton_clicked()
+{
+    bool temp = false;
+
+    ///
+    if(temp) {
+
+    }
+}
+

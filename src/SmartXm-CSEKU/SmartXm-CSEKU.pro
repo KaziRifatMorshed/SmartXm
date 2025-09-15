@@ -17,8 +17,10 @@ HEADERS += \
     SQliteDbHandler.h \
     Student.h \
     TerminalExecuter.h \
+    csv.h \
     welcomewindow.h \
-    dependencies/linux/Encryption/encryption.h
+    dependencies/linux/Encryption/encryption.h \
+    xamppDBhandler.h
 
 FORMS += \
     welcomewindow.ui
