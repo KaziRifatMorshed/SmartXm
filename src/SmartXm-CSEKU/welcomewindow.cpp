@@ -10,6 +10,9 @@ WelcomeWindow::WelcomeWindow(QWidget *parent)
     , m_networkManager(new QNetworkAccessManager(this))
 {
     ui->setupUi(this);
+    ui->tabWidget->setTabEnabled(1,false);
+    ui->tabWidget->setTabEnabled(2,false);
+    ui->tabWidget->setTabEnabled(3,false);
 }
 
 WelcomeWindow::~WelcomeWindow()
@@ -25,24 +28,32 @@ void WelcomeWindow::on_exit_welcome_pushButton_4_clicked()
 
 void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked()
 {
+    ui->tabWidget->setTabEnabled(1,true);
+    ui->tabWidget->setTabEnabled(2,false);
+    ui->tabWidget->setTabEnabled(3,false);
     ui->tabWidget->setCurrentIndex(1);
 }
 
 
 void WelcomeWindow::on_studentWelcome_pushButton_4_clicked()
 {
+    ui->tabWidget->setTabEnabled(2,true);
+    ui->tabWidget->setTabEnabled(1,false);
+    ui->tabWidget->setTabEnabled(3,false);
     ui->tabWidget->setCurrentIndex(2);
 }
 
 
 void WelcomeWindow::on_nextRemoteServer_pushButton_4_clicked()
 {
+    ui->tabWidget->setTabEnabled(3,true);
     ui->tabWidget->setCurrentIndex(3);
 }
 
 
 void WelcomeWindow::on_NextLocalServer_pushButton_4_clicked()
 {
+    ui->tabWidget->setTabEnabled(3,true);
     ui->tabWidget->setCurrentIndex(3);
 }
 

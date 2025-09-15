@@ -128,6 +128,33 @@
           </item>
          </layout>
         </item>
+        <item>
+         <widget class="QTableWidget" name="connectedPCwithServer_tableWidget">
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+          </property>
+          <column>
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Stu ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Local IP</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Action</string>
+           </property>
+          </column>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="exam_tab">
@@ -142,19 +169,166 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QTableView" name="AllExamTableView"/>
+            <widget class="QTableWidget" name="allXmList_tableWidget">
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+             </property>
+             <row>
+              <property name="text">
+               <string>2</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </row>
+             <row/>
+             <column>
+              <property name="text">
+               <string>Course Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Course Code</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Course Teacher</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Exam Topic</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Exam Date</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Exam Time</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Action</string>
+              </property>
+             </column>
+             <item row="0" column="0">
+              <property name="text">
+               <string>Data Structure Lab</string>
+              </property>
+             </item>
+             <item row="0" column="1">
+              <property name="text">
+               <string>CSE 2100</string>
+              </property>
+             </item>
+             <item row="0" column="2">
+              <property name="text">
+               <string>Mr. XYZ ABCD</string>
+              </property>
+             </item>
+             <item row="0" column="3">
+              <property name="text">
+               <string>Stack</string>
+              </property>
+             </item>
+             <item row="0" column="4">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+             <item row="0" column="5">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+             <item row="1" column="0">
+              <property name="text">
+               <string>Computer Fundamentals Lab</string>
+              </property>
+             </item>
+             <item row="1" column="1">
+              <property name="text">
+               <string>CSE 1100</string>
+              </property>
+             </item>
+             <item row="1" column="2">
+              <property name="text">
+               <string>Mr WXYZ</string>
+              </property>
+             </item>
+             <item row="1" column="3">
+              <property name="text">
+               <string>PowerPoint</string>
+              </property>
+             </item>
+             <item row="1" column="4">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+             <item row="1" column="5">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+             <item row="2" column="0">
+              <property name="text">
+               <string>Algorithms Lab</string>
+              </property>
+             </item>
+             <item row="2" column="1">
+              <property name="text">
+               <string>CSE 2200</string>
+              </property>
+             </item>
+             <item row="2" column="2">
+              <property name="text">
+               <string>Mr. ABC XYZ</string>
+              </property>
+             </item>
+             <item row="2" column="3">
+              <property name="text">
+               <string>Greedy</string>
+              </property>
+             </item>
+             <item row="2" column="4">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+             <item row="2" column="5">
+              <property name="text">
+               <string>dummy</string>
+              </property>
+             </item>
+            </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="createXm_pushButton">
              <property name="text">
               <string>Create Exam</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="editExam_pushButon_2">
              <property name="text">
               <string>Edit Exam</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="testExam_pushButton_3">
+             <property name="text">
+              <string>Test Exam</string>
              </property>
             </widget>
            </item>
@@ -163,6 +337,36 @@
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="sendInstructions_groupBox">
+      <property name="title">
+       <string>Send Instructions to all clients</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="instruction_send_pushButton">
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="selectFile_pushButton">
+         <property name="text">
+          <string>Select File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="selectedFileToSendInstruction_label_2">
+         <property name="text">
+          <string>Selected File: none</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>

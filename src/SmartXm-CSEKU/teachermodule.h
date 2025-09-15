@@ -22,6 +22,10 @@ private slots:
 
     void on_StopServer_toolButton_2_clicked();
 
+    void on_selectFile_pushButton_clicked();
+
+    void on_instruction_send_pushButton_clicked();
+
 private:
     Ui::TeacherModule *ui;
 };
