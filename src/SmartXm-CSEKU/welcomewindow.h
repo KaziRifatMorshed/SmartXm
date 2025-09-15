@@ -2,6 +2,8 @@
 #define WELCOMEWINDOW_H
 
 #include <QMainWindow>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,7 +30,11 @@ private slots:
 
     void on_NextLocalServer_pushButton_4_clicked();
 
+    void on_sync_remoteS_pushButton_2_clicked();
+
 private:
     Ui::WelcomeWindow *ui;
+    QNetworkAccessManager *m_networkManager;
+    void checkConnection();
 };
 #endif // WELCOMEWINDOW_H

@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,12 +10,15 @@ CONFIG += c++23
 
 SOURCES += \
     main.cpp \
-    welcomewindow.cpp
+    welcomewindow.cpp \
+    dependencies/linux/Encryption/encryption.cpp
 
 HEADERS += \
     SQliteDbHandler.h \
     Student.h \
-    welcomewindow.h
+    TerminalExecuter.h \
+    welcomewindow.h \
+    dependencies/linux/Encryption/encryption.h
 
 FORMS += \
     welcomewindow.ui

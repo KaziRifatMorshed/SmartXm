@@ -45,8 +45,8 @@ public:
     QWidget *remoteServerTab;
     QVBoxLayout *verticalLayout_2;
     QLabel *syncWithRemoteServer_label;
-    QLabel *label;
-    QPushButton *pushButton_2;
+    QLabel *netConnectionStatus_label;
+    QPushButton *sync_remoteS_pushButton_2;
     QLabel *label_2;
     QPushButton *nextRemoteServer_pushButton_4;
     QWidget *LocalServer_tab;
@@ -141,15 +141,15 @@ public:
 
         verticalLayout_2->addWidget(syncWithRemoteServer_label);
 
-        label = new QLabel(remoteServerTab);
-        label->setObjectName("label");
+        netConnectionStatus_label = new QLabel(remoteServerTab);
+        netConnectionStatus_label->setObjectName("netConnectionStatus_label");
 
-        verticalLayout_2->addWidget(label);
+        verticalLayout_2->addWidget(netConnectionStatus_label);
 
-        pushButton_2 = new QPushButton(remoteServerTab);
-        pushButton_2->setObjectName("pushButton_2");
+        sync_remoteS_pushButton_2 = new QPushButton(remoteServerTab);
+        sync_remoteS_pushButton_2->setObjectName("sync_remoteS_pushButton_2");
 
-        verticalLayout_2->addWidget(pushButton_2);
+        verticalLayout_2->addWidget(sync_remoteS_pushButton_2);
 
         label_2 = new QLabel(remoteServerTab);
         label_2->setObjectName("label_2");
@@ -286,7 +286,7 @@ public:
 
         retranslateUi(WelcomeWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(WelcomeWindow);
@@ -303,8 +303,8 @@ public:
         studentWelcome_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Student", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(welcome_tab), QCoreApplication::translate("WelcomeWindow", "Welcome", nullptr));
         syncWithRemoteServer_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">Synchronize with Remote Server</span></p></body></html>", nullptr));
-        label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Internet Connection Status: (not implemented yet)</p></body></html>", nullptr));
-        pushButton_2->setText(QCoreApplication::translate("WelcomeWindow", "Sync", nullptr));
+        netConnectionStatus_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Internet Connection Status: (not implemented yet)</p></body></html>", nullptr));
+        sync_remoteS_pushButton_2->setText(QCoreApplication::translate("WelcomeWindow", "Sync", nullptr));
         label_2->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Synchronization Status: (not implemented yet)</p></body></html>", nullptr));
         nextRemoteServer_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Next", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(remoteServerTab), QCoreApplication::translate("WelcomeWindow", "Remote Server", nullptr));

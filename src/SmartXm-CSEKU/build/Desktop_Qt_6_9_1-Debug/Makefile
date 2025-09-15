@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -fPIC -D_REENTRANT $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -Wextra -fPIC -D_REENTRANT $(DEFINES)
-INCPATH       = -I../../../SmartXm-CSEKU -I. -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I. -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../../../SmartXm-CSEKU -I. -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I. -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++
 QMAKE         = /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = SmartXm-CSEKU1.0.0
 DISTDIR = /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU/build/Desktop_Qt_6_9_1-Debug/.tmp/SmartXm-CSEKU1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib -Wl,-rpath-link,/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib
-LIBS          = $(SUBLIBS) /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Sql.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.so -lpthread -lGL   
+LIBS          = $(SUBLIBS) /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Sql.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Network.so /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.so -lpthread -lGL   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -53,9 +53,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../../main.cpp \
-		../../welcomewindow.cpp moc_welcomewindow.cpp
+		../../welcomewindow.cpp \
+		../../dependencies/linux/Encryption/encryption.cpp moc_welcomewindow.cpp
 OBJECTS       = main.o \
 		welcomewindow.o \
+		encryption.o \
 		moc_welcomewindow.o
 DIST          = /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/common/unix.conf \
@@ -296,8 +298,11 @@ DIST          = /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/lex.prf \
 		../../../../SmartXm-CSEKU.pro ../../SQliteDbHandler.h \
 		../../Student.h \
-		../../welcomewindow.h ../../main.cpp \
-		../../welcomewindow.cpp
+		../../TerminalExecuter.h \
+		../../welcomewindow.h \
+		../../dependencies/linux/Encryption/encryption.h ../../main.cpp \
+		../../welcomewindow.cpp \
+		../../dependencies/linux/Encryption/encryption.cpp
 QMAKE_TARGET  = SmartXm-CSEKU
 DESTDIR       = 
 TARGET        = SmartXm-CSEKU
@@ -550,6 +555,7 @@ Makefile: ../../SmartXm-CSEKU.pro /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/lin
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.prl \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.prl \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Sql.prl \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Network.prl \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.prl
 	$(QMAKE) -o Makefile ../../SmartXm-CSEKU.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/spec_pre.prf:
@@ -793,6 +799,7 @@ Makefile: ../../SmartXm-CSEKU.pro /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/lin
 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Widgets.prl:
 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Gui.prl:
 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Sql.prl:
+/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Network.prl:
 /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/lib/libQt6Core.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ../../SmartXm-CSEKU.pro -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug
@@ -809,8 +816,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../SQliteDbHandler.h ../../Student.h ../../welcomewindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../main.cpp ../../welcomewindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../SQliteDbHandler.h ../../Student.h ../../TerminalExecuter.h ../../welcomewindow.h ../../dependencies/linux/Encryption/encryption.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../main.cpp ../../welcomewindow.cpp ../../dependencies/linux/Encryption/encryption.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../welcomewindow.ui $(DISTDIR)/
 
 
@@ -1045,9 +1052,41 @@ moc_welcomewindow.cpp: ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlocale.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication_platform.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhttpheaders.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QString \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QUrl \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QVariant \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q26numeric.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhostaddress.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcalendar.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QFlags \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QMetaType \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkReply \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
 		moc_predefs.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc
-	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc $(DEFINES) --include /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU/build/Desktop_Qt_6_9_1-Debug/moc_predefs.h -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/15.2.1 -I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/15.2.1/backward -I/usr/lib/clang/20/include -I/usr/local/include -I/usr/include ../../welcomewindow.h -o moc_welcomewindow.cpp
+	/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/libexec/moc $(DEFINES) --include /home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU/build/Desktop_Qt_6_9_1-Debug/moc_predefs.h -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/mkspecs/linux-g++ -I/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/src/SmartXm-CSEKU -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtSql -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork -I/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/15.2.1 -I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/15.2.1/backward -I/usr/lib/clang/20/include -I/usr/local/include -I/usr/include ../../welcomewindow.h -o moc_welcomewindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1269,6 +1308,38 @@ main.o: ../../main.cpp ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlocale.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication_platform.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhttpheaders.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QString \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QUrl \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QVariant \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q26numeric.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhostaddress.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcalendar.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QFlags \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QMetaType \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkReply \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QApplication \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
@@ -1472,17 +1543,78 @@ welcomewindow.o: ../../welcomewindow.cpp ../../welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qlocale.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qguiapplication_platform.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qtabwidget.h \
-		ui_welcomewindow.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetwork-config.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtnetworkexports.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhttpheaders.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QSharedDataPointer \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QString \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QUrl \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QVariant \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/q26numeric.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslConfiguration \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qhostaddress.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslerror.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcryptographichash.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qdatetime.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/qcalendar.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qssl.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QFlags \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QMetaType \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkReply \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtCore/QIODevice \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtNetwork/QNetworkRequest \
+		ui_welcomewindow.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QApplication \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qapplication.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QFormLayout \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qformlayout.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QLayout \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qlayout.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qboxlayout.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qgridlayout.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QHBoxLayout \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QLabel \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qlabel.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qframe.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpicture.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtextdocument.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QLineEdit \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qlineedit.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtextcursor.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtextformat.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qpen.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtGui/qtextoption.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QMenuBar \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qmenubar.h \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qmenu.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QPushButton \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qpushbutton.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QSpacerItem \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QStatusBar \
 		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/qstatusbar.h \
-		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QWidget
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QTabWidget \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QVBoxLayout \
+		/mnt/PlayKaziRifat/Qt/6.9.1/gcc_64/include/QtWidgets/QWidget \
+		../../TerminalExecuter.h \
+		../../dependencies/linux/Encryption/encryption.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o welcomewindow.o ../../welcomewindow.cpp
+
+encryption.o: ../../dependencies/linux/Encryption/encryption.cpp ../../dependencies/linux/Encryption/encryption.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o encryption.o ../../dependencies/linux/Encryption/encryption.cpp
 
 moc_welcomewindow.o: moc_welcomewindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_welcomewindow.o moc_welcomewindow.cpp

@@ -7,6 +7,7 @@
 *****************************************************************************/
 
 #include "../../welcomewindow.h"
+#include <QtNetwork/QSslError>
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>
@@ -44,7 +45,8 @@ template <> constexpr inline auto WelcomeWindow::qt_create_metaobjectdata<qt_met
         "on_teacherWelcome_pushButton_4_clicked",
         "on_studentWelcome_pushButton_4_clicked",
         "on_nextRemoteServer_pushButton_4_clicked",
-        "on_NextLocalServer_pushButton_4_clicked"
+        "on_NextLocalServer_pushButton_4_clicked",
+        "on_sync_remoteS_pushButton_2_clicked"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -58,6 +60,8 @@ template <> constexpr inline auto WelcomeWindow::qt_create_metaobjectdata<qt_met
         QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'on_NextLocalServer_pushButton_4_clicked'
         QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_sync_remoteS_pushButton_2_clicked'
+        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -86,6 +90,7 @@ void WelcomeWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 2: _t->on_studentWelcome_pushButton_4_clicked(); break;
         case 3: _t->on_nextRemoteServer_pushButton_4_clicked(); break;
         case 4: _t->on_NextLocalServer_pushButton_4_clicked(); break;
+        case 5: _t->on_sync_remoteS_pushButton_2_clicked(); break;
         default: ;
         }
     }
@@ -111,14 +116,14 @@ int WelcomeWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }
