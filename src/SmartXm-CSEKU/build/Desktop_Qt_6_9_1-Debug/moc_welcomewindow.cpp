@@ -38,10 +38,26 @@ template <> constexpr inline auto WelcomeWindow::qt_create_metaobjectdata<qt_met
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "WelcomeWindow"
+        "WelcomeWindow",
+        "on_exit_welcome_pushButton_4_clicked",
+        "",
+        "on_teacherWelcome_pushButton_4_clicked",
+        "on_studentWelcome_pushButton_4_clicked",
+        "on_nextRemoteServer_pushButton_4_clicked",
+        "on_NextLocalServer_pushButton_4_clicked"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Slot 'on_exit_welcome_pushButton_4_clicked'
+        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_teacherWelcome_pushButton_4_clicked'
+        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_studentWelcome_pushButton_4_clicked'
+        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_nextRemoteServer_pushButton_4_clicked'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_NextLocalServer_pushButton_4_clicked'
+        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,9 +79,16 @@ Q_CONSTINIT const QMetaObject WelcomeWindow::staticMetaObject = { {
 void WelcomeWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<WelcomeWindow *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->on_exit_welcome_pushButton_4_clicked(); break;
+        case 1: _t->on_teacherWelcome_pushButton_4_clicked(); break;
+        case 2: _t->on_studentWelcome_pushButton_4_clicked(); break;
+        case 3: _t->on_nextRemoteServer_pushButton_4_clicked(); break;
+        case 4: _t->on_NextLocalServer_pushButton_4_clicked(); break;
+        default: ;
+        }
+    }
     (void)_a;
 }
 
@@ -85,6 +108,18 @@ void *WelcomeWindow::qt_metacast(const char *_clname)
 int WelcomeWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 5)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 5;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 5)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 5;
+    }
     return _id;
 }
 QT_WARNING_POP

@@ -17,6 +17,17 @@ public:
     WelcomeWindow(QWidget *parent = nullptr);
     ~WelcomeWindow();
 
+private slots:
+    void on_exit_welcome_pushButton_4_clicked();
+
+    void on_teacherWelcome_pushButton_4_clicked();
+
+    void on_studentWelcome_pushButton_4_clicked();
+
+    void on_nextRemoteServer_pushButton_4_clicked();
+
+    void on_NextLocalServer_pushButton_4_clicked();
+
 private:
     Ui::WelcomeWindow *ui;
 };
