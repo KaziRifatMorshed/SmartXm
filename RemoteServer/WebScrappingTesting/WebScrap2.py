@@ -30,3 +30,5 @@ driver.quit()
 
 with open("./remoteData.csv", "w", encoding="utf-8") as ff:
     ff.write(result)
+
+# pyinstaller --onefile main.py
