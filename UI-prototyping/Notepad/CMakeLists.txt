@@ -6,7 +6,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
-include_directories("C:/Qt/6.9.1/mingw_64/include")
+# include_directories("C:/Qt/6.9.1/mingw_64/include")
 
 qt_add_executable(Notepad
     WIN32 MACOSX_BUNDLE
@@ -18,7 +18,13 @@ qt_add_executable(Notepad
     toast.cpp
 )
 
-set(QSCINTILLA_LIB "C:/Qt/6.9.1/mingw_64/lib/libqscintilla2_qt6.a")
+# set(QSCINTILLA_LIB "C:/Qt/6.9.1/mingw_64/lib/libqscintilla2_qt6.a")
+set(QSCINTILLA_LIB "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/QScintilla_src-2.14.1/src/libqscintilla2_qt5.so")
+target_include_directories(Notepad PRIVATE
+    "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/QScintilla_src-2.14.1/src"
+)
+
+
 
 target_link_libraries(Notepad
     PRIVATE
