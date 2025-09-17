@@ -19,9 +19,9 @@ qt_add_executable(Notepad
 )
 
 # set(QSCINTILLA_LIB "C:/Qt/6.9.1/mingw_64/lib/libqscintilla2_qt6.a")
-set(QSCINTILLA_LIB "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/QScintilla_src-2.14.1/src/libqscintilla2_qt5.so")
+set(QSCINTILLA_LIB "${CMAKE_CURRENT_SOURCE_DIR}/QScintilla_src-2.14.1/src/libqscintilla2_qt6.so")
 target_include_directories(Notepad PRIVATE
-    "/home/scr33nw0rmmj/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/UI-prototyping/Notepad/QScintilla_src-2.14.1/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/QScintilla_src-2.14.1/src"
 )
 
 

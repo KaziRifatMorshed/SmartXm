@@ -14,7 +14,6 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
@@ -22,6 +21,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QWidget>
@@ -32,25 +32,28 @@ class Ui_notepad
 {
 public:
     QWidget *centralwidget;
-    QGridLayout *gridLayout_3;
+    QGridLayout *gridLayout_6;
+    QSplitter *splitter_3;
     QTreeView *treeViewFiles;
+    QWidget *widget;
+    QGridLayout *gridLayout_5;
     QSplitter *splitter_2;
-    QWidget *layoutWidget;
-    QHBoxLayout *horizontalLayout;
-    QGridLayout *gridLayout_4;
+    QTabWidget *Editor_tabWidget;
+    QWidget *tab;
+    QGridLayout *gridLayout_3;
     QLabel *EditorLabel;
     QsciScintilla *Editor;
+    QWidget *tab_2;
     QSplitter *splitter;
-    QWidget *layoutWidget1;
+    QWidget *layoutWidget;
     QGridLayout *gridLayout;
     QTextEdit *Input;
     QLabel *InputLabel;
-    QWidget *layoutWidget2;
+    QWidget *layoutWidget1;
     QGridLayout *gridLayout_2;
     QLabel *OutputLabel;
     QTextEdit *Output;
-    QWidget *layoutWidget3;
-    QGridLayout *gridLayout_5;
+    QGridLayout *gridLayout_4;
     QLabel *DebugOutputLabel;
     QTextEdit *DebugOutput;
     QStatusBar *statusbar;
@@ -61,105 +64,113 @@ public:
     {
         if (notepad->objectName().isEmpty())
             notepad->setObjectName("notepad");
-        notepad->resize(869, 545);
+        notepad->resize(950, 627);
         centralwidget = new QWidget(notepad);
         centralwidget->setObjectName("centralwidget");
-        gridLayout_3 = new QGridLayout(centralwidget);
-        gridLayout_3->setObjectName("gridLayout_3");
-        treeViewFiles = new QTreeView(centralwidget);
+        gridLayout_6 = new QGridLayout(centralwidget);
+        gridLayout_6->setObjectName("gridLayout_6");
+        splitter_3 = new QSplitter(centralwidget);
+        splitter_3->setObjectName("splitter_3");
+        splitter_3->setOrientation(Qt::Orientation::Horizontal);
+        treeViewFiles = new QTreeView(splitter_3);
         treeViewFiles->setObjectName("treeViewFiles");
         treeViewFiles->setMaximumSize(QSize(200, 16777215));
-
-        gridLayout_3->addWidget(treeViewFiles, 0, 0, 1, 1);
-
-        splitter_2 = new QSplitter(centralwidget);
+        splitter_3->addWidget(treeViewFiles);
+        widget = new QWidget(splitter_3);
+        widget->setObjectName("widget");
+        gridLayout_5 = new QGridLayout(widget);
+        gridLayout_5->setObjectName("gridLayout_5");
+        gridLayout_5->setContentsMargins(0, 0, 0, 0);
+        splitter_2 = new QSplitter(widget);
         splitter_2->setObjectName("splitter_2");
-        splitter_2->setOrientation(Qt::Orientation::Vertical);
-        layoutWidget = new QWidget(splitter_2);
-        layoutWidget->setObjectName("layoutWidget");
-        horizontalLayout = new QHBoxLayout(layoutWidget);
-        horizontalLayout->setObjectName("horizontalLayout");
-        horizontalLayout->setContentsMargins(0, 0, 0, 0);
-        gridLayout_4 = new QGridLayout();
-        gridLayout_4->setObjectName("gridLayout_4");
-        EditorLabel = new QLabel(layoutWidget);
+        splitter_2->setOrientation(Qt::Orientation::Horizontal);
+        Editor_tabWidget = new QTabWidget(splitter_2);
+        Editor_tabWidget->setObjectName("Editor_tabWidget");
+        tab = new QWidget();
+        tab->setObjectName("tab");
+        gridLayout_3 = new QGridLayout(tab);
+        gridLayout_3->setObjectName("gridLayout_3");
+        EditorLabel = new QLabel(tab);
         EditorLabel->setObjectName("EditorLabel");
         EditorLabel->setMaximumSize(QSize(16777215, 16));
 
-        gridLayout_4->addWidget(EditorLabel, 0, 0, 1, 1);
+        gridLayout_3->addWidget(EditorLabel, 0, 0, 1, 1);
 
-        Editor = new QsciScintilla(layoutWidget);
+        Editor = new QsciScintilla(tab);
         Editor->setObjectName("Editor");
         Editor->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents);
         // Editor->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
         Editor->setWrapMode(QsciScintilla::WrapNone);
 
-        gridLayout_4->addWidget(Editor, 1, 0, 1, 1);
+        gridLayout_3->addWidget(Editor, 1, 0, 1, 1);
 
-
-        horizontalLayout->addLayout(gridLayout_4);
-
-        splitter = new QSplitter(layoutWidget);
+        Editor_tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName("tab_2");
+        Editor_tabWidget->addTab(tab_2, QString());
+        splitter_2->addWidget(Editor_tabWidget);
+        splitter = new QSplitter(splitter_2);
         splitter->setObjectName("splitter");
         splitter->setOrientation(Qt::Orientation::Vertical);
-        layoutWidget1 = new QWidget(splitter);
-        layoutWidget1->setObjectName("layoutWidget1");
-        gridLayout = new QGridLayout(layoutWidget1);
+        layoutWidget = new QWidget(splitter);
+        layoutWidget->setObjectName("layoutWidget");
+        gridLayout = new QGridLayout(layoutWidget);
         gridLayout->setObjectName("gridLayout");
         gridLayout->setContentsMargins(0, 0, 0, 0);
-        Input = new QTextEdit(layoutWidget1);
+        Input = new QTextEdit(layoutWidget);
         Input->setObjectName("Input");
         Input->setMaximumSize(QSize(400, 800));
 
         gridLayout->addWidget(Input, 1, 0, 1, 1);
 
-        InputLabel = new QLabel(layoutWidget1);
+        InputLabel = new QLabel(layoutWidget);
         InputLabel->setObjectName("InputLabel");
 
         gridLayout->addWidget(InputLabel, 0, 0, 1, 1);
 
-        splitter->addWidget(layoutWidget1);
-        layoutWidget2 = new QWidget(splitter);
-        layoutWidget2->setObjectName("layoutWidget2");
-        gridLayout_2 = new QGridLayout(layoutWidget2);
+        splitter->addWidget(layoutWidget);
+        layoutWidget1 = new QWidget(splitter);
+        layoutWidget1->setObjectName("layoutWidget1");
+        gridLayout_2 = new QGridLayout(layoutWidget1);
         gridLayout_2->setObjectName("gridLayout_2");
         gridLayout_2->setContentsMargins(0, 0, 0, 0);
-        OutputLabel = new QLabel(layoutWidget2);
+        OutputLabel = new QLabel(layoutWidget1);
         OutputLabel->setObjectName("OutputLabel");
 
         gridLayout_2->addWidget(OutputLabel, 0, 0, 1, 1);
 
-        Output = new QTextEdit(layoutWidget2);
+        Output = new QTextEdit(layoutWidget1);
         Output->setObjectName("Output");
         Output->setMaximumSize(QSize(400, 800));
 
         gridLayout_2->addWidget(Output, 1, 0, 1, 1);
 
-        splitter->addWidget(layoutWidget2);
+        splitter->addWidget(layoutWidget1);
+        splitter_2->addWidget(splitter);
 
-        horizontalLayout->addWidget(splitter);
+        gridLayout_5->addWidget(splitter_2, 0, 0, 1, 1);
 
-        splitter_2->addWidget(layoutWidget);
-        layoutWidget3 = new QWidget(splitter_2);
-        layoutWidget3->setObjectName("layoutWidget3");
-        gridLayout_5 = new QGridLayout(layoutWidget3);
-        gridLayout_5->setObjectName("gridLayout_5");
-        gridLayout_5->setContentsMargins(0, 0, 0, 0);
-        DebugOutputLabel = new QLabel(layoutWidget3);
+        gridLayout_4 = new QGridLayout();
+        gridLayout_4->setObjectName("gridLayout_4");
+        gridLayout_4->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
+        DebugOutputLabel = new QLabel(widget);
         DebugOutputLabel->setObjectName("DebugOutputLabel");
         DebugOutputLabel->setMaximumSize(QSize(16777215, 16));
 
-        gridLayout_5->addWidget(DebugOutputLabel, 0, 0, 1, 1);
+        gridLayout_4->addWidget(DebugOutputLabel, 0, 0, 1, 1);
 
-        DebugOutput = new QTextEdit(layoutWidget3);
+        DebugOutput = new QTextEdit(widget);
         DebugOutput->setObjectName("DebugOutput");
-        DebugOutput->setMaximumSize(QSize(16777215, 16777215));
+        DebugOutput->setMaximumSize(QSize(16777215, 200));
 
-        gridLayout_5->addWidget(DebugOutput, 1, 0, 1, 1);
+        gridLayout_4->addWidget(DebugOutput, 1, 0, 1, 1);
 
-        splitter_2->addWidget(layoutWidget3);
 
-        gridLayout_3->addWidget(splitter_2, 0, 1, 1, 1);
+        gridLayout_5->addLayout(gridLayout_4, 1, 0, 1, 1);
+
+        splitter_3->addWidget(widget);
+
+        gridLayout_6->addWidget(splitter_3, 0, 0, 1, 1);
 
         notepad->setCentralWidget(centralwidget);
         statusbar = new QStatusBar(notepad);
@@ -167,7 +178,7 @@ public:
         notepad->setStatusBar(statusbar);
         menubar = new QMenuBar(notepad);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 869, 26));
+        menubar->setGeometry(QRect(0, 0, 950, 23));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName("menuFile");
         notepad->setMenuBar(menubar);
@@ -176,6 +187,9 @@ public:
 
         retranslateUi(notepad);
 
+        Editor_tabWidget->setCurrentIndex(1);
+
+
         QMetaObject::connectSlotsByName(notepad);
     } // setupUi
 
@@ -183,6 +197,8 @@ public:
     {
         notepad->setWindowTitle(QCoreApplication::translate("notepad", "notepad", nullptr));
         EditorLabel->setText(QCoreApplication::translate("notepad", "Editor", nullptr));
+        Editor_tabWidget->setTabText(Editor_tabWidget->indexOf(tab), QCoreApplication::translate("notepad", "Tab 1", nullptr));
+        Editor_tabWidget->setTabText(Editor_tabWidget->indexOf(tab_2), QCoreApplication::translate("notepad", "Tab 2", nullptr));
         InputLabel->setText(QCoreApplication::translate("notepad", "Input", nullptr));
         OutputLabel->setText(QCoreApplication::translate("notepad", "Output", nullptr));
         DebugOutputLabel->setText(QCoreApplication::translate("notepad", "Compiler Output", nullptr));

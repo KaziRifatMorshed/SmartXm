@@ -20,6 +20,8 @@
 
 !win32:VERSION = 15.2.1
 
+CONFIG += c++23
+
 TEMPLATE = lib
 CONFIG += qt warn_off thread exceptions hide_symbols
 
@@ -63,7 +65,7 @@ CONFIG -= android_install
 
 # For old versions of GCC.
 unix:!macx {
-    CONFIG += c++11
+    CONFIG += c++23
 }
 
 # Comment this in if you want the internal Scintilla classes to be placed in a
