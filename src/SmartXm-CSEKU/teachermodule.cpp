@@ -64,7 +64,7 @@ void TeacherModule::on_StopServer_toolButton_2_clicked() {
 
 void TeacherModule::on_selectFile_pushButton_clicked()
 {
-    QString filter = "PDF (*.pdf) ;; Text (.*txt) ;; DOCX (*.docx)";
+    QString filter = "PDF (*.pdf) ;; Text (.*txt) ;; DOCX (*.docx) ;; Tar (*.tar)";
     instructionFileName = QFileDialog::getOpenFileName(this,"Select a file containing instructions to sent it to all connected clients", QDir::homePath(), filter);
     QFile instructionFile(instructionFileName);
     if(!instructionFile.open(QFile::ReadOnly)){
