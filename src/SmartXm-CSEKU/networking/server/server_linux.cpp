@@ -124,6 +124,7 @@ void Server::acceptLoop() {
         }
         auth_buffer[received_length] = '\0';
         if (secretKey != std::string(auth_buffer)) {
+            std::cout << secretKey << " " << std::string(auth_buffer) << "\n";
             std::cout << "Authentication failed for client from " << inet_ntoa(client_addr.sin_addr) << std::endl;
             close(client_socket);
             continue;

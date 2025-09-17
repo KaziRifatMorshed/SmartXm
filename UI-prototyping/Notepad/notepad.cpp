@@ -15,6 +15,9 @@
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerpython.h>
+#include <string>
+#include <QString>
+#include </home/seam/Desktop/SmartXm/Tools/Client/client3.h>
 
 notepad::notepad(QWidget *parent)
     : QMainWindow(parent)
@@ -72,6 +75,7 @@ notepad::notepad(QWidget *parent)
     QAction *currentFileAction = new QAction("Print", this);
     QAction *saveAsAction = new QAction("Save As", this);
     QAction *runAction = new QAction("Run", this);
+    QAction *loadAction = new QAction("Load Problem", this);
 
     connect(newAction, &QAction::triggered, this, &notepad::newFile);
     connect(openAction, &QAction::triggered, this, &notepad::openFileNoPath);
@@ -86,6 +90,7 @@ notepad::notepad(QWidget *parent)
     connect(currentFileAction, &QAction::triggered, this, &notepad::printCurrentFile);
     connect(saveAsAction, &QAction::triggered, this, &notepad::saveAs);
     connect(runAction, &QAction::triggered, this, &notepad::run);
+    connect(loadAction, &QAction::triggered, this, &notepad::loadProblem);
 
     ui->menuFile->addAction(newAction);
     ui->menuFile->addAction(openAction);
@@ -93,6 +98,7 @@ notepad::notepad(QWidget *parent)
     ui->menuFile->addAction(currentFileAction);
     ui->menuFile->addAction(saveAsAction);
     ui->menuFile->addAction(runAction);
+    ui->menuFile->addAction(loadAction);
 }
 
 void notepad::setLexer()
@@ -455,4 +461,57 @@ QString notepad::getFileContent(QString path)
     file.close();
 
     return text;
+}
+
+void notepad::loadProblem()
+{
+    std::string path = "/home/seam/Desktop/SmartXm/UI-prototyping/Notepad/Dummy_Problem/";
+
+    setStatement(path + "statement");
+    setSampleInput(path + "sample_in");
+    setSampleOutput(path + "sample_out");
+}
+
+void notepad::setStatement(std::string name)
+{
+    QPixmap pic = QPixmap(QString(name.c_str()));
+    ui->label->setPixmap(pic);
+}
+
+void notepad::setSampleInput(std::string name)
+{
+
+    QFile file(name.c_str());
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot open sample input file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+
+    ui->Input->setText(text);
+
+    file.close();
+}
+
+void notepad::setSampleOutput(std::string name)
+{
+
+    QFile file(name.c_str());
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot open sample output file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+
+    ui->Output->setText(text);
+
+    file.close();
 }
