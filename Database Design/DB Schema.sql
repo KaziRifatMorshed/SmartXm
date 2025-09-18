@@ -94,9 +94,9 @@ CREATE TABLE Submission (
 CREATE TABLE TeacherEvaluatesSubmission (
     teacher_id INT,
     submission_id INT,
-    marks DECIMAL(5,2),
-    penalty DECIMAL(5,2),
-    total_marks INT NOT NULL DEFAULT 0,
+    marks DECIMAL(5,2) DEFAULT 0.00,
+    penalty DECIMAL(5,2) DEFAULT 0.00,
+    total_marks INT GENERATED ALWAYS AS (CEIL(marks - penalty)) STORED,
     comment TEXT,
     PRIMARY KEY(teacher_id, submission_id),
     FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id)
@@ -104,3 +104,4 @@ CREATE TABLE TeacherEvaluatesSubmission (
     FOREIGN KEY (submission_id) REFERENCES Submission(submission_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
