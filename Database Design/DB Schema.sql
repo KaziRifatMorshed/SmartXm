@@ -7,11 +7,18 @@ CREATE TABLE Teacher (
 );
 
 CREATE TABLE Student (
-    student_id VARCHAR(50) PRIMARY KEY,  -- stu_id string PK
+    student_id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Course (
+    course_code VARCHAR(50) PRIMARY KEY NOT NULL,
+    course_name VARCHAR(80) NOT NULL,
+    assigned_teacher INT,
+    FOREIGN KEY (assigned_teacher) REFERENCES Teacher(teacher_id)
 );
 
 CREATE TABLE Exam (
@@ -29,14 +36,9 @@ CREATE TABLE Exam (
     last_updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     topic_name VARCHAR(255) NOT NULL,
     exam_no INT,
-    course_code VARCHAR(50) NOT NULL FOREIGN KEY Course(course_code),
-    show_marks BOOLEAN DEFAULT FALSE
-);
-
-CREATE TABLE Course (
-    course_code VARCHAR(50) PRIMARY KEY NOT NULL,
-    course_name VARCHAR(80) NOT NULL,
-    assigned_teacher INT FOREIGN KEY Teacher(teacher_id)
+    course_code VARCHAR(50) NOT NULL,
+    show_marks BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (course_code) REFERENCES Course(course_code)
 );
 
 CREATE TABLE PreviousCode (
@@ -71,7 +73,7 @@ CREATE TABLE Participates (
 
 CREATE TABLE StudentSubmission (
     student_id VARCHAR(50) NOT NULL,
-    submission_id INT AUTO_INCREMENT NOT NULL,
+    submission_id INT NOT NULL,
     PRIMARY KEY(student_id, submission_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -102,4 +104,3 @@ CREATE TABLE TeacherEvaluatesSubmission (
     FOREIGN KEY (submission_id) REFERENCES Submission(submission_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-
