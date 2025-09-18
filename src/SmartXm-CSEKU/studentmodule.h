@@ -15,6 +15,9 @@ public:
     explicit StudentModule(QWidget *parent = nullptr);
     ~StudentModule();
 
+private slots:
+    void on_exitBtn_profileTab_pushButton_2_clicked();
+
 private:
     Ui::StudentModule *ui;
 };

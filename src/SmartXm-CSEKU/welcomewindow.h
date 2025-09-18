@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <teachermodule.h>
+#include <studentmodule.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,5 +42,6 @@ private:
     void checkConnection();
 
     TeacherModule *teacherModuleWindow;
+    StudentModule *studentModuleWindow;
 };
 #endif // WELCOMEWINDOW_H

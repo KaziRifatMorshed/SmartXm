@@ -69,6 +69,7 @@ void WelcomeWindow::checkConnection()
     qDebug() << "Checking for internet connection...";
 }
 
+/*
 // void WelcomeWindow::handleConnectionCheck(QNetworkReply *reply)
 // {
 //     if (reply->error() == QNetworkReply::NoError) {
@@ -84,7 +85,7 @@ void WelcomeWindow::checkConnection()
 //     }
 //     reply->deleteLater();
 // }
-
+*/
 
 
 void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
@@ -114,11 +115,14 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
 
 void WelcomeWindow::on_pushButton_clicked()
 {
+    QString inputtedEmail = ui->email_lineEdit->text();
+    QString inputtedPass = ui->pass_lineEdit_2->text();
+
     bool temp = true; // if login info are true
-    bool isTeacher = true;
+    // bool isTeacher = (inputtedEmail == "t") ? true : false;
     /// login info checking code goes here
     if(temp) {
-        if(isTeacher){
+        if(inputtedEmail == "t"){
             close();
             teacherModuleWindow = new TeacherModule();
             /*
@@ -127,8 +131,10 @@ void WelcomeWindow::on_pushButton_clicked()
             teacherModuleWindow = new TeacherModule(this);
              */
             teacherModuleWindow->show();
-        } else {
-
+        } else if (inputtedEmail == "s") {
+            close();
+            studentModuleWindow = new StudentModule();
+            studentModuleWindow->show();
         }
     }
 }

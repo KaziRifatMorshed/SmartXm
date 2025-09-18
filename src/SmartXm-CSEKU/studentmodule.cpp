@@ -12,3 +12,9 @@ StudentModule::~StudentModule()
 {
     delete ui;
 }
+
+void StudentModule::on_exitBtn_profileTab_pushButton_2_clicked()
+{
+    close();
+}
+
