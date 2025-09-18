@@ -16,7 +16,7 @@ CREATE TABLE Student (
 
 CREATE TABLE Exam (
     exam_id INT AUTO_INCREMENT PRIMARY KEY,
-    status ENUM('scheduled','running','finished','evaluating','evaluated','postponed') DEFAULT 'scheduled',
+    status ENUM('Scheduled','Running','Finished','Evaluating','Evaluated','Postponed') DEFAULT 'Scheduled',
     date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
@@ -24,25 +24,27 @@ CREATE TABLE Exam (
     penalty DECIMAL(5,2) DEFAULT 0.00,
     num_ques_sets INT DEFAULT 1,
     rulebook TEXT,
-    marks INT,
+    full_marks INT,
     exam_creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    topic_name VARCHAR(255),
+    topic_name VARCHAR(255) NOT NULL,
     exam_no INT,
+    course_code VARCHAR(50) NOT NULL FOREIGN KEY Course(course_code),
     show_marks BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE Course (
-    course_code VARCHAR(50),
-    course_name VARCHAR(80),
+    course_code VARCHAR(50) PRIMARY KEY NOT NULL,
+    course_name VARCHAR(80) NOT NULL,
     assigned_teacher INT FOREIGN KEY Teacher(teacher_id)
-)
+);
 
 CREATE TABLE PreviousCode (
     code_id INT AUTO_INCREMENT PRIMARY KEY,
-    submitted_by VARCHAR(50),
+    submitted_by VARCHAR(50) NOT NULL,
     code TEXT NOT NULL,
-    is_allowed BOOLEAN DEFAULT TRUE,
+    is_allowed BOOLEAN DEFAULT FALSE,
+    submission_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (submitted_by) REFERENCES Student(student_id)
         ON DELETE SET NULL ON UPDATE CASCADE
@@ -59,6 +61,7 @@ CREATE TABLE Submission (
 CREATE TABLE Participates (
     student_id VARCHAR(50),
     exam_id INT,
+    set_code_no INT,
     PRIMARY KEY(student_id, exam_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -67,24 +70,12 @@ CREATE TABLE Participates (
 );
 
 CREATE TABLE StudentSubmission (
-    student_id VARCHAR(50),
-    submission_id INT,
+    student_id VARCHAR(50) NOT NULL,
+    submission_id INT AUTO_INCREMENT NOT NULL,
     PRIMARY KEY(student_id, submission_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (submission_id) REFERENCES Submission(submission_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE SubmitPrevCode (
-    submit_id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id VARCHAR(50),
-    code_id INT,
-    submission_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    last_updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (code_id) REFERENCES PreviousCode(code_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -103,6 +94,7 @@ CREATE TABLE TeacherEvaluatesSubmission (
     submission_id INT,
     marks DECIMAL(5,2),
     penalty DECIMAL(5,2),
+    total_marks INT NOT NULL DEFAULT 0,
     comment TEXT,
     PRIMARY KEY(teacher_id, submission_id),
     FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id)
