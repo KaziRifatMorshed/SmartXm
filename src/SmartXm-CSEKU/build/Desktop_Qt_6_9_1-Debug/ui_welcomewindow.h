@@ -45,10 +45,12 @@ public:
     QWidget *remoteServerTab;
     QVBoxLayout *verticalLayout_2;
     QLabel *syncWithRemoteServer_label;
+    QLabel *xampp_status_label;
     QLabel *netConnectionStatus_label;
     QPushButton *sync_remoteS_pushButton_2;
-    QLabel *label_2;
+    QLabel *sync_status_label_2;
     QPushButton *nextRemoteServer_pushButton_4;
+    QLabel *label;
     QWidget *LocalServer_tab;
     QVBoxLayout *verticalLayout_4;
     QLabel *label_4;
@@ -141,6 +143,11 @@ public:
 
         verticalLayout_2->addWidget(syncWithRemoteServer_label);
 
+        xampp_status_label = new QLabel(remoteServerTab);
+        xampp_status_label->setObjectName("xampp_status_label");
+
+        verticalLayout_2->addWidget(xampp_status_label);
+
         netConnectionStatus_label = new QLabel(remoteServerTab);
         netConnectionStatus_label->setObjectName("netConnectionStatus_label");
 
@@ -151,15 +158,20 @@ public:
 
         verticalLayout_2->addWidget(sync_remoteS_pushButton_2);
 
-        label_2 = new QLabel(remoteServerTab);
-        label_2->setObjectName("label_2");
+        sync_status_label_2 = new QLabel(remoteServerTab);
+        sync_status_label_2->setObjectName("sync_status_label_2");
 
-        verticalLayout_2->addWidget(label_2);
+        verticalLayout_2->addWidget(sync_status_label_2);
 
         nextRemoteServer_pushButton_4 = new QPushButton(remoteServerTab);
         nextRemoteServer_pushButton_4->setObjectName("nextRemoteServer_pushButton_4");
 
         verticalLayout_2->addWidget(nextRemoteServer_pushButton_4);
+
+        label = new QLabel(remoteServerTab);
+        label->setObjectName("label");
+
+        verticalLayout_2->addWidget(label);
 
         tabWidget->addTab(remoteServerTab, QString());
         LocalServer_tab = new QWidget();
@@ -289,7 +301,7 @@ public:
 
         retranslateUi(WelcomeWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(WelcomeWindow);
@@ -306,10 +318,12 @@ public:
         studentWelcome_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Student", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(welcome_tab), QCoreApplication::translate("WelcomeWindow", "Welcome", nullptr));
         syncWithRemoteServer_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">Synchronize with Remote Server</span></p></body></html>", nullptr));
+        xampp_status_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">XAMPP DB Server Status: not implemented</p></body></html>", nullptr));
         netConnectionStatus_label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Internet Connection Status: (not implemented yet)</p></body></html>", nullptr));
         sync_remoteS_pushButton_2->setText(QCoreApplication::translate("WelcomeWindow", "Sync", nullptr));
-        label_2->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Synchronization Status: (not implemented yet)</p></body></html>", nullptr));
+        sync_status_label_2->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">Synchronization Status: (not implemented yet)</p></body></html>", nullptr));
         nextRemoteServer_pushButton_4->setText(QCoreApplication::translate("WelcomeWindow", "Next", nullptr));
+        label->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\">If synchronization takes too much time, please visit <a href=\"https://cseku-smartxm.free.nf/\"><span style=\" text-decoration: underline; color:#27bf73;\">https://cseku-smartxm.free.nf/</span></a> to awake remote server</p></body></html>", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(remoteServerTab), QCoreApplication::translate("WelcomeWindow", "Remote Server", nullptr));
         label_4->setText(QCoreApplication::translate("WelcomeWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">Connect to Local Server</span></p></body></html>", nullptr));
         label_5->setText(QCoreApplication::translate("WelcomeWindow", "Local Server IP:", nullptr));

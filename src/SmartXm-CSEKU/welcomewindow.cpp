@@ -3,6 +3,7 @@
 #include "TerminalExecuter.h"
 #include "dependencies/linux/Encryption/encryption.h"
 #include <iostream>
+#include <db_xampp.h>
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +33,9 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked()
     ui->tabWidget->setTabEnabled(2,false);
     ui->tabWidget->setTabEnabled(3,false);
     ui->tabWidget->setCurrentIndex(1);
+
+
+    connectToXamppDb();
 }
 
 
@@ -115,8 +119,13 @@ void WelcomeWindow::on_pushButton_clicked()
     ///
     if(temp) {
         if(isTeacher){
+            close();
+            teacherModuleWindow = new TeacherModule();
+            /*
+             * ISSUE: window hides but does not closes
             hide();
             teacherModuleWindow = new TeacherModule(this);
+             */
             teacherModuleWindow->show();
         } else {
 

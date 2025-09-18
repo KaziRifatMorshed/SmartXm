@@ -19,15 +19,15 @@ SOURCES += \
 HEADERS += \
     ClientInfo.h \
     Msg.h \
-    SQliteDbHandler.h \
     Student.h \
     TerminalExecuter.h \
     csv.h \
+    db_sqlite.h \
+    db_xampp.h \
     networking/server/Server.h \
     teachermodule.h \
     welcomewindow.h \
-    dependencies/linux/Encryption/encryption.h \
-    xamppDBhandler.h
+    dependencies/linux/Encryption/encryption.h
 
 FORMS += \
     teachermodule.ui \
