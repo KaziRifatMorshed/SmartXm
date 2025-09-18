@@ -95,7 +95,7 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
 #ifdef __linux__
     pyFetcherPath = executablePath + "/dependencies/linux/WebScrap2";
 #elif _WIN32
-    pyFetcherPath = executablePath + "/dependencies/win/WebScrap2"; // forgot
+    pyFetcherPath = executablePath + "/dependencies/win/WebScrap2.exe"; // forgot
 #endif
 
     DownloadDataAndSaveCSV:

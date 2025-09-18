@@ -12,6 +12,7 @@ SOURCES += \
     main.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
+    studentmodule.cpp \
     teachermodule.cpp \
     welcomewindow.cpp \
     dependencies/linux/Encryption/encryption.cpp
@@ -25,11 +26,13 @@ HEADERS += \
     db_sqlite.h \
     db_xampp.h \
     networking/server/Server.h \
+    studentmodule.h \
     teachermodule.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui
 
