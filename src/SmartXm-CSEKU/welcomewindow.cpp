@@ -114,9 +114,9 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked()
 
 void WelcomeWindow::on_pushButton_clicked()
 {
-    bool temp = true;
+    bool temp = true; // if login info are true
     bool isTeacher = true;
-    ///
+    /// login info checking code goes here
     if(temp) {
         if(isTeacher){
             close();
