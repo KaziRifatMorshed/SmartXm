@@ -16,12 +16,13 @@ CREATE TABLE Student (
 
 CREATE TABLE Course (
     course_code VARCHAR(50) PRIMARY KEY NOT NULL,
-    course_name VARCHAR(80) NOT NULL,
+    course_name VARCHAR(80) NOT NULL
 );
 
 CREATE TABLE CourseTeacher(
-    course_code VARCHAR(50) PRIMARY KEY NOT NULL,
+    course_code VARCHAR(50) NOT NULL,
     assigned_teacher INT NOT NULL,
+    PRIMARY KEY(course_code, assigned_teacher),
     FOREIGN KEY (assigned_teacher) REFERENCES Teacher(teacher_id),
     FOREIGN KEY (course_code) REFERENCES Course(course_code)
 );
@@ -59,7 +60,7 @@ CREATE TABLE Participates (
 
 CREATE TABLE PreviousCode (
     code_id INT AUTO_INCREMENT PRIMARY KEY,
-    submitted_by VARCHAR(50) NOT NULL,
+    submitted_by VARCHAR(50), -- nullable so ON DELETE SET NULL works
     code TEXT NOT NULL,
     is_allowed BOOLEAN DEFAULT FALSE,
     submission_time DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -81,10 +82,10 @@ CREATE TABLE UsePreviousCode (
 CREATE TABLE Submission (
     submission_id INT AUTO_INCREMENT PRIMARY KEY,
     student_id VARCHAR(50) NOT NULL,
-    exam_id int NOT NULL,
+    exam_id INT NOT NULL,
     set_code VARCHAR(50),
     submitted_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(student_id, submission_id, exam_id),
+    UNIQUE(student_id, exam_id), -- a student can only submit once per exam
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(exam_id) REFERENCES Exam(exam_id)
@@ -104,4 +105,3 @@ CREATE TABLE TeacherEvaluatesSubmission (
     FOREIGN KEY (submission_id) REFERENCES Submission(submission_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-
