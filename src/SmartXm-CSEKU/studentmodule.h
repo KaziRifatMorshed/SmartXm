@@ -18,8 +18,11 @@ public:
 private slots:
     void on_exitBtn_profileTab_pushButton_2_clicked();
 
+    void on_openRuleBook_pushButton_clicked();
+
 private:
     Ui::StudentModule *ui;
+    void ruleBookReceived();
 };
 
 #endif // STUDENTMODULE_H

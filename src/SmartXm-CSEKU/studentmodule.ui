@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>554</width>
-    <height>518</height>
+    <width>1010</width>
+    <height>678</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SmartXm-CSEKU (Student)</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -25,7 +25,7 @@
     <item>
      <widget class="QTabWidget" name="MainTabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="ProfileTab">
        <attribute name="title">
@@ -83,7 +83,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="openRuleBook_pushButton">
              <property name="text">
               <string>Open Instructions/Rulebook</string>
              </property>
@@ -93,7 +93,97 @@
          </widget>
         </item>
         <item>
-         <widget class="QTableWidget" name="exam_list_tableWidget"/>
+         <widget class="QTableWidget" name="exam_list_tableWidget">
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+          </property>
+          <row/>
+          <column>
+           <property name="text">
+            <string>Course Code</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Course</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Exam no</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Topic</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Date</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Start Time</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>End Time</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Status</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Action</string>
+           </property>
+          </column>
+          <item row="0" column="0">
+           <property name="text">
+            <string>CSE 1100</string>
+           </property>
+          </item>
+          <item row="0" column="1">
+           <property name="text">
+            <string>Structured Programming Sessional</string>
+           </property>
+          </item>
+          <item row="0" column="2">
+           <property name="text">
+            <string>1</string>
+           </property>
+          </item>
+          <item row="0" column="3">
+           <property name="text">
+            <string>Array</string>
+           </property>
+          </item>
+          <item row="0" column="4">
+           <property name="text">
+            <string>dummy</string>
+           </property>
+          </item>
+          <item row="0" column="5">
+           <property name="text">
+            <string>dummy</string>
+           </property>
+          </item>
+          <item row="0" column="6">
+           <property name="text">
+            <string>dummy</string>
+           </property>
+          </item>
+          <item row="0" column="7">
+           <property name="text">
+            <string>Scheduled</string>
+           </property>
+          </item>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -106,7 +196,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>554</width>
+     <width>1010</width>
      <height>22</height>
     </rect>
    </property>
