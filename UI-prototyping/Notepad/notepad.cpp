@@ -17,7 +17,7 @@
 #include <Qsci/qscilexerpython.h>
 #include <string>
 #include <QString>
-#include </home/seam/Desktop/SmartXm/Tools/Client/client3.h>
+// #include "client3.cpp"
 
 notepad::notepad(QWidget *parent)
     : QMainWindow(parent)
