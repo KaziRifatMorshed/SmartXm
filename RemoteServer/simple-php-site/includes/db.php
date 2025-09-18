@@ -28,7 +28,6 @@ try {
 
 CREATE DATABASE IF NOT EXISTS SmartXmRemoteServer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -37,6 +36,17 @@ CREATE TABLE IF NOT EXISTS users (
     student_id VARCHAR(50) UNIQUE,
     role ENUM('Teacher', 'Student') NOT NULL DEFAULT 'Student',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL, -- STORED AS RAW/PLAIN TEXT (NOT HASHED)
+    student_id VARCHAR(50) UNIQUE,
+    role ENUM('Teacher', 'Student') NOT NULL DEFAULT 'Student',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Dummy data for users table
