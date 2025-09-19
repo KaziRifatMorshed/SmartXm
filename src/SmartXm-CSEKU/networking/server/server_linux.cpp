@@ -13,19 +13,23 @@ Server* Server::serverInstance = nullptr;
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
 {
+    std::cout << "Local Server Constructor invoked" << std::endl;
     localIP = fetchLocalIP();
     Server::start();
 }
 
 Server::~Server() {
+    std::cout << "Destructor invoked" << std::endl;
     stop();
     serverInstance = nullptr;
 }
 
 Server* Server::createServer(){ // Singleton approach
     if(!running){
+        std::cout << "No server instance found, new server starting..." << std::endl;
         Server::serverInstance = new Server();
         running = true;
+        // Server::serverInstance->start();
     }
     return Server::serverInstance;
 }
@@ -68,7 +72,7 @@ int Server::start() {
     status = "RUNNING";
     running = true;
 
-    std::cout << "Welcome to SmartXm SERVER" << std::endl;
+    std::cout << "Welcome to SmartXm-CSEKU LOCAL SERVER" << std::endl;
     std::cout << "Server will listen on port " << port << std::endl;
     std::cout << "Server local IP (give this to client): " << localIP << std::endl;
     std::cout << "Waiting for client connections..." << std::endl;
