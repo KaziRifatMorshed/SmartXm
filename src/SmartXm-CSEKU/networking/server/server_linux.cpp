@@ -7,20 +7,21 @@
 #include <cstring>
 #include "Msg.h"
 
+
 bool Server::running = false;
 Server* Server::serverInstance = nullptr;
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
 {
-    std::cout << "Local Server Constructor invoked" << std::endl;
+    // std::cout << "Local Server Constructor invoked" << std::endl;
     localIP = fetchLocalIP();
     Server::start();
 }
 
 Server::~Server() {
-    std::cout << "Destructor invoked" << std::endl;
-    stop();
+    // std::cout << "Destructor invoked" << std::endl;
+    // stop();
     serverInstance = nullptr;
 }
 
@@ -29,7 +30,6 @@ Server* Server::createServer(){ // Singleton approach
         std::cout << "No server instance found, new server starting..." << std::endl;
         Server::serverInstance = new Server();
         running = true;
-        // Server::serverInstance->start();
     }
     return Server::serverInstance;
 }
@@ -79,7 +79,7 @@ int Server::start() {
 
     // Start threads
     acceptThread = std::thread(&Server::acceptLoop, this);
-    printerThread = std::thread(&Server::printClientsLoop, this, 5);
+    // printerThread = std::thread(&Server::printClientsLoop, this, 5);
 
     return 0;
 }
@@ -135,7 +135,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        // AUTHENTICATION:
+        AUTHENTICATION:
         char auth_buffer[256] = {0};
         ssize_t received_length = recv(client_socket, auth_buffer, sizeof(auth_buffer) - 1, 0);
         if (received_length <= 0) {
@@ -151,7 +151,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        // RECEIVE_CLIENT_INFO:
+        RECEIVE_CLIENT_INFO:
         char client_name[50] = {0};
         ssize_t name_len = recv(client_socket, client_name, sizeof(client_name) - 1, 0);
         if (name_len <= 0) {

@@ -29,7 +29,7 @@ TeacherModule::~TeacherModule() { delete ui; }
 
 void TeacherModule::on_StartServer_toolButton_clicked() {
   if (server == nullptr) {
-    Server::createServer();
+    server = Server::createServer();
     ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: " + QString::fromStdString(server->getStatus() + "</span></p></body></html>"));
     ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: " + QString::fromStdString(server->getLocalIP()) + "</span></p></body></html>");
   }
