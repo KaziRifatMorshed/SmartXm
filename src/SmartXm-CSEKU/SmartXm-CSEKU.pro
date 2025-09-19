@@ -10,6 +10,9 @@ CONFIG += c++23
 
 SOURCES += \
     main.cpp \
+    networking/client/client.cpp \
+    networking/client/client3.cpp \
+    networking/client/client_linux.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
     studentmodule.cpp \
@@ -25,6 +28,7 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    networking/client/Client.h \
     networking/server/Server.h \
     studentmodule.h \
     teachermodule.h \
