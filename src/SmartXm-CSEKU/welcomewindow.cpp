@@ -4,6 +4,9 @@
 #include "dependencies/linux/Encryption/encryption.h"
 #include <iostream>
 #include <db_xampp.h>
+#include <networking/client/Client.h>
+
+Client *client;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -136,6 +139,18 @@ void WelcomeWindow::on_pushButton_clicked()
             studentModuleWindow = new StudentModule();
             studentModuleWindow->show();
         }
+    }
+}
+
+
+void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked()
+{
+    QString inputtedLocalServerIP = ui->localServerIP_lineEdit_3->text();
+    client = Client::createClient();
+    bool isConnectedToLocalServer = client->connectToServer(inputtedLocalServerIP.toStdString());
+    if (isConnectedToLocalServer){
+        std::cout << "Connected to local server" << std::endl;
+        ui->localServerStatus_label_6->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:11pt;\">Local Server Connection Status: <span style=\"color: green;\">CONNECTED</span></span></p></body></html>");
     }
 }
 
