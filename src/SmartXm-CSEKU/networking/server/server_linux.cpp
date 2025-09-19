@@ -1,6 +1,7 @@
 #ifdef __linux__
 
 #include "Server.h"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -129,7 +130,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        AUTHENTICATION:
+        // AUTHENTICATION:
         char auth_buffer[256] = {0};
         ssize_t received_length = recv(client_socket, auth_buffer, sizeof(auth_buffer) - 1, 0);
         if (received_length <= 0) {
@@ -145,7 +146,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        RECEIVE_CLIENT_INFO:
+        // RECEIVE_CLIENT_INFO:
         char client_name[50] = {0};
         ssize_t name_len = recv(client_socket, client_name, sizeof(client_name) - 1, 0);
         if (name_len <= 0) {
@@ -186,13 +187,12 @@ void Server::handleClient(int client_socket) {
         }
     }
     close(client_socket);
-    // Remove client from list
-    {
-        std::lock_guard<std::mutex> lock(clientsMutex);
-        clients.erase(std::remove_if(clients.begin(), clients.end(),
-                                     [client_socket](const ClientInfo& ci) { return ci.socfd == client_socket; }),
-                      clients.end());
-    }
+    // Remove client from list    
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    clients.erase(std::remove_if(clients.begin(), clients.end(),
+                                 [client_socket](const ClientInfo& ci) { return ci.socfd == client_socket; }),
+                  clients.end());
+
     std::cout << "Client Handler Thread Terminated!! socket id = " << client_socket << std::endl;
 }
 

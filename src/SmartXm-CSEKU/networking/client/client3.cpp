@@ -31,7 +31,7 @@ struct ClientInfo
 void receive_file(int client_sock_fd) {
     while (true) {
         size_t file_size;
-        ssize_t bytes_received = recv(client_sock_fd, &file_size, sizeof(file_size), MSG_WAITALL);
+        size_t bytes_received = recv(client_sock_fd, &file_size, sizeof(file_size), MSG_WAITALL);
         if (bytes_received <= 0) {
             std::cerr << "Server disconnected or error receiving file size." << std::endl;
             break;
