@@ -6,7 +6,7 @@
 #include <QUrl>
 #include <QDir>
 #include <QProcess>
-#include <cstdlib>
+
 
 StudentModule::StudentModule(QWidget *parent)
     : QMainWindow(parent)
@@ -49,12 +49,19 @@ void StudentModule::on_openRuleBook_pushButton_clicked()
 #ifdef __WIN32
 
 #elif __linux__
-    // QProcess::startDetached("/usr/bin/microsoft-edge-stable", QStringList() << "/home/noobcod3r-rtx/a.pdf");
-    // system("sudo /usr/bin/xdg-open /home/noobcod3r-rtx/Documents/a.pdf");
-    pOpenFile.startDetached("/usr/bin/xdg-open /home/noobcod3r-rtx/Documents/a.pdf");
-    pOpenFile.startDetached("ls");
-    pOpenFile.waitForFinished();
-    std::cout << "PRINTING OuTpUtS: " << pOpenFile.readAllStandardOutput().toStdString() << std::endl;
+    QProcess::startDetached("/usr/bin/microsoft-edge-stable", QStringList() << "/home/noobcod3r-rtx/a.pdf");
+
+/* DOES NOT WORK
+    // QProcess::startDetached("/usr/bin/xdg-open", QStringList() << "/home/noobcod3r-rtx/a.pdf");
+    // // system("/usr/bin/xdg-open /home/noobcod3r-rtx/Documents/a.pdf");
+    // pOpenFile.start("/usr/bin/xdg-open", QStringList() << "/home/noobcod3r-rtx/a.mp4");
+    // // pOpenFile.startDetached("ls");
+    // pOpenFile.waitForFinished();
+    // std::cout << "PRINTING OuTpUtS: " << pOpenFile.readAllStandardOutput().toStdString() << std::endl;
+
+    // QDesktopServices::openUrl(QUrl::fromLocalFile("/home/noobcod3r-rtx/a.pdf"));
+ */
+
 #endif
 }
 

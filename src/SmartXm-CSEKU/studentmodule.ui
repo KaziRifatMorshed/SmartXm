@@ -189,6 +189,13 @@
       </widget>
      </widget>
     </item>
+    <item>
+     <widget class="QLabel" name="serve_status_label">
+      <property name="text">
+       <string>Server Status: (not implemented)</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
