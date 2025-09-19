@@ -1,12 +1,12 @@
 #include "teachermodule.h"
-#include "networking/server/server.cpp"
+#include "networking/server/Server.h"
 #include "ui_teachermodule.h"
 #include <QFileDialog>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
 
-Server server;
+
 QString instructionFileName = "";
 
 TeacherModule::TeacherModule(QWidget *parent)
@@ -27,43 +27,44 @@ TeacherModule::TeacherModule(QWidget *parent)
 TeacherModule::~TeacherModule() { delete ui; }
 
 void TeacherModule::on_StartServer_toolButton_clicked() {
-  if (server.getStatus() != "RUNNING") {
-    server.start();
-    ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: " + QString::fromStdString(server.getStatus() + "</span></p></body></html>"));
-    ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: " + QString::fromStdString(server.getLocalIP()) + "</span></p></body></html>");
+  if (Server::getStatus() != "RUNNING") {
+    Server::createServer();
+    ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: " + QString::fromStdString(Server::getStatus() + "</span></p></body></html>"));
+    ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: " + QString::fromStdString(Server::getLocalIP()) + "</span></p></body></html>");
   }
 }
 
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
-  if (server.getStatus() == "RUNNING") {
-    server.~Server();
+  if (Server::getStatus() == "RUNNING") {
+    Server::stop();
     ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: STOPPED</span></p></body></html>");
-        ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: STOPPED</span></p></body></html>");
+    ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: STOPPED</span></p></body></html>");
   }
 }
 
-// void updateStudentInfo(const QString& name, const QString& id, const QString& localIp) {
-//     // Check if the student already exists (by ID for example)
-//     int row = -1;
-//     for (int i = 0; i < tableWidget->rowCount(); ++i) {
-//         if (tableWidget->item(i, 1)->text() == id) {
-//             row = i;
-//             break;
-//         }
-//     }
-//     if (row == -1) {
-//         // New student, add a new row
-//         row = tableWidget->rowCount();
-//         tableWidget->insertRow(row);
-//     }
+/*
+void updateStudentInfo(const QString& name, const QString& id, const QString& localIp) {
+    // Check if the student already exists (by ID for example)
+    int row = -1;
+    for (int i = 0; i < tableWidget->rowCount(); ++i) {
+        if (tableWidget->item(i, 1)->text() == id) {
+            row = i;
+            break;
+        }
+    }
+    if (row == -1) {
+        // New student, add a new row
+        row = tableWidget->rowCount();
+        tableWidget->insertRow(row);
+    }
 
-//     tableWidget->setItem(row, 0, new QTableWidgetItem(name));
-//     tableWidget->setItem(row, 1, new QTableWidgetItem(id));
-//     tableWidget->setItem(row, 2, new QTableWidgetItem(localIp));
-// }
+    tableWidget->setItem(row, 0, new QTableWidgetItem(name));
+    tableWidget->setItem(row, 1, new QTableWidgetItem(id));
+    tableWidget->setItem(row, 2, new QTableWidgetItem(localIp));
+}
+ */
 
-void TeacherModule::on_selectFile_pushButton_clicked()
-{
+void TeacherModule::on_selectFile_pushButton_clicked(){
     QString filter = "PDF (*.pdf) ;; Text (.*txt) ;; DOCX (*.docx) ;; Tar (*.tar)";
     instructionFileName = QFileDialog::getOpenFileName(this,"Select a file containing instructions to sent it to all connected clients", QDir::homePath(), filter);
     QFile instructionFile(instructionFileName);
@@ -74,20 +75,18 @@ void TeacherModule::on_selectFile_pushButton_clicked()
 }
 
 
-void TeacherModule::on_instruction_send_pushButton_clicked()
-{
+void TeacherModule::on_instruction_send_pushButton_clicked() {
     if(instructionFileName.length() <= 0){
         QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
     } else {
         // send file to all connected clients
-        bool t = server.sendFileToAllClients(instructionFileName.toStdString());
+        bool t = Server::sendFileToAllClients(instructionFileName.toStdString());
         // on successful, show msg
         if(t){
             QMessageBox::information(this, "Success", "Instruction sent to all connected clients.");
         } else {
             QMessageBox::warning(this, "failed!", "File Send Failed!!!");
         }
-
     }
 }
 

@@ -5,14 +5,24 @@
 #include <sstream>
 
 Server::Server(int port_, const std::string& secret)
-    : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1), running(false)
+    : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
 {
     localIP = fetchLocalIP();
+    Server::start();
 }
 
 Server::~Server() {
     stop();
 }
+
+Server* Server::createServer(){ // Singleton approach
+    if(!running){
+        Server::serverInstance = new Server();
+        running = true;
+    }
+    return Server::serverInstance;
+}
+
 
 int Server::start() {
     if (running) return 0;

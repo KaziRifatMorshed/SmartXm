@@ -22,18 +22,21 @@
 
 class Server {
 public:
-    Server(int port = 8080, const std::string& secret = "MySuperSecret123x");
-    ~Server();
-
-    int start();
-    void stop();
-    std::vector<ClientInfo> getClients();
-    std::string getStatus();
-    std::string getLocalIP();
-    bool sendFileToAllClients(std::string path);
+    static Server* createServer();
+    static int start();
+    static void stop();
+    static std::vector<ClientInfo> getClients();
+    static std::string getStatus();
+    static std::string getLocalIP();
+    static bool sendFileToAllClients(std::string path);
 
     // For demo: Print clients every interval seconds
-    void printClientsLoop(int intervalSeconds = 5);
+    static void printClientsLoop(int intervalSeconds = 5);
+
+protected:
+    Server(int port = 8080, const std::string& secret = "MySuperSecret123x");
+    ~Server();
+    static Server *serverInstance;
 
 private:
     void acceptLoop();
@@ -46,7 +49,7 @@ private:
     std::string localIP;
 
     int server_fd;
-    bool running;
+    static bool running; // serverExists
     std::vector<ClientInfo> clients;
     std::mutex clientsMutex;
     std::thread acceptThread;
