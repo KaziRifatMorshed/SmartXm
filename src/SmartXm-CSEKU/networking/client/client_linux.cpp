@@ -1,8 +1,13 @@
 #ifdef __linux__
 
 #include "Client.h"
+#include <filesystem>
 
-Client::Client() : sock_fd(-1), connected(false) {}
+Client* Client::clientInstance = nullptr;
+std::time_t Client::lastLoginTime = 0;
+
+Client::Client()
+    : sock_fd(-1), connected(false) {}
 
 Client::~Client() {
     disconnect();
@@ -10,145 +15,187 @@ Client::~Client() {
 
 bool Client::connectToServer(const std::string& ip_addr, int port) {
     std::lock_guard<std::mutex> lock(connMutex);
-    if (connected) {
-        std::cerr << "Already connected!" << std::endl;
+
+    if (connected) return true;
+
+    sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock_fd < 0) {
+        std::cerr << "Error creating socket\n";
         return false;
     }
 
-    struct sockaddr_in server_addr;
-    char name_buffer[50] = {0};
-
-    if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("Socket creation error");
-        return false;
-    }
-
+    sockaddr_in server_addr{};
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-
     if (inet_pton(AF_INET, ip_addr.c_str(), &server_addr.sin_addr) <= 0) {
-        perror("Invalid address");
+        std::cerr << "Invalid address/ Address not supported\n";
+        ::close(sock_fd);
         return false;
     }
 
     if (connect(sock_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Connection failed");
+        std::cerr << "Connection Failed\n";
+        ::close(sock_fd);
         return false;
     }
 
-    std::cout << "Connected to server at: " << ip_addr << " : " << port << std::endl;
-
-    std::cout << "Enter your name: ";
-    std::cin.getline(name_buffer, sizeof(name_buffer));
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    clientName = name_buffer;
-
-           // AUTHENTICATION
-    if (send(sock_fd, CLIENT_SECRET_KEY, strlen(CLIENT_SECRET_KEY), 0) < 0) {
-        perror("Authentication failed");
-        close(sock_fd);
-        sock_fd = -1;
-        return false;
-    }
-    // Send client name
-    if (send(sock_fd, clientName.c_str(), clientName.size(), 0) < 0) {
-        perror("Sending client name failed");
-        close(sock_fd);
-        sock_fd = -1;
+    // Authenticate with secret key
+    send(sock_fd, CLIENT_SECRET_KEY, strlen(CLIENT_SECRET_KEY), 0);
+    char buffer[CLIENT_BUFFER_SIZE]{};
+    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+    if (valread <= 0 || std::string(buffer) != "OK") {
+        std::cerr << "Secret key mismatch or server error\n";
+        ::close(sock_fd);
         return false;
     }
 
     connected = true;
     // Start file receiving thread
     fileReceiverThread = std::thread(&Client::receiveFileLoop, this);
-    fileReceiverThread.detach();
+
     return true;
-}
-
-void Client::chatLoop() {
-    if (!connected) {
-        std::cerr << "Not connected to server!" << std::endl;
-        return;
-    }
-
-    char temp[CLIENT_BUFFER_SIZE] = {0};
-    while (true) {
-        std::cout << "Write Message (and hit Enter): ";
-        std::cin.getline(temp, CLIENT_BUFFER_SIZE);
-
-        if (std::cin.fail()) {
-            std::cout << "INPUT IS TOO LONG!!! Only first " << (CLIENT_BUFFER_SIZE - 1)
-            << " characters will be used." << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-
-        if (strcmp(temp, "\\c") == 0) {
-            std::cout << "Closing chatting..." << std::endl;
-            break;
-        }
-
-        Msg msg;
-        strncpy(msg.sender_name, clientName.c_str(), sizeof(msg.sender_name) - 1);
-        msg.sender_name[sizeof(msg.sender_name) - 1] = '\0';
-        strncpy(msg.text, temp, sizeof(msg.text) - 1);
-        msg.text[sizeof(msg.text) - 1] = '\0';
-
-        if (send(sock_fd, &msg, sizeof(msg), 0) < 0) {
-            perror("Msg send failed");
-        } else {
-            std::cout << "ACK: Msg sent to server : " << temp << std::endl;
-        }
-    }
-    disconnect();
-}
-
-void Client::receiveFileLoop() {
-    while (connected) {
-        size_t file_size;
-        ssize_t bytes_received = recv(sock_fd, &file_size, sizeof(file_size), MSG_WAITALL);
-        if (bytes_received <= 0) {
-            std::cerr << "Server disconnected or error receiving file size." << std::endl;
-            break;
-        }
-
-        std::cout << "Receiving file of size: " << file_size << " bytes." << std::endl;
-
-        char* file_buffer = new char[file_size];
-        bytes_received = recv(sock_fd, file_buffer, file_size, MSG_WAITALL);
-        if (bytes_received != (ssize_t)file_size) {
-            std::cerr << "Error receiving file data. Expected: " << file_size
-                      << ", received: " << bytes_received << std::endl;
-            delete[] file_buffer;
-            break;
-        }
-
-        std::string filename = "received_file";
-        std::ofstream output_file(filename, std::ios::binary);
-        if (!output_file.is_open()) {
-            std::cerr << "Error opening file for writing: " << filename << std::endl;
-            delete[] file_buffer;
-            break;
-        }
-
-        output_file.write(file_buffer, file_size);
-        output_file.close();
-        std::cout << "File saved as: " << filename << std::endl;
-
-        delete[] file_buffer;
-    }
 }
 
 void Client::disconnect() {
     std::lock_guard<std::mutex> lock(connMutex);
     if (connected) {
-        close(sock_fd);
-        sock_fd = -1;
         connected = false;
-        std::cout << "Client has been closed" << std::endl;
+        if (fileReceiverThread.joinable()) {
+            fileReceiverThread.join();
+        }
+        ::close(sock_fd);
+        sock_fd = -1;
+    }
+}
+
+void Client::chatLoop() {
+    while (connected) {
+        std::string msg;
+        std::getline(std::cin, msg);
+        if (msg == "/quit") break;
+        send(sock_fd, msg.c_str(), msg.size(), 0);
+    }
+    disconnect();
+}
+
+void Client::receiveFileLoop() {
+    // Event-driven: wait for "file" message from server, then receive file
+    while (connected) {
+        char buffer[CLIENT_BUFFER_SIZE]{};
+        ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+        if (valread <= 0) break;
+
+        std::string msg(buffer, valread);
+
+        if (msg == "RULEBOOK_TRANSFER") {
+            // Receive file size
+            ssize_t sz = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+            size_t file_size = std::stoul(std::string(buffer, sz));
+            std::ofstream outfile("rulebook.pdf", std::ios::binary);
+            size_t total_received = 0;
+            while (total_received < file_size) {
+                ssize_t n = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+                if (n <= 0) break;
+                outfile.write(buffer, n);
+                total_received += n;
+            }
+            outfile.close();
+            std::cout << "Rulebook received!\n";
+        }
+        // Add more events as needed
+    }
+}
+
+void Client::sendSubmission() { // need to check later
+    if (!connected) return;
+    std::string submissionPath;
+    std::cout << "Enter submission file path: ";
+    std::getline(std::cin, submissionPath);
+
+    if (!std::filesystem::exists(submissionPath)) {
+        std::cerr << "Submission file not found.\n";
+        return;
+    }
+
+    std::ifstream infile(submissionPath, std::ios::binary | std::ios::ate);
+    auto file_size = infile.tellg();
+    infile.seekg(0);
+
+           // Notify server
+    std::string header = "SUBMISSION_TRANSFER";
+    send(sock_fd, header.c_str(), header.size(), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::string size_str = std::to_string(file_size);
+    send(sock_fd, size_str.c_str(), size_str.size(), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    char buffer[CLIENT_BUFFER_SIZE]{};
+    while (!infile.eof()) {
+        infile.read(buffer, CLIENT_BUFFER_SIZE);
+        std::streamsize n = infile.gcount();
+        send(sock_fd, buffer, n, 0);
+    }
+    infile.close();
+    std::cout << "Submission sent!\n";
+}
+
+void Client::updateAccountInfo() {
+    if (!connected) return;
+    std::string msg = "UPDATE_ACCOUNT";
+    send(sock_fd, msg.c_str(), msg.size(), 0);
+    // Add implementation for sending updated info as needed
+}
+
+bool Client::sendLoginInfoToServer() {
+    if (!connected) return false;
+    std::string email, password;
+
+    std::string login_data = "LOGIN:" + email + ":" + password; // vulnerable
+    send(sock_fd, login_data.c_str(), login_data.size(), 0);
+
+    char buffer[CLIENT_BUFFER_SIZE]{};
+    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+    std::string response(buffer, valread);
+    if (response == "LOGIN_SUCCESS") {
+        clientName = email;
+        lastLoginTime = getCurrentTime();
+        storeLoginInfoToCache();
+        std::cout << "Login successful!\n";
+        return true;
+    }
+    std::cout << "Login failed.\n";
+    return false;
+}
+
+void Client::storeLoginInfoToCache() {
+    std::ofstream ofs("login_cache.txt");
+    ofs << clientName << "\n" << lastLoginTime << "\n";
+    ofs.close();
+}
+
+bool Client::checkLoginInfoInCache() { // CHECK LATER
+    std::ifstream ifs("login_cache.txt");
+    if (!ifs) return false;
+    std::string cached_name;
+    std::time_t cached_time;
+    ifs >> cached_name >> cached_time;
+    ifs.close();
+    std::time_t now = getCurrentTime();
+    if (cached_name == clientName && (now - cached_time) < 3*60*60) {
+        lastLoginTime = cached_time;
+        return true;
+    }
+    return false;
+}
+
+void Client::getLeaderboardDataFromServer() { // FUTURE IMPLEMENTATION
+    if (!connected) return;
+    std::string msg = "GET_LEADERBOARD";
+    send(sock_fd, msg.c_str(), msg.size(), 0);
+    char buffer[CLIENT_BUFFER_SIZE]{};
+    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+    if (valread > 0) {
+        std::cout << "Leaderboard:\n" << std::string(buffer, valread) << "\n";
     }
 }
 
