@@ -23,6 +23,7 @@ public:
     bool sendFileToAllClients(std::string path);
     void printClientsLoop(int intervalSeconds = 5);
     void stop();
+    static std::string fetchLocalIP();
 
 protected:
     Server(int port = 8080, const std::string& secret = "MySuperSecret123x"); // constructor protected e
@@ -41,7 +42,6 @@ private:
 
     void acceptLoop();
     void handleClient(int client_socket);
-    std::string fetchLocalIP();
 
     std::vector<ClientInfo> clients;
     std::vector<ClientInfo> getClients();

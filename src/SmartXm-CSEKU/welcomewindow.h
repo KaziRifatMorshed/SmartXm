@@ -36,6 +36,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_connect_to_local_server_pushButton_3_clicked();
+
 private:
     Ui::WelcomeWindow *ui;
     QNetworkAccessManager *m_networkManager;
