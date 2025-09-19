@@ -21,14 +21,14 @@ Server::Server(int port_, const std::string& secret)
 
 Server::~Server() {
     // std::cout << "Destructor invoked" << std::endl;
-    // stop();
+    stop();
     serverInstance = nullptr;
 }
 
 Server* Server::createServer(){ // Singleton approach
     if(!running){
         std::cout << "No server instance found, new server starting..." << std::endl;
-        Server::serverInstance = new Server();
+        serverInstance = new Server();
         running = true;
     }
     return Server::serverInstance;
@@ -99,11 +99,6 @@ void Server::stop() {
         close(ci.socfd);
     }
     clients.clear();
-
-
-    // Join threads
-    if (acceptThread.joinable()) acceptThread.detach();
-    if (printerThread.joinable()) printerThread.detach();
 
     std::cout << "SERVER SHOULD BE STOPPED" << std::endl;
     return;
