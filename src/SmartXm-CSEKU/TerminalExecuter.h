@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TERMINALEXECUTER_H
 #define TERMINALEXECUTER_H
 
@@ -6,7 +7,8 @@
 #include <string>
 #include <array>
 
-std::string termiExec(const char* cmd) {
+// `static` saved the LINKER ERROR
+static std::string termiExec(const char* cmd) {
     std::array<char, 128> buffer;
     std::string result;
 #ifdef _WIN32

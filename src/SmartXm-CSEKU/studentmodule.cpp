@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QDir>
 #include <QProcess>
+#include <TerminalExecuter.h>
 
 
 StudentModule::StudentModule(QWidget *parent)
@@ -60,6 +61,9 @@ void StudentModule::on_openRuleBook_pushButton_clicked()
     // std::cout << "PRINTING OuTpUtS: " << pOpenFile.readAllStandardOutput().toStdString() << std::endl;
 
     // QDesktopServices::openUrl(QUrl::fromLocalFile("/home/noobcod3r-rtx/a.pdf"));
+
+    // const char* cmdd = "/usr/bin/xdg-open /home/noobcod3r-rtx/Documents/a.pdf";
+    // std::string s = termiExec(cmdd);
  */
 
 #endif
