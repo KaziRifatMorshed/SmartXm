@@ -129,7 +129,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        AUTHENTICATION:
+        // AUTHENTICATION:
         char auth_buffer[256] = {0};
         ssize_t received_length = recv(client_socket, auth_buffer, sizeof(auth_buffer) - 1, 0);
         if (received_length <= 0) {
@@ -145,7 +145,7 @@ void Server::acceptLoop() {
             continue;
         }
 
-        RECEIVE_CLIENT_INFO:
+        // RECEIVE_CLIENT_INFO:
         char client_name[50] = {0};
         ssize_t name_len = recv(client_socket, client_name, sizeof(client_name) - 1, 0);
         if (name_len <= 0) {
