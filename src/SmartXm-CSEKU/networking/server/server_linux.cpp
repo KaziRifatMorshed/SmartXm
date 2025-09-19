@@ -93,18 +93,17 @@ void Server::stop() {
     // Close the listening socket to unblock accept()
     close(server_fd);
 
-    // Close all client sockets
-    {
-        std::lock_guard<std::mutex> lock(clientsMutex);
-        for (auto& ci : clients) {
-            close(ci.socfd);
-        }
-        clients.clear();
+    // Close all client sockets    
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    for (auto& ci : clients) {
+        close(ci.socfd);
     }
+    clients.clear();
+
 
     // Join threads
-    if (acceptThread.joinable()) acceptThread.join();
-    if (printerThread.joinable()) printerThread.join();
+    if (acceptThread.joinable()) acceptThread.detach();
+    if (printerThread.joinable()) printerThread.detach();
 
     std::cout << "SERVER SHOULD BE STOPPED" << std::endl;
     return;
