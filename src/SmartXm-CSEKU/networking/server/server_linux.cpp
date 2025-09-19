@@ -1,6 +1,7 @@
 #ifdef __linux__
 
 #include "Server.h"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <iostream>
