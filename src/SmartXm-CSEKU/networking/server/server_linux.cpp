@@ -186,13 +186,12 @@ void Server::handleClient(int client_socket) {
         }
     }
     close(client_socket);
-    // Remove client from list
-    {
-        std::lock_guard<std::mutex> lock(clientsMutex);
-        clients.erase(std::remove_if(clients.begin(), clients.end(),
-                                     [client_socket](const ClientInfo& ci) { return ci.socfd == client_socket; }),
-                      clients.end());
-    }
+    // Remove client from list    
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    clients.erase(std::remove_if(clients.begin(), clients.end(),
+                                 [client_socket](const ClientInfo& ci) { return ci.socfd == client_socket; }),
+                  clients.end());
+
     std::cout << "Client Handler Thread Terminated!! socket id = " << client_socket << std::endl;
 }
 
