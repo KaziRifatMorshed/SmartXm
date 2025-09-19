@@ -3,6 +3,9 @@
 #include "Server.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
+#include <cstring>
+#include "Msg.h"
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
@@ -28,7 +31,7 @@ int Server::start() {
     if (running) return 0;
     int opt = 1;
     struct sockaddr_in address;
-    socklen_t addrlen = sizeof(address);
+    // socklen_t addrlen = sizeof(address);
 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket creation failed");
@@ -247,7 +250,7 @@ bool Server::sendFileToAllClients(std::string path) {
         int client_socket = client.socfd;
 
         // 1. Send file size
-        ssize_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
+        size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
         if (bytesSent != sizeof(fileSize)) {
             std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
             continue;

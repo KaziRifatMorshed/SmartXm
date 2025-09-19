@@ -1,13 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 #pragma once
-#include <algorithm>
 #include <arpa/inet.h>
-#include <chrono>
-#include <cstdio>
-#include <cstring>
 #include <ifaddrs.h>
-#include <iostream>
 #include <mutex>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -18,39 +13,37 @@
 #include <unistd.h>
 #include <vector>
 #include "ClientInfo.h"
-#include "Msg.h"
 
 class Server {
 public:
-    static Server* createServer();
-    static int start();
-    static void stop();
-    static std::vector<ClientInfo> getClients();
-    static std::string getStatus();
-    static std::string getLocalIP();
-    static bool sendFileToAllClients(std::string path);
-
-    // For demo: Print clients every interval seconds
-    static void printClientsLoop(int intervalSeconds = 5);
+    static Server* createServer(); // creator thake public e
+    static bool isRunning() {return running;};
+    std::string getStatus();
+    std::string getLocalIP();
+    bool sendFileToAllClients(std::string path);
+    void printClientsLoop(int intervalSeconds = 5);
 
 protected:
-    Server(int port = 8080, const std::string& secret = "MySuperSecret123x");
+    Server(int port = 8080, const std::string& secret = "MySuperSecret123x"); // constructor protected e
     ~Server();
-    static Server *serverInstance;
+    static bool running; // serverExists
+    std::string status;
 
 private:
+    int port;
+    int server_fd;
+    std::string secretKey;
+    std::string localIP;
+    static Server *serverInstance; // instance private e thake
+
+    int start();
+    void stop();
     void acceptLoop();
     void handleClient(int client_socket);
     std::string fetchLocalIP();
 
-    int port;
-    std::string secretKey;
-    std::string status;
-    std::string localIP;
-
-    int server_fd;
-    static bool running; // serverExists
     std::vector<ClientInfo> clients;
+    std::vector<ClientInfo> getClients();
     std::mutex clientsMutex;
     std::thread acceptThread;
     std::thread printerThread;

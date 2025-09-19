@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QMessageBox>
 
-
+Server *server;
 QString instructionFileName = "";
 
 TeacherModule::TeacherModule(QWidget *parent)
@@ -27,7 +27,7 @@ TeacherModule::TeacherModule(QWidget *parent)
 TeacherModule::~TeacherModule() { delete ui; }
 
 void TeacherModule::on_StartServer_toolButton_clicked() {
-  if (Server::getStatus() != "RUNNING") {
+  if (server == nullptr) {
     Server::createServer();
     ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: " + QString::fromStdString(Server::getStatus() + "</span></p></body></html>"));
     ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: " + QString::fromStdString(Server::getLocalIP()) + "</span></p></body></html>");
@@ -35,8 +35,8 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
 }
 
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
-  if (Server::getStatus() == "RUNNING") {
-    Server::stop();
+  if (server != nullptr && Server::isRunning()) {
+    server->stop();
     ui->serverStatus_label_2->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: STOPPED</span></p></body></html>");
     ui->serverIP_label_3->setText("<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: STOPPED</span></p></body></html>");
   }
@@ -80,7 +80,7 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
         QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
     } else {
         // send file to all connected clients
-        bool t = Server::sendFileToAllClients(instructionFileName.toStdString());
+        bool t = server->sendFileToAllClients(instructionFileName.toStdString());
         // on successful, show msg
         if(t){
             QMessageBox::information(this, "Success", "Instruction sent to all connected clients.");
