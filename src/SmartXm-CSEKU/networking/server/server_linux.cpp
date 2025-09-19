@@ -7,6 +7,9 @@
 #include <cstring>
 #include "Msg.h"
 
+bool Server::running = false;
+Server* Server::serverInstance = nullptr;
+
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
 {
@@ -16,6 +19,7 @@ Server::Server(int port_, const std::string& secret)
 
 Server::~Server() {
     stop();
+    serverInstance = nullptr;
 }
 
 Server* Server::createServer(){ // Singleton approach

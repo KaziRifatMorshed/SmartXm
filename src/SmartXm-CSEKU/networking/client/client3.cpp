@@ -65,7 +65,7 @@ void receive_file(int client_sock_fd) {
 }
 
 
-int main(int argc, const char* argv[]) {
+int _main(int argc, const char* argv[]) {
     int client_sock_fd = 0;
     struct sockaddr_in server_addr;
     char client_name[50] = {0};
