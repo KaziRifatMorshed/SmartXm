@@ -23,7 +23,7 @@ StudentModule::~StudentModule() { delete ui; }
 
 void StudentModule::on_exitBtn_profileTab_pushButton_2_clicked() { close(); }
 
-void showMsgBox(QWidget *parent, QString type, QString title, QString text) {
+void _showMsgBox(QWidget *parent, QString type, QString title, QString text) {
   if (type == "information") {
     QMessageBox::information(parent, title, text);
   } else if (type == "warning") {
@@ -32,9 +32,18 @@ void showMsgBox(QWidget *parent, QString type, QString title, QString text) {
     QMessageBox::critical(parent, title, text);
   }
 }
+void StudentModule::showMsgBox(QString type, QString title, QString text) {
+    if (type == "information") {
+        QMessageBox::information(this, title, text);
+    } else if (type == "warning") {
+        QMessageBox::warning(this, title, text);
+    } else if (type == "critical") {
+        QMessageBox::critical(this, title, text);
+    }
+}
 
 void StudentModule::on_openRuleBook_pushButton_clicked() {
-  showMsgBox(this, "information", "Rulebook", "Rulebook received! Click OK to open rulebook.");
+  // showMsgBox("information", "Rulebook", "Rulebook received! Click OK to open rulebook."); // remove later
   std::cout << "Opening rulebook/instructions" << std::endl;
   QString rulebookPath; // this needs to modify
   // get a QMsgBox and then btn will be open

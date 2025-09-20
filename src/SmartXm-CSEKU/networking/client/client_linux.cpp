@@ -4,6 +4,7 @@
 #include "Client.h"
 #include <filesystem>
 #include <QMessageBox>
+#include <studentmodule.cpp>
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -66,7 +67,7 @@ void receive_file(int client_sock_fd) {
       break;
     }
 
-    QMessageBox(QMessageBox::Icon::Information ,"Rulebook", "Rulebook received!");
+
     output_file.write(file_buffer, file_size);
     output_file.close();
     std::cout << "File saved as: " << filename << std::endl;
