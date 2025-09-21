@@ -15,6 +15,7 @@ class IDE : public QMainWindow
 public:
     explicit IDE(QWidget* parent = nullptr);
     ~IDE();
+    void loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath);
 
 private:
     Ui::IDE* ui;
