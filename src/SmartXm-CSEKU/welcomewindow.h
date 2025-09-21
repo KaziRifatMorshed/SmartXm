@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <teachermodule.h>
 #include <studentmodule.h>
+// #include <ide.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -45,5 +46,6 @@ private:
 
     TeacherModule *teacherModuleWindow;
     StudentModule *studentModuleWindow;
+    // IDE *ideEditor;
 };
 #endif // WELCOMEWINDOW_H

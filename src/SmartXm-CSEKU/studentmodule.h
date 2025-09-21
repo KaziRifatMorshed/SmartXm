@@ -2,6 +2,7 @@
 #define STUDENTMODULE_H
 
 #include <QMainWindow>
+#include <ide.h>
 
 namespace Ui {
 class StudentModule;
@@ -26,6 +27,7 @@ private slots:
 private:
     Ui::StudentModule *ui;
     void ruleBookReceived();
+    IDE *ideEditor;
 };
 
 #endif // STUDENTMODULE_H

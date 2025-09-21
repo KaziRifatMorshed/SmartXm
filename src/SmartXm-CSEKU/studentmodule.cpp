@@ -74,5 +74,7 @@ void StudentModule::on_openCodeEditor_pushButton_clicked()
 {
     // open code editor seperate window
     // this window will not be closed
+    ideEditor = new IDE();
+    ideEditor->show();
 }
 

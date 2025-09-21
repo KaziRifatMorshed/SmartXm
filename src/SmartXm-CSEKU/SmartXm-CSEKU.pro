@@ -9,6 +9,7 @@ CONFIG += c++23
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ide.cpp \
     main.cpp \
     networking/client/client.cpp \
     networking/client/client_linux.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    ide.h \
     networking/client/Client.h \
     networking/server/Server.h \
     studentmodule.h \
@@ -35,6 +37,7 @@ HEADERS += \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    ide.ui \
     studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui
