@@ -46,12 +46,12 @@ private:
           return (lastDot == std::string::npos) ? filename : filename.substr(0, lastDot);
      }
 
-     // std::string getDirectoryPath(const std::string &filepath)
-     // {
-     //      size_t lastSlash = filepath.find_last_of("/\\");
+     std::string getDirectoryPath(const std::string &filepath)
+     {
+          size_t lastSlash = filepath.find_last_of("/\\");
 
-     //      return (lastSlash == std::string::npos) ? "./" : filepath.substr(0, lastSlash + 1);
-     // }
+          return (lastSlash == std::string::npos) ? "./" : filepath.substr(0, lastSlash + 1);
+     }
 
      bool checkCompiler(const std::string &ext)
      {
@@ -69,7 +69,7 @@ private:
 #ifdef _WIN32
                checkCmd = "where python>nul 2>&1";
 #else
-               checkCmd = "which python3 >/dev/null 2>&1"
+               checkCmd = "which python3 >/dev/null 2>&1";
 #endif
           }
           return system(checkCmd.c_str()) == 0;
