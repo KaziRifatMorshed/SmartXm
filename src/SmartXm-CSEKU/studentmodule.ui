@@ -25,7 +25,7 @@
     <item>
      <widget class="QTabWidget" name="MainTabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ProfileTab">
        <attribute name="title">
@@ -66,7 +66,7 @@
       </widget>
       <widget class="QWidget" name="examTab">
        <attribute name="title">
-        <string>Exam</string>
+        <string>All Exams</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -186,6 +186,24 @@
          </widget>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="currentExamTab">
+       <attribute name="title">
+        <string>Current Exam</string>
+       </attribute>
+       <widget class="QPushButton" name="openCodeEditor_pushButton">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>70</y>
+          <width>201</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Open Code Editor</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

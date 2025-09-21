@@ -69,3 +69,9 @@ void StudentModule::ruleBookReceived() {
   std::cout << "Rulebook received from server at " << currentTime.toStdString()
             << std::endl;
 }
+
+void StudentModule::on_openCodeEditor_pushButton_clicked()
+{
+    // open code editor seperate window
+}
+
