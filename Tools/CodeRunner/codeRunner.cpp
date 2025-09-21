@@ -236,7 +236,7 @@ private:
           compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 
 #else
-          exeFile = "./" + filename;
+          exeFile = "./ \"" + directoryPath + filename + "\"";
           compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #endif
 
