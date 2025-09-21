@@ -191,19 +191,15 @@
        <attribute name="title">
         <string>Current Exam</string>
        </attribute>
-       <widget class="QPushButton" name="openCodeEditor_pushButton">
-        <property name="geometry">
-         <rect>
-          <x>400</x>
-          <y>70</y>
-          <width>201</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Open Code Editor</string>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QPushButton" name="openCodeEditor_pushButton">
+          <property name="text">
+           <string>Open Code Editor</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

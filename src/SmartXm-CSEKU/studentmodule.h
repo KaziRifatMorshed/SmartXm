@@ -21,6 +21,8 @@ private slots:
 
     void on_openRuleBook_pushButton_clicked();
 
+    void on_openCodeEditor_pushButton_clicked();
+
 private:
     Ui::StudentModule *ui;
     void ruleBookReceived();
