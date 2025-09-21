@@ -7,6 +7,7 @@
 #include <QWebChannel>
 #include <QFile>
 #include <QDir>
+#include <QFileInfo>
 
 #include "src/qpdfjswindow.h"
 #include "src/communicator.h"
@@ -26,7 +27,9 @@ QPdfJsWindow::QPdfJsWindow(QString pdf_path
 	auto url = QUrl::fromLocalFile(app_path+"/minified/web/viewer.html");
 
 	QDir dir(app_path+"/minified/web/");
-	setWindowTitle(pdf_path);
+	QFileInfo fileInfo(pdf_path);
+	QString fileName = fileInfo.fileName();
+	setWindowTitle(fileName);
 	pdf_path = dir.relativeFilePath(pdf_path);
 
 	m_communicator = new Communicator(this);
