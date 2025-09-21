@@ -50,7 +50,7 @@ private:
      {
           size_t lastSlash = filepath.find_last_of("/\\");
 
-          return (lastSlash == std::string::npos) ? "./" : filepath.substr(0, lastSlash + 1);
+          return (lastSlash == std::string::npos) ? "" : filepath.substr(0, lastSlash + 1);
      }
 
      bool checkCompiler(const std::string &ext)
@@ -132,11 +132,10 @@ private:
           if (!pipe)
                return "Error: Failed to execute command";
 
-          char buffer[1];
+          char buffer[128];
           while (fread(buffer, 1, 1, pipe) == 1)
           {
-               result += buffer[0];
-               std::cout << buffer[0] << std::flush;
+               result += buffer;
           }
 
           int status = pclose(pipe);
@@ -230,8 +229,10 @@ private:
 
           std::string exeFile, compileCmd;
 
+          std::string directoryPath = getDirectoryPath(currentFile);
+
 #ifdef _WIN32
-          exeFile = filename + ".exe";
+          exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
           compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 
 #else
@@ -256,13 +257,14 @@ private:
                }
           }
 
-          if (!std::filesystem::exists(exeFile))
+          if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
           {
                std::ofstream fout("error.txt", std::ios::out);
                fout << "Compilation Failed!" << std::endl;
                fout.close();
                return;
           }
+
           int exitCode;
           std ::string error = executeExeFile(exeFile, exitCode);
           if (exitCode)
