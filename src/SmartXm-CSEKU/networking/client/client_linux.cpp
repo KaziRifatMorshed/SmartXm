@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <studentmodule.cpp>
 #include <networking/FileMeta.h>
+#include <iomanip>
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -117,6 +118,37 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
 }
 */
 
+// new
+
+void file_receive_loop(int sock_fd) {
+    try {
+        while (true) {
+            std::cout << "[FileReceiver] Waiting for file/message from server..." << std::endl;
+            FileMeta meta = FileMeta::recv_from_socket(sock_fd);
+
+            std::cout << "[FileReceiver] Received file: "
+                      << meta.filename
+                      << " (." << meta.extension << "), "
+                      << "size: " << meta.file_data.size() << " bytes, "
+                      << "sent at: " << std::put_time(std::localtime(&meta.sent_time), "%d-%m-%Y %H:%M:%S")
+                      << std::endl;
+            std::cout << "[FileReceiver] Server message: " << meta.message << std::endl;
+
+                   // Save file to disk
+            std::ofstream ofs(meta.filename, std::ios::binary);
+            if (!ofs) {
+                std::cerr << "[FileReceiver] Failed to write file: " << meta.filename << std::endl;
+            } else {
+                ofs.write(meta.file_data.data(), meta.file_data.size());
+                ofs.close();
+                std::cout << "[FileReceiver] File saved as: " << meta.filename << std::endl;
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[FileReceiver] Error or connection closed: " << e.what() << std::endl;
+    }
+}
+
 // Send file to server
 bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg) {
     std::ifstream file(path, std::ios::binary);
@@ -140,6 +172,7 @@ FileMeta receive_file_from_server(int sock_fd) {
     std::cout << "received a file from server" << std::endl;
     return FileMeta::recv_from_socket(sock_fd);
 }
+
 
 /*
 void Client::sendSubmission() { // need to check later
@@ -308,7 +341,7 @@ bool Client::connectToServer(const std::string &ip_addr, int port) {
 
   // std::thread t(&Client::receiveFileLoop, this);
   // std::thread t(receive_file, sock_fd);
-  std::thread t(receive_file_from_server, sock_fd);
+  std::thread t(file_receive_loop, sock_fd);
   t.detach();
 
   return true;
