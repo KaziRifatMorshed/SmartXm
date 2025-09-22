@@ -37,7 +37,6 @@ TeacherModule::~TeacherModule() { delete ui; }
 void TeacherModule::on_StartServer_toolButton_clicked() {
   std::cout << "Start Server button clicked" << std::endl;
   if (server == nullptr) {
-    std::cout << "server == nullptr" << std::endl;
     server = Server::createServer();
     ui->serverStatus_label_2->setText(
         "<html><head/><body><p><span style=\" font-size:18pt;\">Server "
@@ -56,6 +55,7 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
   std::cout << "Stop Server button clicked" << std::endl;
   if (server != nullptr && Server::isRunning()) {
+  // if (server != nullptr) {
     std::cout << "trying to stop server..." << std::endl;
     server->stop();
     server = nullptr;
@@ -66,7 +66,7 @@ void TeacherModule::on_StopServer_toolButton_2_clicked() {
         "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local "
         "IP: STOPPED</span></p></body></html>");
   } else {
-        std::cout << "No server instance should be running..." << std::endl;
+    std::cout << "No server instance should be running..." << std::endl;
   }
 }
 
@@ -115,13 +115,15 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
     QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
   } else {
     // send file to all connected clients
-    bool t = server->sendFileToAllClients(instructionFileName.toStdString());
+    bool t = server->sendFileToAllClients(
+        instructionFileName.toStdString(),
+        "Rulebook containing instruction provided.");
     // on successful, show msg
     if (t) {
       QMessageBox::information(this, "Success",
-                               "Instruction sent to all connected clients.");
+                               "Rulebook sent to all connected clients.");
     } else {
-      QMessageBox::warning(this, "failed!", "File Send Failed!!!");
+      QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
     }
   }
 }

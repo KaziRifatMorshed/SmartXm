@@ -20,30 +20,35 @@ Server* Server::serverInstance = nullptr;
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
-{
-    // std::cout << "Local Server Constructor invoked" << std::endl;
+{ // constructor
+    std::cout << "Local Server Constructor invoked" << std::endl;
     localIP = fetchLocalIP();
+    status = "CREATED";
     Server::start();
 }
 
-Server::~Server() {
-    // std::cout << "Destructor invoked" << std::endl;
+Server::~Server() { // destructor
+    std::cout << "Server Destructor invoked" << std::endl;
     stop();
+    running = false;
     serverInstance = nullptr;
+    status = "DESTROYED";
 }
 
-Server* Server::createServer(){ // Singleton approach
+Server* Server::createServer(){ // Singleton approach // Create Instance
     if(!running){
-        std::cout << "No server instance found, new server starting..." << std::endl;
+        std::cout << "No server instance found, NEW server starting..." << std::endl;
         serverInstance = new Server();
         running = true;
     }
+    std::cout << "Server instance exists" << std::endl;
     return Server::serverInstance;
 }
 
 
-int Server::start() {
+int Server::start() { // start server; Constructor will call it only
     if (running) return 0;
+    std::cout << "Starting server..." << std::endl;
     int opt = 1;
     struct sockaddr_in address;
     // socklen_t addrlen = sizeof(address);
@@ -79,10 +84,10 @@ int Server::start() {
     status = "RUNNING";
     running = true;
 
-    std::cout << "Welcome to SmartXm-CSEKU LOCAL SERVER" << std::endl;
+    std::cout << "====== SmartXm-CSEKU LOCAL SERVER ======" << std::endl;
     std::cout << "Server will listen on port " << port << std::endl;
     std::cout << "Server local IP (give this to client): " << localIP << std::endl;
-    std::cout << "Waiting for client connections..." << std::endl;
+    // std::cout << "Waiting for client connections..." << std::endl;
 
     // Start threads
     acceptThread = std::thread(&Server::acceptLoop, this);
@@ -95,7 +100,7 @@ void Server::stop() {
     if (!running) return;
     running = false;
     status = "STOPPED";
-    std::cout << "STOPPING SERVER" << std::endl;
+    std::cout << "----- STOPPING SERVER -----" << std::endl;
 
     // Close the listening socket to unblock accept()
     close(server_fd);
@@ -107,7 +112,7 @@ void Server::stop() {
     }
     clients.clear();
 
-    std::cout << "SERVER SHOULD BE STOPPED" << std::endl;
+    std::cout << "----- SERVER SHOULD BE STOPPED -----" << std::endl;
     return;
 }
 
@@ -124,15 +129,15 @@ std::string Server::getLocalIP() {
     return localIP;
 }
 
-void Server::acceptLoop() {
+void Server::acceptLoop() { // accept new connections
     while (running) {
         struct sockaddr_in client_addr;
         socklen_t client_addr_len = sizeof(client_addr);
 
         int client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if (!running) break;
+        if (!running) break; // this !!!
         if (client_socket < 0) {
-            if (running) perror("failed to accept connection");
+            if (serverInstance == nullptr) perror("failed to accept connection ???");
             continue;
         }
 
@@ -180,9 +185,10 @@ void Server::acceptLoop() {
     }
 }
 
-void Server::handleClient(int client_socket) {
+void Server::handleClient(int client_socket) { // after client is accepted, this needs
     Msg msg;
     while (running) {
+    // while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
         if (valread <= 0) {
             std::cout << "Client (socket_id=" << client_socket << ") disconnected!" << std::endl;
@@ -193,6 +199,7 @@ void Server::handleClient(int client_socket) {
         }
     }
     close(client_socket);
+
     // Remove client from list    
     std::lock_guard<std::mutex> lock(clientsMutex);
     clients.erase(std::remove_if(clients.begin(), clients.end(),
@@ -204,6 +211,7 @@ void Server::handleClient(int client_socket) {
 
 void Server::printClientsLoop(int intervalSeconds) {
     while (running) {
+    // while (serverInstance != nullptr) {
         {
             std::lock_guard<std::mutex> lock(clientsMutex);
             std::cout << "-----------------------\nConnected Clients:\n";
@@ -223,7 +231,7 @@ std::string Server::fetchLocalIP() {
     std::string found = "error";
 
     if (getifaddrs(&ifap) == -1) {
-        perror("getifaddrs");
+        perror("getifaddrs error");
         return found;
     }
 
@@ -283,6 +291,7 @@ bool Server::sendFileToAllClients(std::string path) { // might decricate later
 // new
 
 // send to specific client
+// kivabe button e implement korbo bujhtesi na
 bool Server::sendFileToClient(int client_sock, const std::string path, const std::string msg) {
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open()) return false;
@@ -300,7 +309,7 @@ bool Server::sendFileToClient(int client_sock, const std::string path, const std
     return meta.send_on_socket(client_sock);
 }
 
-// Broadcast to all
+// Broadcast to all // might be easier
 bool Server::sendFileToAllClients(const std::string path, const std::string msg) {
     std::lock_guard<std::mutex> lock(clientsMutex);
     bool all_ok = true;

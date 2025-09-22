@@ -22,6 +22,7 @@ public:
     : filename(fname), extension(ext), sent_time(t),
     file_data(std::move(data)), message(msg) {}
 
+
     std::vector<char> serialize() const {
         std::vector<char> out;
 
@@ -74,6 +75,7 @@ public:
         return m;
     }
 
+#ifdef __linux__
     // Send the serialized FileMeta object on a socket
     bool send_on_socket(int sock_fd) const {
         std::vector<char> bytes = serialize();
@@ -110,4 +112,5 @@ public:
         }
         return deserialize(buffer);
     }
+#endif
 };
