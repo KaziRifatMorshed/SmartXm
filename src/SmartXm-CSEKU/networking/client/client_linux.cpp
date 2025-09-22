@@ -137,6 +137,7 @@ bool send_file_to_server(int sock_fd, const std::string& path, const std::string
 
 // Receive file from server
 FileMeta receive_file_from_server(int sock_fd) {
+    std::cout << "received a file from server" << std::endl;
     return FileMeta::recv_from_socket(sock_fd);
 }
 
@@ -306,7 +307,8 @@ bool Client::connectToServer(const std::string &ip_addr, int port) {
   // fileReceiverThread.detach();
 
   // std::thread t(&Client::receiveFileLoop, this);
-  std::thread t(receive_file, sock_fd);
+  // std::thread t(receive_file, sock_fd);
+  std::thread t(receive_file_from_server, sock_fd);
   t.detach();
 
   return true;
