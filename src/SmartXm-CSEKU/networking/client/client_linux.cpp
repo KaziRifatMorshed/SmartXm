@@ -134,21 +134,31 @@ void file_receive_loop(int sock_fd) {
                       << std::endl;
             std::cout << "[FileReceiver] Server message: " << meta.message << std::endl;
 
-                   // Save file to disk
-            std::ofstream ofs(meta.filename, std::ios::binary);
+                   // Use meta.message as the file type/purpose indicator
+            std::string save_name;
+            if (meta.message == "rulebook") {
+                save_name = "rulebook.pdf";
+            } else if (meta.message == "question") {
+                save_name = "questions.pdf";
+            } else if (meta.message == "notice") {
+                save_name = "notice.txt";
+            } else {
+                save_name = meta.filename; // fallback to original filename
+            }
+
+            std::ofstream ofs(save_name, std::ios::binary);
             if (!ofs) {
-                std::cerr << "[FileReceiver] Failed to write file: " << meta.filename << std::endl;
+                std::cerr << "[FileReceiver] Failed to write file: " << save_name << std::endl;
             } else {
                 ofs.write(meta.file_data.data(), meta.file_data.size());
                 ofs.close();
-                std::cout << "[FileReceiver] File saved as: " << meta.filename << std::endl;
+                std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
             }
         }
     } catch (const std::exception& e) {
         std::cerr << "[FileReceiver] Error or connection closed: " << e.what() << std::endl;
     }
 }
-
 // Send file to server
 bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg) {
     std::ifstream file(path, std::ios::binary);
