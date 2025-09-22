@@ -135,7 +135,7 @@ void Server::acceptLoop() { // accept new connections
         socklen_t client_addr_len = sizeof(client_addr);
 
         int client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if (running) break;
+        if (!running) break; // this !!!
         if (client_socket < 0) {
             if (serverInstance == nullptr) perror("failed to accept connection ???");
             continue;
