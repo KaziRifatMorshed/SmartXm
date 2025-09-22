@@ -155,8 +155,10 @@ public:
      void run()
      {
           std::ofstream fout("error.txt", std::ios::trunc);
+          fout.close();
         
           std::ofstream("output.txt", std::ios::trunc);
+          fout.close();
           if (currentFile.empty())
           {
 
