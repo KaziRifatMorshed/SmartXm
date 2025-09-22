@@ -2,6 +2,8 @@
 #define IDE_H
 
 #include <QMainWindow>
+#include <QFileSystemModel>
+#include <string>
 
 namespace Ui
 {
@@ -16,6 +18,7 @@ public:
     explicit IDE(QWidget* parent = nullptr);
     ~IDE();
     void loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath);
+
 
 private:
     Ui::IDE* ui;

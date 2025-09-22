@@ -8,6 +8,23 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include "toast.h"
+#include <QDir>
+#include <QFileInfo>
+#include <QFile>
+#include <QFileDialog>
+#include <qmessagebox.h>
+#include <QTextEdit>
+#include <QApplication>
+#include <QTextStream>
+#include <QProcess>
+#include <QFontMetricsF>
+#include <QWheelEvent>
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerpython.h>
+#include <string>
+#include <QString>
 
 IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
     ui->setupUi(this);
@@ -34,45 +51,11 @@ void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
     quesPdfDoc->load(pdfFilePath);
     quesPdfView->setDocument(quesPdfDoc);
 
-           // For navigation and zoom, cast QPdfView to QPdfPageNavigation
-    QPdfPageNavigator* navigation = qobject_cast<QPdfPageNavigator*>(quesPdfView);
-
-    QPushButton* quesPrevBtn = new QPushButton("Previous");
-    QPushButton* quesNextBtn = new QPushButton("Next");
-    QLabel* quesPageLabel = new QLabel();
+    quesPdfView->setPageMode(QPdfView::PageMode::MultiPage);
 
     QPushButton* quesZoomInBtn = new QPushButton("Zoom In");
     QPushButton* quesZoomOutBtn = new QPushButton("Zoom Out");
 
-    auto updateQuesPageLabel = [navigation, quesPdfDoc, quesPageLabel]() {
-        if (!navigation)
-            return;
-        int currentPage = navigation->currentPage();
-        int pageCount = quesPdfDoc->pageCount();
-        quesPageLabel->setText(QString("Page %1 / %2").arg(currentPage + 1).arg(pageCount));
-    };
-
-    QObject::connect(quesPrevBtn, &QPushButton::clicked, [navigation, updateQuesPageLabel]() {
-        if (!navigation)
-            return;
-        int current = navigation->currentPage();
-        if (current > 0) {
-            // navigation->setPage(current - 1);
-            updateQuesPageLabel();
-        }
-    });
-
-    QObject::connect(quesNextBtn, &QPushButton::clicked, [navigation, quesPdfDoc, updateQuesPageLabel]() {
-        if (!navigation)
-            return;
-        int current = navigation->currentPage();
-        if (current + 1 < quesPdfDoc->pageCount()) {
-            // navigation->setPage(current + 1);
-            updateQuesPageLabel();
-        }
-    });
-
-           // Zoom: QPdfView uses setZoomFactor() and zoomFactor()
     QObject::connect(quesZoomInBtn, &QPushButton::clicked, [quesPdfView]() {
         qreal zoom = quesPdfView->zoomFactor();
         quesPdfView->setZoomFactor(zoom + 0.1);
@@ -84,12 +67,7 @@ void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
             quesPdfView->setZoomFactor(zoom - 0.1);
     });
 
-    updateQuesPageLabel();
-
     QHBoxLayout* quesNavLayout = new QHBoxLayout();
-    quesNavLayout->addWidget(quesPrevBtn);
-    quesNavLayout->addWidget(quesPageLabel);
-    quesNavLayout->addWidget(quesNextBtn);
     quesNavLayout->addStretch();
     quesNavLayout->addWidget(quesZoomOutBtn);
     quesNavLayout->addWidget(quesZoomInBtn);

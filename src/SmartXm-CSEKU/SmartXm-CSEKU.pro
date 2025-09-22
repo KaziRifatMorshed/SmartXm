@@ -17,6 +17,7 @@ SOURCES += \
     networking/server/server_linux.cpp \
     studentmodule.cpp \
     teachermodule.cpp \
+    toast.cpp \
     welcomewindow.cpp \
     dependencies/linux/Encryption/encryption.cpp
 
@@ -33,6 +34,7 @@ HEADERS += \
     networking/server/Server.h \
     studentmodule.h \
     teachermodule.h \
+    toast.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
