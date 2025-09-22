@@ -25,14 +25,61 @@
 // #include <Qsci/qscilexerpython.h>
 #include <string>
 #include <QString>
+#include <iostream>
 
-IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
+IDE* IDE::ideInstance = nullptr;
+
+IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE)
+{
     ui->setupUi(this);
+    initialize();
+}
+
+IDE::~IDE()
+{
+    delete ui;
+}
+
+void IDE::initialize()
+{
+    ui->CompilerDebudOutput_textEdit->setReadOnly(true);
+
+    ui->Editor->setFont(QFont("Monospace"));
+    ui->input_textEdit->setFont(QFont("Monospace"));
+    ui->output_textEdit->setFont(QFont("Monospace"));
+    ui->CompilerDebudOutput_textEdit->setFont(QFont("Monospace"));
+
+    model = new QFileSystemModel(this);
+    model->setRootPath(dirPath);
+    model->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
+
+    ui->treeViewFiles->setModel(model);
+    ui->treeViewFiles->setRootIndex(model->index(dirPath));
+
+    QAction *newAction = new QAction("New", this);
+    QAction *saveAction = new QAction("Save", this);
+    QAction *runAction = new QAction("Run", this);
+    QAction *loadAction = new QAction("Load Problem", this);
+
+    connect(newAction, &QAction::triggered, this, &IDE::newFile);
+    connect(saveAction, &QAction::triggered, this, &IDE::save);
+    connect(runAction, &QAction::triggered, this, &IDE::run);
+    connect(ui->treeViewFiles, &QTreeView::doubleClicked, this, [=] (const QModelIndex &index) {
+        QString path = model->filePath(index);
+
+        if (QFileInfo(path).isFile()) {
+            openFile(path);
+        }
+    });
+    connect(loadAction, &QAction::triggered, this, &IDE::loadProblem);
+
+    ui->menuFile->addAction(newAction);
+    ui->menuFile->addAction(saveAction);
+    ui->menuFile->addAction(runAction);
+    ui->menuFile->addAction(loadAction);
 
     loadPdfInQuesTab(ui->ques_tab, "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/questions.pdf");
 }
-
-IDE::~IDE() { delete ui; }
 
 void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
 {
@@ -77,4 +124,129 @@ void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
     quesMainLayout->addLayout(quesNavLayout);
 
     ques_tab->setLayout(quesMainLayout);
+}
+
+void IDE::newFile()
+{
+    ui->Editor->setText(QString());
+    
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        "Save New File",
+        dirPath,
+        "All Files (*)"
+    );
+    
+    if (!fileName.isEmpty()) {
+        currentFile = fileName;
+
+        QFileInfo fileInfo(fileName);
+        QFileInfo dirInfo(dirPath);
+        
+        QString selectedDir = fileInfo.absolutePath();
+        QString projectDir = dirInfo.absolutePath();
+        
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            out << "";
+            file.close();
+            
+            model->setRootPath(dirPath);
+            
+            QModelIndex index = model->index(fileName);
+            if (index.isValid()) {
+                ui->treeViewFiles->expand(index.parent());
+                ui->treeViewFiles->setCurrentIndex(index);
+            }
+        } else {
+            QMessageBox::critical(this, "Error", "Could not create file: " + fileName);
+        }
+    }
+}
+
+QString IDE::getFileContent(QString path)
+{
+    QFile file(path);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot read file: " + file.errorString());
+
+        return QString();
+    }
+
+    QString text = file.readAll();
+
+    file.close();
+
+    return text;
+}
+
+void IDE::save()
+{
+    QString fileName;
+
+    fileName = currentFile;
+
+    if (IDE::getFileContent(fileName) == ui->Editor->toPlainText()) {
+        return;
+    }
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream out(&file);
+    QString text = ui->Editor->toPlainText();
+    out << text;
+    file.close();
+
+    ToastManager::showMessage(this, "File saved as: " + currentFile);
+}
+
+void IDE::run()
+{
+    // TODO: Implement run functionality
+}
+
+void IDE::openFile(QString path)
+{
+    QString fileName;
+
+    if (path == "") {
+        fileName = QFileDialog::getOpenFileName(this, "Open the file");
+    }
+    else {
+        fileName = path;
+    }
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+
+    ui->Editor->setText(text);
+
+    currentFile = fileName;
+
+    file.close();
+}
+
+void IDE::loadProblem()
+{
+    // TODO: Implement load problem functionality
 }

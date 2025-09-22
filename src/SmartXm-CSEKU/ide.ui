@@ -60,6 +60,11 @@
          <attribute name="title">
           <string>Editor 1</string>
          </attribute>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QTextEdit" name="Editor"/>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QSplitter" name="splitter_InputOutput">
@@ -123,6 +128,12 @@
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
