@@ -328,7 +328,7 @@
            <item>
             <widget class="QPushButton" name="testExam_pushButton_3">
              <property name="text">
-              <string>Test Exam</string>
+              <string>XYZ Exam</string>
              </property>
             </widget>
            </item>
@@ -342,7 +342,7 @@
     <item>
      <widget class="QGroupBox" name="sendInstructions_groupBox">
       <property name="title">
-       <string>Send Instructions to all clients</string>
+       <string>Send rulebook(instructions) to all clients</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
