@@ -18,7 +18,7 @@
 class Server {
 public:
     static Server* createServer(); // creator thake public e
-    static bool isRunning() {return running;};
+    // static bool isRunning() {return running;};
     std::string getStatus();
     std::string getLocalIP();
     bool sendFileToClient(int client_sock, std::string path, std::string msg);
@@ -31,7 +31,7 @@ public:
 protected:
     Server(int port = 8080, const std::string& secret = "MySuperSecret123x"); // constructor protected e
     ~Server();
-    static bool running; // serverExists
+    // static bool running; // serverExists
     std::string status;
 
 private:

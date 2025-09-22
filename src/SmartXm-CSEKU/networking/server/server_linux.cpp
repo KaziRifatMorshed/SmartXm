@@ -81,7 +81,7 @@ int Server::start() { // start server; Constructor will call it only
     }
 
     status = "RUNNING";
-    running = true;
+    // running = true;
 
     std::cout << "====== SmartXm-CSEKU LOCAL SERVER ======" << std::endl;
     std::cout << "Server will listen on port " << port << std::endl;
@@ -96,8 +96,8 @@ int Server::start() { // start server; Constructor will call it only
 }
 
 void Server::stop() {
-    if (!running) return;
-    running = false;
+    if (serverInstance == nullptr) return;
+    // running = false;
     status = "STOPPED";
     std::cout << "----- STOPPING SERVER -----" << std::endl;
 
@@ -186,7 +186,8 @@ void Server::acceptLoop() { // accept new connections
 
 void Server::handleClient(int client_socket) { // after client is accepted, this needs
     Msg msg;
-    while (running) {
+    // while (running) {
+    while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
         if (valread <= 0) {
             std::cout << "Client (socket_id=" << client_socket << ") disconnected!" << std::endl;
@@ -208,7 +209,8 @@ void Server::handleClient(int client_socket) { // after client is accepted, this
 }
 
 void Server::printClientsLoop(int intervalSeconds) {
-    while (running) {
+    // while (running) {
+    while (serverInstance != nullptr) {
         {
             std::lock_guard<std::mutex> lock(clientsMutex);
             std::cout << "-----------------------\nConnected Clients:\n";
