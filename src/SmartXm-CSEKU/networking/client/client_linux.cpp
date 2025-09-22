@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <QMessageBox>
 #include <studentmodule.cpp>
+#include <networking/FileMeta.h>
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -25,6 +26,7 @@ void Client::disconnect() {
   }
 }
 
+/*
 void Client::chatLoop() {
   while (connected) {
     std::string msg;
@@ -35,7 +37,13 @@ void Client::chatLoop() {
   }
   disconnect();
 }
+*/
 
+void receive_file(int client_sock_fd) {
+    // receive file and check, ki aslo
+}
+
+/*
 void receive_file(int client_sock_fd) {
   while (true) {
     size_t file_size;
@@ -75,7 +83,9 @@ void receive_file(int client_sock_fd) {
     delete[] file_buffer;
   }
 }
+*/
 
+/*
 void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
   // Event-driven: wait for "file" message from server, then receive file
   while (connected) {
@@ -105,7 +115,32 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
     // Add more events as needed
   }
 }
+*/
 
+// Send file to server
+bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) return false;
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+
+    std::string fname = std::filesystem::path(path).filename();
+    std::string ext = std::filesystem::path(path).extension().string();
+    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    return meta.send_on_socket(sock_fd);
+}
+
+// Receive file from server
+FileMeta receive_file_from_server(int sock_fd) {
+    return FileMeta::recv_from_socket(sock_fd);
+}
+
+/*
 void Client::sendSubmission() { // need to check later
   if (!connected)
     return;
@@ -139,8 +174,10 @@ void Client::sendSubmission() { // need to check later
   infile.close();
   std::cout << "Submission sent!\n";
 }
+*/
 
-void Client::updateAccountInfo() {
+
+void Client::updateAccountInfo() { // kivabe implement korbo ???
   if (!connected)
     return;
   std::string msg = "UPDATE_ACCOUNT";
