@@ -6,6 +6,7 @@
 
 namespace Ui {
 class StudentModule;
+extern StudentModule* studentModulePointer; // ekhan e ???????????????
 }
 
 class StudentModule : public QMainWindow
@@ -28,6 +29,12 @@ private:
     Ui::StudentModule *ui;
     void ruleBookReceived();
     IDE *ideEditor;
+
+signals:
+    void rulebookArrived(); // Signal to notify rulebook received
+
+// public slots:
+//     void ruleBookReceived();
 };
 
 #endif // STUDENTMODULE_H

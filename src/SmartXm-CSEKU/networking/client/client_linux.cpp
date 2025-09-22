@@ -119,6 +119,7 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
 */
 
 // new
+extern StudentModule *studentModulePointer; // Declare somewhere accessible
 
 void file_receive_loop(int sock_fd) {
     try {
@@ -138,6 +139,22 @@ void file_receive_loop(int sock_fd) {
             std::string save_name;
             if (meta.message == "rulebook") {
                 save_name = "./examResources/rulebook." + meta.extension;
+
+                if(studentModulePointer){
+                    std::ofstream ofs(save_name, std::ios::binary);
+                    if (ofs) {
+                        ofs.write(meta.file_data.data(), meta.file_data.size());
+                        ofs.close();
+                        // Notify UI (in main thread)
+                        if (studentModulePointer)
+                            QMetaObject::invokeMethod(
+                                studentModulePointer,
+                                "rulebookArrived", // signal, not slot!
+                                Qt::QueuedConnection
+                                );
+                    }
+                }
+
             } else if (meta.message == "question") {
                 save_name = "./examResources/questions." + meta.extension;
             } else if (meta.message == "extra") {
