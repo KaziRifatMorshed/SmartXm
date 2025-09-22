@@ -6,16 +6,16 @@
 #include <filesystem>
 
 #ifdef _WIN32
-#include <windows.h>
-#include <io.h>
-#define popen _popen
-#define pclose _pclose
+     #include <windows.h>
+     #include <io.h>
+     #define popen _popen
+     #define pclose _pclose
 #else
-#include <unistd.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <pty.h>
-#include <fcntl.h>
+     #include <unistd.h>
+     #include <sys/wait.h>
+     #include <signal.h>
+     #include <pty.h>
+     #include <fcntl.h>
 
 #endif
 
@@ -107,7 +107,7 @@ private:
           runtimeError = false;
 
 #ifdef _WIN32
-          std::string fullCmd = exeCommand + " < input.txt > output.txt 2>error.txt";
+          std::string fullCmd = exeCommand + " < input.txt > output.txt 2>>error.txt";
 
           FILE *pipe = _popen(fullCmd.c_str(), "r");
           if (!pipe)
@@ -126,7 +126,7 @@ private:
                runtimeError = exitCode;
 
 #else
-          std::string fullCmd = exeCommand + " < input.txt";
+          std::string fullCmd = exeCommand + " < input.txt >output.txt 2>>error.txt";
 
           FILE *pipe = popen(fullCmd.c_str(), "r");
           if (!pipe)
@@ -154,15 +154,13 @@ public:
 
      void run()
      {
-          std::ofstream fout("error.txt", std::ios::out);
-          fout << "Compilation and execution are successful.\n"
-               << std::endl;
-          fout.close();
+          std::ofstream fout("error.txt", std::ios::trunc);
+        
           std::ofstream("output.txt", std::ios::trunc);
           if (currentFile.empty())
           {
 
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Error: No file specified.\n"
                     << std::endl;
 
@@ -172,7 +170,7 @@ public:
 
           if (!std::filesystem::exists(currentFile))
           {
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Error : File '" << currentFile << "' does not exist.\n";
                fout.close();
 
@@ -180,7 +178,7 @@ public:
           }
           if (!std::filesystem::exists("input.txt"))
           {
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Error : File '" << "input.txt" << "' does not exist.\n";
                fout.close();
                return;
@@ -190,7 +188,7 @@ public:
 
           if (ext != "c" && ext != "cpp" && ext != "c++" && ext != "py")
           {
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Error: Unsupported file type " << ext << ".\n";
                fout.close();
                return;
@@ -198,7 +196,7 @@ public:
 
           if (!checkCompiler(ext))
           {
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Error: Required compiler/interpreter not found for ." << ext << " files\n";
 
                if (ext == "c" || ext == "cpp" || ext == "c++")
@@ -236,8 +234,9 @@ private:
           compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 
 #else
-          exeFile = "./ \"" + directoryPath + filename + "\"";
-          compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+          exeFile = "\"" + directoryPath +"./"+ filename + "\"";
+          compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+
 #endif
 
           std::string compileOutput = executeCommand(compileCmd);
@@ -247,7 +246,7 @@ private:
                std::string compilationOutput = "Compilation Output:\n\n";
                compilationOutput += compileOutput;
 
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << compilationOutput << std::endl;
                fout.close();
 
@@ -259,7 +258,7 @@ private:
 
           if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
           {
-               std::ofstream fout("error.txt", std::ios::out);
+               std::ofstream fout("error.txt", std::ios::app);
                fout << "Compilation Failed!" << std::endl;
                fout.close();
                return;
@@ -269,23 +268,32 @@ private:
           std ::string error = executeExeFile(exeFile, exitCode);
           if (exitCode)
           {
+               #ifdef _WIN32
                if (exitCode == 1)
                {
-                    std::ofstream fout("error.txt", std::ios::out);
-                    fout << "Execution command error: \n";
+                    std::ofstream fout("error.txt", std::ios::app);
+                    fout << "Execution command error.\n";
                     fout << error;
                     fout << std::endl;
                     fout.close();
                }
                else
                {
-                    std::ofstream fout("error.txt", std::ios::out);
+                    std::ofstream fout("error.txt", std::ios::app);
                     fout << "Runtime error: \n\n";
                     fout << "Runtime error occured with exit code: " << exitCode;
                     fout << std::endl;
                     fout.close();
                }
+               #endif
                return;
+          }
+          else
+          {
+               std::ofstream fout("error.txt", std::ios::app);
+                 fout << "Compilation and execution are successful.\n"
+               << std::endl;
+               fout.close();
           }
      }
      void runPythonFile()
@@ -304,6 +312,13 @@ private:
           if (exitCode)
           {
                return;
+          }
+           else
+          {
+               std::ofstream fout("error.txt", std::ios::app);
+                 fout << "Compilation and execution are successful.\n"
+               << std::endl;
+               fout.close();
           }
      }
 };

@@ -4,7 +4,11 @@ using namespace std;
 
 int main()
 {
-     int n;
-     cin>>n;
-     cout<<n*n<<endl;
+     int a,b;
+     cin>>a>>b;
+     int c=115;
+     
+    int arr[a];
+    cout<<arr[c]<<endl;
+     
 }

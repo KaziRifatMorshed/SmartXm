@@ -1,6 +1,2 @@
-Compilation Output:
+Compilation and execution are successful.
 
-/usr/bin/ld: cannot open output file ./: Is a directory
-collect2: error: ld returned 1 exit status
-
-Command failed with exit code: 256
