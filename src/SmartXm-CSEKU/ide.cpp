@@ -20,9 +20,9 @@
 #include <QProcess>
 #include <QFontMetricsF>
 #include <QWheelEvent>
-#include <Qsci/qscilexercpp.h>
-#include <Qsci/qscilexerpython.h>
-#include <QFont>
+// #include <Qsci/qsciscintilla.h>
+// #include <Qsci/qscilexercpp.h>
+// #include <Qsci/qscilexerpython.h>
 #include <string>
 #include <QString>
 #include <iostream>

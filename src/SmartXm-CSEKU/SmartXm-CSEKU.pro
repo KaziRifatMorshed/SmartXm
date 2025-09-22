@@ -30,6 +30,7 @@ HEADERS += \
     db_sqlite.h \
     db_xampp.h \
     ide.h \
+    networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
     studentmodule.h \
