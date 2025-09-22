@@ -6,7 +6,13 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
+#include "networking/FileMeta.h"
 #include "Msg.h"
+#include <filesystem>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <ctime>
 
 
 bool Server::running = false;
@@ -235,41 +241,81 @@ std::string Server::fetchLocalIP() {
     return found;
 }
 
-bool Server::sendFileToAllClients(std::string path) {
+/*
+bool Server::sendFileToAllClients(std::string path) { // might decricate later
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Could not open file: " << path << std::endl;
         return false;
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string fileContent = buffer.str();
-    size_t fileSize = fileContent.size();
+ std::stringstream buffer;
+ buffer << file.rdbuf();
+ std::string fileContent = buffer.str();
+ size_t fileSize = fileContent.size();
 
-    std::lock_guard<std::mutex> lock(clientsMutex);
-    for (auto& client : clients) {
-        int client_socket = client.socfd;
+ std::lock_guard<std::mutex> lock(clientsMutex);
+ for (auto& client : clients) {
+     int client_socket = client.socfd;
 
-        // 1. Send file size
-        size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
-        if (bytesSent != sizeof(fileSize)) {
-            std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
-            continue;
-        }
+     // 1. Send file size
+     size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
+     if (bytesSent != sizeof(fileSize)) {
+         std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
+         continue;
+     }
 
-        // 2. Send file content
-        bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
-        if (bytesSent != fileSize) {
-            std::cerr << "Failed to send file content to client " << client.clientName << std::endl;
-            continue;
-        }
+     // 2. Send file content
+     bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
+     if (bytesSent != fileSize) {
+         std::cerr << "Failed to send file content to client " << client.clientName << std::endl;
+         continue;
+     }
 
-        std::cout << "File '" << path << "' sent to client " << client.clientName << std::endl;
-    }
+     std::cout << "File '" << path << "' sent to client " << client.clientName << std::endl;
+ }
 
-    return true;
+ return true;
+}
+*/
+
+
+// new
+
+// send to specific client
+bool Server::sendFileToClient(int client_sock, const std::string path, const std::string msg) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) return false;
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+
+    std::string fname = std::filesystem::path(path).filename();
+    std::string ext = std::filesystem::path(path).extension().string();
+    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    return meta.send_on_socket(client_sock);
 }
 
+// Broadcast to all
+bool Server::sendFileToAllClients(const std::string path, const std::string msg) {
+    std::lock_guard<std::mutex> lock(clientsMutex);
+    bool all_ok = true;
+    for (auto& client : clients) {
+        if (!sendFileToClient(client.socfd, path, msg)) {
+            std::cerr << "Failed to send to " << client.clientName << "\n";
+            all_ok = false;
+        }
+    }
+    return all_ok;
+}
+
+// Receive from a client (example, e.g. for submissions)
+FileMeta Server::receiveFileFromClient(int client_sock) {
+    return FileMeta::recv_from_socket(client_sock);
+}
 
 #endif
