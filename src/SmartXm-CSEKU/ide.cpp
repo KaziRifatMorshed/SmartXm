@@ -27,9 +27,21 @@
 #include <QString>
 #include <iostream>
 
-IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
-    ui->setupUi(this);
+IDE* IDE::ideInstance = nullptr;
 
+IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE)
+{
+    ui->setupUi(this);
+    initialize();
+}
+
+IDE::~IDE()
+{
+    delete ui;
+}
+
+void IDE::initialize()
+{
     ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
     ui->Editor->setFont(QFont("Monospace"));
@@ -68,8 +80,6 @@ IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
 
     loadPdfInQuesTab(ui->ques_tab, "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/questions.pdf");
 }
-
-IDE::~IDE() { delete ui; }
 
 void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
 {
