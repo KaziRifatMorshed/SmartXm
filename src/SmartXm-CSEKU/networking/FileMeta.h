@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <iostream>
 
 class FileMeta {
 public:
@@ -94,6 +95,7 @@ public:
 
     // Receive and deserialize FileMeta object from a socket
     static FileMeta recv_from_socket(int sock_fd) {
+        std::cout << "processing a received file from server" << std::endl;
         uint64_t total_size = 0;
         size_t recvd = 0;
         // Read the size of the incoming data

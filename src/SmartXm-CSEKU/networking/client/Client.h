@@ -18,6 +18,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <networking/FileMeta.h>
 
 #define CLIENT_PORT 8080
 #define CLIENT_BUFFER_SIZE 1024
@@ -56,6 +57,9 @@ public:
     void storeLoginInfoToCache(); // client will be login for 3 hours; exceeding 3 hour will clear cache
     bool checkLoginInfoInCache(); //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later
+
+    // FileMeta receive_file_from_server(int sock_fd);
+    // bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg);
 
 protected:
     Client();
