@@ -318,12 +318,17 @@ bool Server::sendFileToAllClients(const FileMeta& meta) {
         for (const auto& c : clients) sockets.push_back(c.socfd);
     }
     bool all_ok = true;
+    std::vector<std::thread> workers;
     for (int sock : sockets) {
+        workers.emplace_back([&, sock]() {
+            // meta.send_on_socket(sock);
         if (!meta.send_on_socket(sock)) {
             std::cerr << "Failed to send FileMeta to client socket: " << sock << "\n";
             all_ok = false;
         }
+        });
     }
+    for (auto& t : workers) t.detach();
     return all_ok;
 }
 
