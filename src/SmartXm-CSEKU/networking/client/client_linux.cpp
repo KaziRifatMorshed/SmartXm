@@ -134,17 +134,18 @@ void file_receive_loop(int sock_fd) {
                       << std::endl;
             std::cout << "[FileReceiver] Server message: " << meta.message << std::endl;
 
-                   // Use meta.message as the file type/purpose indicator
+            // Use meta.message as the file type/purpose indicator
             std::string save_name;
             if (meta.message == "rulebook") {
-                save_name = "rulebook.pdf";
+                save_name = "./examResources/rulebook." + meta.extension;
             } else if (meta.message == "question") {
-                save_name = "questions.pdf";
-            } else if (meta.message == "notice") {
-                save_name = "notice.txt";
-            } else {
-                save_name = meta.filename; // fallback to original filename
+                save_name = "./examResources/questions." + meta.extension;
+            } else if (meta.message == "extra") {
+                save_name = "./examResources/notice." + meta.extension;
             }
+            // else { // kisu korbo na
+            //     save_name = meta.filename; // fallback to original filename
+            // }
 
             std::ofstream ofs(save_name, std::ios::binary);
             if (!ofs) {
