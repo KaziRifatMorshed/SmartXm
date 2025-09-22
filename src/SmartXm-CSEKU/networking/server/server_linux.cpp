@@ -15,39 +15,40 @@
 #include <ctime>
 
 
-// bool Server::running = false;
+bool Server::running = false;
 Server* Server::serverInstance = nullptr;
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
 { // constructor
-    // std::cout << "Local Server Constructor invoked" << std::endl;
+    std::cout << "Local Server Constructor invoked" << std::endl;
     localIP = fetchLocalIP();
-    Server::start();
     status = "CREATED";
+    Server::start();
 }
 
 Server::~Server() { // destructor
     std::cout << "Server Destructor invoked" << std::endl;
     stop();
-    // running = false;
+    running = false;
     serverInstance = nullptr;
     status = "DESTROYED";
 }
 
 Server* Server::createServer(){ // Singleton approach // Create Instance
-    // if(!running){
-    if (serverInstance == nullptr) {
-        std::cout << "No server instance found, new server starting..." << std::endl;
+    if(!running){
+        std::cout << "No server instance found, NEW server starting..." << std::endl;
         serverInstance = new Server();
-        // running = true;
+        running = true;
     }
+    std::cout << "Server instance exists" << std::endl;
     return Server::serverInstance;
 }
 
 
 int Server::start() { // start server; Constructor will call it only
-    if (serverInstance != nullptr) return 0;
+    if (running) return 0;
+    std::cout << "Starting server..." << std::endl;
     int opt = 1;
     struct sockaddr_in address;
     // socklen_t addrlen = sizeof(address);
@@ -81,7 +82,7 @@ int Server::start() { // start server; Constructor will call it only
     }
 
     status = "RUNNING";
-    // running = true;
+    running = true;
 
     std::cout << "====== SmartXm-CSEKU LOCAL SERVER ======" << std::endl;
     std::cout << "Server will listen on port " << port << std::endl;
@@ -96,8 +97,8 @@ int Server::start() { // start server; Constructor will call it only
 }
 
 void Server::stop() {
-    if (serverInstance == nullptr) return;
-    // running = false;
+    if (!running) return;
+    running = false;
     status = "STOPPED";
     std::cout << "----- STOPPING SERVER -----" << std::endl;
 
@@ -129,12 +130,12 @@ std::string Server::getLocalIP() {
 }
 
 void Server::acceptLoop() { // accept new connections
-    while (serverInstance != nullptr) {
+    while (running) {
         struct sockaddr_in client_addr;
         socklen_t client_addr_len = sizeof(client_addr);
 
         int client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if (serverInstance != nullptr) break;
+        if (running) break;
         if (client_socket < 0) {
             if (serverInstance == nullptr) perror("failed to accept connection ???");
             continue;
@@ -186,8 +187,8 @@ void Server::acceptLoop() { // accept new connections
 
 void Server::handleClient(int client_socket) { // after client is accepted, this needs
     Msg msg;
-    // while (running) {
-    while (serverInstance != nullptr) {
+    while (running) {
+    // while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
         if (valread <= 0) {
             std::cout << "Client (socket_id=" << client_socket << ") disconnected!" << std::endl;
@@ -209,8 +210,8 @@ void Server::handleClient(int client_socket) { // after client is accepted, this
 }
 
 void Server::printClientsLoop(int intervalSeconds) {
-    // while (running) {
-    while (serverInstance != nullptr) {
+    while (running) {
+    // while (serverInstance != nullptr) {
         {
             std::lock_guard<std::mutex> lock(clientsMutex);
             std::cout << "-----------------------\nConnected Clients:\n";

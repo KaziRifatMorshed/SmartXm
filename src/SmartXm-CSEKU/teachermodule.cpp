@@ -37,7 +37,6 @@ TeacherModule::~TeacherModule() { delete ui; }
 void TeacherModule::on_StartServer_toolButton_clicked() {
   std::cout << "Start Server button clicked" << std::endl;
   if (server == nullptr) {
-    std::cout << "server == nullptr" << std::endl;
     server = Server::createServer();
     ui->serverStatus_label_2->setText(
         "<html><head/><body><p><span style=\" font-size:18pt;\">Server "
@@ -55,8 +54,8 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
 
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
   std::cout << "Stop Server button clicked" << std::endl;
-  // if (server != nullptr && Server::isRunning()) {
-  if (server != nullptr) {
+  if (server != nullptr && Server::isRunning()) {
+  // if (server != nullptr) {
     std::cout << "trying to stop server..." << std::endl;
     server->stop();
     server = nullptr;
