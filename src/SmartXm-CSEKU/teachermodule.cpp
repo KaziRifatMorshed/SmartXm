@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <iostream>
+#include <fstream>
 
 Server *server;
 QString instructionFileName = "";
@@ -20,7 +21,7 @@ TeacherModule::TeacherModule(QWidget *parent)
       "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
       "NOT STARTED</span></p></body></html>");
 
-ServerConnectedPC_Table:
+// ServerConnectedPC_Table:
   ui->connectedPCwithServer_tableWidget->setRowCount(100);
   for (int var = 0; var < 20; ++var) {
     ui->connectedPCwithServer_tableWidget->setItem(
@@ -114,16 +115,28 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
   if (instructionFileName.length() <= 0) {
     QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
   } else {
-    // send file to all connected clients
-    bool t = server->sendFileToAllClients(
-        instructionFileName.toStdString(),
-        "Rulebook containing instruction provided.");
-    // on successful, show msg
-    if (t) {
-      QMessageBox::information(this, "Success",
-                               "Rulebook sent to all connected clients.");
-    } else {
-      QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
-    }
+      // Prepare file
+      std::ifstream file(instructionFileName.toStdString(), std::ios::binary);
+      if (!file.is_open()) {
+          QMessageBox::warning(this, "failed!", "Rulebook File Open Failed!!!");
+          return;
+      }
+      file.seekg(0, std::ios::end);
+      size_t sz = file.tellg();
+      file.seekg(0, std::ios::beg);
+      std::vector<char> filedata(sz);
+      file.read(filedata.data(), sz);
+
+      std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
+      std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
+      std::string msg = "rulebook"; // or "question", etc.
+
+      FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+      bool t = server->sendFileToAllClients(meta);
+      if (t) {
+          QMessageBox::information(this, "Success", "Rulebook sent to all clients.");
+      } else {
+          QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
+      }
   }
 }

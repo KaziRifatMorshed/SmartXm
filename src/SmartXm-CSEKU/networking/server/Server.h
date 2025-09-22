@@ -21,8 +21,8 @@ public:
     static bool isRunning() {return running;};
     std::string getStatus();
     std::string getLocalIP();
-    bool sendFileToClient(int client_sock, std::string path, std::string msg);
-    bool sendFileToAllClients(std::string path, std::string msg);
+    bool sendFileToClient(int client_sock, std::string path, std::string msg); // bad, need FileMeta
+    bool sendFileToAllClients(const FileMeta& meta); // build successful
     FileMeta receiveFileFromClient(int client_sock);
     void printClientsLoop(int intervalSeconds = 5);
     void stop();

@@ -310,62 +310,21 @@ bool Server::sendFileToClient(int client_sock, const std::string path, const std
 }
 
 // Broadcast to all // might be easier
-// bool Server::sendFileToAllClients(const std::string path, const std::string msg) { // this works but too slow
-//     std::lock_guard<std::mutex> lock(clientsMutex);
-//     bool all_ok = true;
-//     for (auto& client : clients) {
-//         if (!sendFileToClient(client.socfd, path, msg)) {
-//             std::cerr << "Failed to send to " << client.clientName << "\n";
-//             all_ok = false;
-//         }
-//     }
-//     return all_ok;
-// }
-bool Server::sendFileToAllClients(const std::string path, const std::string msg) { // need to test
-    // Prepare file meta and open file
-    std::ifstream file(path, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) return false;
-    size_t file_size = file.tellg();
-    file.seekg(0);
-
-    std::string fname = std::filesystem::path(path).filename();
-    std::string ext = std::filesystem::path(path).extension().string();
-    if (!ext.empty() && ext[0] == '.') ext = ext.substr(1);
-
-    FileMeta meta(fname, ext, std::time(nullptr), {}, msg);
-    meta.file_data.clear(); // Don't keep whole file in memory!
-
-    // Snapshot client sockets
+bool Server::sendFileToAllClients(const FileMeta& meta) {
+    // Snapshot sockets
     std::vector<int> sockets;
     {
         std::lock_guard<std::mutex> lock(clientsMutex);
-        for (auto& c : clients) sockets.push_back(c.socfd);
+        for (const auto& c : clients) sockets.push_back(c.socfd);
     }
-
-    // Send meta (with file size, but not file_data!), then file in chunks
+    bool all_ok = true;
     for (int sock : sockets) {
-        // 1. Send meta (without file_data): you may want to add file_size to meta/message
-        if (!meta.send_on_socket(sock)) continue;
-
-        // 2. Send file in chunks
-        file.clear();
-        file.seekg(0);
-        const size_t CHUNK = 65536;
-        std::vector<char> buffer(CHUNK);
-        size_t sent = 0;
-        while (sent < file_size) {
-            size_t to_read = std::min(CHUNK, file_size - sent);
-            file.read(buffer.data(), to_read);
-            size_t written = 0;
-            while (written < to_read) {
-                ssize_t n = send(sock, buffer.data() + written, to_read - written, MSG_NOSIGNAL);
-                if (n <= 0) break;
-                written += n;
-            }
-            sent += to_read;
+        if (!meta.send_on_socket(sock)) {
+            std::cerr << "Failed to send FileMeta to client socket: " << sock << "\n";
+            all_ok = false;
         }
     }
-    return true;
+    return all_ok;
 }
 
 // Receive from a client (example, e.g. for submissions)
