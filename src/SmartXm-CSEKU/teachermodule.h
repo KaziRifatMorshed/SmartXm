@@ -26,6 +26,8 @@ private slots:
 
     void on_instruction_send_pushButton_clicked();
 
+    void on_testExam_pushButton_3_clicked();
+
 private:
     Ui::TeacherModule *ui;
 };
