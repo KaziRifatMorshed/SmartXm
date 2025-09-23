@@ -156,7 +156,7 @@ void file_receive_loop(int sock_fd) {
                     }
                 }
 
-            } else if (meta.message == "question") {
+            } else if (meta.message == "questions.tar") {
                 save_name = "./examResources/questions." + meta.extension;
             } else if (meta.message == "extra") {
                 save_name = "./examResources/notice." + meta.extension;

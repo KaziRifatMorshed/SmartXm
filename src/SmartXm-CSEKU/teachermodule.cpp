@@ -140,3 +140,36 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
       }
   }
 }
+
+void TeacherModule::on_testExam_pushButton_3_clicked()
+{
+    QString filter = "Tar (*.tar)";
+
+    QString quesFilePath = QFileDialog::getOpenFileName(this,
+                                                        "Select a tar file containing question to "
+                                                        "sent it to all connected clients",
+                                                        QDir::homePath(), filter);
+    std::ifstream file(quesFilePath.toStdString(), std::ios::binary);
+    if (!file.is_open()) {
+        QMessageBox::warning(this, "failed!", "Questions File Open Failed!!!");
+        return;
+    }
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+
+    std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
+    std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
+    std::string msg = "questions.tar"; // or "question", etc.
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    bool t = server->sendFileToAllClients(meta);
+    if (t) {
+        QMessageBox::information(this, "Success", "Questions tar file sent to all clients.");
+    } else {
+        QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
+    }
+}
+
