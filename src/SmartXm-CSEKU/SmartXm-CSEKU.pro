@@ -9,6 +9,7 @@ CONFIG += c++23
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
     networking/client/client.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    dependencies/TarHandler/tarhandler.h \
     ide.h \
     networking/FileMeta.h \
     networking/client/Client.h \

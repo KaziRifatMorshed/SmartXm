@@ -77,11 +77,9 @@ void IDE::initialize()
     ui->menuFile->addAction(saveAction);
     ui->menuFile->addAction(runAction);
     ui->menuFile->addAction(loadAction);
-
-    loadPdfInQuesTab(ui->ques_tab, "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/questions.pdf");
 }
 
-void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
+void IDE::loadPdfInQuesTab(QWidget* ques_tab, std::string pdfFilePath)
 {
     if (ques_tab->layout()) {
         QLayoutItem* item;
@@ -95,7 +93,7 @@ void IDE::loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath)
     QPdfDocument* quesPdfDoc = new QPdfDocument(ques_tab);
     QPdfView* quesPdfView = new QPdfView(ques_tab);
 
-    quesPdfDoc->load(pdfFilePath);
+    quesPdfDoc->load(QString(pdfFilePath.c_str()));
     quesPdfView->setDocument(quesPdfDoc);
 
     quesPdfView->setPageMode(QPdfView::PageMode::MultiPage);
@@ -246,7 +244,59 @@ void IDE::openFile(QString path)
     file.close();
 }
 
+void IDE::loadInput(std::string path)
+{
+    QString fileName = QString(path.c_str());
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+
+    ui->input_textEdit->setText(text);
+
+    file.close();
+}
+
+void IDE::loadOutput(std::string path)
+{
+    QString fileName = QString(path.c_str());
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream in(&file);
+    QString text = in.readAll();
+
+    ui->output_textEdit->setText(text);
+
+    file.close();
+}
+
 void IDE::loadProblem()
 {
-    // TODO: Implement load problem functionality
+    std::string path = "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/230201/";
+
+    loadPdfInQuesTab(ui->ques_tab, path + "statement");
+    loadInput(path + "sample_in");
+    loadOutput(path + "sample_out");
 }

@@ -7,6 +7,7 @@
 #include <studentmodule.cpp>
 #include <networking/FileMeta.h>
 #include <iomanip>
+#include "dependencies/TarHandler/tarhandler.h"
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -171,6 +172,8 @@ void file_receive_loop(int sock_fd) {
                 ofs.write(meta.file_data.data(), meta.file_data.size());
                 ofs.close();
                 std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
+
+                TarHandler::extractTar("./examResources/230201/", "questions.tar");
             }
         }
     } catch (const std::exception& e) {
