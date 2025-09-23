@@ -26,6 +26,7 @@
 #include <string>
 #include <QString>
 #include <iostream>
+#include "codeRunner.cpp"
 
 IDE* IDE::ideInstance = nullptr;
 
@@ -208,7 +209,32 @@ void IDE::save()
 
 void IDE::run()
 {
-    // TODO: Implement run functionality
+    save();
+
+    QFile file(QString("input.txt"));
+
+    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream out(&file);
+    QString text = ui->input_textEdit->toPlainText();
+    out << text;
+    file.close();
+
+    CodeRunner runner;
+    runner.setCurrentFile(currentFile.toStdString());
+    runner.run();
+
+    QString outputText = getFileContent(QString("output.txt"));
+
+    ui->output_textEdit->setPlainText(outputText);
+
+    QString debugText = getFileContent(QString("error.txt"));
+
+    ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
 }
 
 void IDE::openFile(QString path)
