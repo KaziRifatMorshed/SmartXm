@@ -37,6 +37,7 @@ bool TarHandler::extractTar(string path, string tarName)
         cerr << "Failed to extract tar archive." << endl;
         return false;
     }
+    cout << "File extracted to: " << tarName << endl;
     return true;
 }
 

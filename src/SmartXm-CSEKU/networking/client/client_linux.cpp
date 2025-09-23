@@ -173,7 +173,9 @@ void file_receive_loop(int sock_fd) {
                 ofs.close();
                 std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
 
-                TarHandler::extractTar("./examResources/230201/", "questions.tar");
+                if (meta.message == "questions.tar") {
+                    TarHandler::extractTar("examResources", "questions.tar");
+                }
             }
         }
     } catch (const std::exception& e) {

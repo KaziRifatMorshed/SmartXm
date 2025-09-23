@@ -296,7 +296,7 @@ void IDE::loadProblem()
 {
     std::string path = "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/230201/";
 
-    loadPdfInQuesTab(ui->ques_tab, path + "statement");
-    loadInput(path + "sample_in");
-    loadOutput(path + "sample_out");
+    loadPdfInQuesTab(ui->ques_tab, path + "questions.pdf");
+    loadInput(path + "sample_in.txt");
+    loadOutput(path + "sample_out.txt");
 }
