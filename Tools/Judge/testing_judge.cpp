@@ -30,9 +30,9 @@ bool compileCode(const string &file, const string &lang) {
     return (res == 0);
 }
 
-// Run program with input/output redirection and timeout// Run program with input/output redirection, detect runtime error
-int runWithRuntimeError(string cmd, string inputFile,
-                        string outputFile) {
+// Run program with input/output redirection and timeout
+int runWithTimeout(string cmd, string inputFile,
+                   string outputFile, int timeLimitMS) {
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
     ZeroMemory(&si, sizeof(si));
@@ -69,8 +69,16 @@ int runWithRuntimeError(string cmd, string inputFile,
         return -1;
     }
 
-    // Wait until process finishes (no timeout)
-    WaitForSingleObject(pi.hProcess, INFINITE);
+    DWORD result = WaitForSingleObject(pi.hProcess, timeLimitMS);
+
+    if (result == WAIT_TIMEOUT) {
+        TerminateProcess(pi.hProcess, 1);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        CloseHandle(hInput);
+        CloseHandle(hOutput);
+        return 2; // TLE
+    }
 
     DWORD exitCode;
     GetExitCodeProcess(pi.hProcess, &exitCode);
@@ -80,11 +88,9 @@ int runWithRuntimeError(string cmd, string inputFile,
     CloseHandle(hInput);
     CloseHandle(hOutput);
 
-    // Return 0 if success, 1 if runtime error
     if (exitCode == 0) return 0;
-    else return 1;
+    else return 1; // runtime error
 }
-
 
 // Normalize output: remove extra spaces, tabs, blank lines
 string normalize(const string &s) {
@@ -130,7 +136,7 @@ int main() {
     else
         cmd = "program.exe";
 
-    int status = runWithRuntimeError(cmd, inputFile, outputFile); // 2 sec limit
+    int status = runWithTimeout(cmd, inputFile, outputFile, 2000); // 2 sec limit
 
     if (status == 2) {
         cout << "Time Limit Exceeded\n";
