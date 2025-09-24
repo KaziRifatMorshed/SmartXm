@@ -26,7 +26,7 @@
 #include <string>
 #include <QString>
 #include <iostream>
-#include "codeRunner.cpp"
+#include "codeRunner.h"
 
 IDE* IDE::ideInstance = nullptr;
 
