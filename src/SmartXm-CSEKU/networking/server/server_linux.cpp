@@ -6,7 +6,13 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
+#include "networking/FileMeta.h"
 #include "Msg.h"
+#include <filesystem>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <ctime>
 
 
 bool Server::running = false;
@@ -14,30 +20,35 @@ Server* Server::serverInstance = nullptr;
 
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(-1)
-{
-    // std::cout << "Local Server Constructor invoked" << std::endl;
+{ // constructor
+    std::cout << "Local Server Constructor invoked" << std::endl;
     localIP = fetchLocalIP();
+    status = "CREATED";
     Server::start();
 }
 
-Server::~Server() {
-    // std::cout << "Destructor invoked" << std::endl;
+Server::~Server() { // destructor
+    std::cout << "Server Destructor invoked" << std::endl;
     stop();
+    running = false;
     serverInstance = nullptr;
+    status = "DESTROYED";
 }
 
-Server* Server::createServer(){ // Singleton approach
+Server* Server::createServer(){ // Singleton approach // Create Instance
     if(!running){
-        std::cout << "No server instance found, new server starting..." << std::endl;
+        std::cout << "No server instance found, NEW server starting..." << std::endl;
         serverInstance = new Server();
         running = true;
     }
+    std::cout << "Server instance exists" << std::endl;
     return Server::serverInstance;
 }
 
 
-int Server::start() {
+int Server::start() { // start server; Constructor will call it only
     if (running) return 0;
+    std::cout << "Starting server..." << std::endl;
     int opt = 1;
     struct sockaddr_in address;
     // socklen_t addrlen = sizeof(address);
@@ -73,10 +84,10 @@ int Server::start() {
     status = "RUNNING";
     running = true;
 
-    std::cout << "Welcome to SmartXm-CSEKU LOCAL SERVER" << std::endl;
+    std::cout << "====== SmartXm-CSEKU LOCAL SERVER ======" << std::endl;
     std::cout << "Server will listen on port " << port << std::endl;
     std::cout << "Server local IP (give this to client): " << localIP << std::endl;
-    std::cout << "Waiting for client connections..." << std::endl;
+    // std::cout << "Waiting for client connections..." << std::endl;
 
     // Start threads
     acceptThread = std::thread(&Server::acceptLoop, this);
@@ -89,7 +100,7 @@ void Server::stop() {
     if (!running) return;
     running = false;
     status = "STOPPED";
-    std::cout << "STOPPING SERVER" << std::endl;
+    std::cout << "----- STOPPING SERVER -----" << std::endl;
 
     // Close the listening socket to unblock accept()
     close(server_fd);
@@ -101,7 +112,7 @@ void Server::stop() {
     }
     clients.clear();
 
-    std::cout << "SERVER SHOULD BE STOPPED" << std::endl;
+    std::cout << "----- SERVER SHOULD BE STOPPED -----" << std::endl;
     return;
 }
 
@@ -118,15 +129,15 @@ std::string Server::getLocalIP() {
     return localIP;
 }
 
-void Server::acceptLoop() {
+void Server::acceptLoop() { // accept new connections
     while (running) {
         struct sockaddr_in client_addr;
         socklen_t client_addr_len = sizeof(client_addr);
 
         int client_socket = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if (!running) break;
+        if (!running) break; // this !!!
         if (client_socket < 0) {
-            if (running) perror("failed to accept connection");
+            if (serverInstance == nullptr) perror("failed to accept connection ???");
             continue;
         }
 
@@ -174,9 +185,10 @@ void Server::acceptLoop() {
     }
 }
 
-void Server::handleClient(int client_socket) {
+void Server::handleClient(int client_socket) { // after client is accepted, this needs
     Msg msg;
     while (running) {
+    // while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
         if (valread <= 0) {
             std::cout << "Client (socket_id=" << client_socket << ") disconnected!" << std::endl;
@@ -187,6 +199,7 @@ void Server::handleClient(int client_socket) {
         }
     }
     close(client_socket);
+
     // Remove client from list    
     std::lock_guard<std::mutex> lock(clientsMutex);
     clients.erase(std::remove_if(clients.begin(), clients.end(),
@@ -198,6 +211,7 @@ void Server::handleClient(int client_socket) {
 
 void Server::printClientsLoop(int intervalSeconds) {
     while (running) {
+    // while (serverInstance != nullptr) {
         {
             std::lock_guard<std::mutex> lock(clientsMutex);
             std::cout << "-----------------------\nConnected Clients:\n";
@@ -217,7 +231,7 @@ std::string Server::fetchLocalIP() {
     std::string found = "error";
 
     if (getifaddrs(&ifap) == -1) {
-        perror("getifaddrs");
+        perror("getifaddrs error");
         return found;
     }
 
@@ -235,41 +249,92 @@ std::string Server::fetchLocalIP() {
     return found;
 }
 
-bool Server::sendFileToAllClients(std::string path) {
+/*
+bool Server::sendFileToAllClients(std::string path) { // might decricate later
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Could not open file: " << path << std::endl;
         return false;
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string fileContent = buffer.str();
-    size_t fileSize = fileContent.size();
+ std::stringstream buffer;
+ buffer << file.rdbuf();
+ std::string fileContent = buffer.str();
+ size_t fileSize = fileContent.size();
 
-    std::lock_guard<std::mutex> lock(clientsMutex);
-    for (auto& client : clients) {
-        int client_socket = client.socfd;
+ std::lock_guard<std::mutex> lock(clientsMutex);
+ for (auto& client : clients) {
+     int client_socket = client.socfd;
 
-        // 1. Send file size
-        size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
-        if (bytesSent != sizeof(fileSize)) {
-            std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
-            continue;
-        }
+     // 1. Send file size
+     size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
+     if (bytesSent != sizeof(fileSize)) {
+         std::cerr << "Failed to send file size to client " << client.clientName << std::endl;
+         continue;
+     }
 
-        // 2. Send file content
-        bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
-        if (bytesSent != fileSize) {
-            std::cerr << "Failed to send file content to client " << client.clientName << std::endl;
-            continue;
-        }
+     // 2. Send file content
+     bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
+     if (bytesSent != fileSize) {
+         std::cerr << "Failed to send file content to client " << client.clientName << std::endl;
+         continue;
+     }
 
-        std::cout << "File '" << path << "' sent to client " << client.clientName << std::endl;
-    }
+     std::cout << "File '" << path << "' sent to client " << client.clientName << std::endl;
+ }
 
-    return true;
+ return true;
+}
+*/
+
+
+// new
+
+// send to specific client
+// kivabe button e implement korbo bujhtesi na
+bool Server::sendFileToClient(int client_sock, const std::string path, const std::string msg) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) return false;
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+
+    std::string fname = std::filesystem::path(path).filename();
+    std::string ext = std::filesystem::path(path).extension().string();
+    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    return meta.send_on_socket(client_sock);
 }
 
+// Broadcast to all // might be easier
+bool Server::sendFileToAllClients(const FileMeta& meta) {
+    // Snapshot sockets
+    std::vector<int> sockets;
+    {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        for (const auto& c : clients) sockets.push_back(c.socfd);
+    }
+    bool all_ok = true;
+    std::vector<std::thread> workers;
+    for (int sock : sockets) {
+        workers.emplace_back([&, sock]() {
+            // meta.send_on_socket(sock);
+        if (!meta.send_on_socket(sock)) {
+            std::cerr << "Failed to send FileMeta to client socket: " << sock << "\n";
+            all_ok = false;
+        }
+        });
+    }
+    for (auto& t : workers) t.detach();
+    return all_ok;
+}
+
+// Receive from a client (example, e.g. for submissions)
+FileMeta Server::receiveFileFromClient(int client_sock) {
+    return FileMeta::recv_from_socket(client_sock);
+}
 
 #endif

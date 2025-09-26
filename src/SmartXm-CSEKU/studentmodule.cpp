@@ -13,11 +13,13 @@ StudentModule::StudentModule(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::StudentModule) {
   ui->setupUi(this);
   ui->openRuleBook_pushButton->setDisabled(
-      false); // after implementation, need to fix it
+      true); // after implementation, need to fix it
 
   // using a button
   QPushButton *examTableActionBtn = new QPushButton("Enter");
   ui->exam_list_tableWidget->setCellWidget(0, 8, examTableActionBtn);
+
+  connect(this, &StudentModule::rulebookArrived, this, &StudentModule::ruleBookReceived);
 }
 
 StudentModule::~StudentModule() { delete ui; }
@@ -73,5 +75,8 @@ void StudentModule::ruleBookReceived() {
 void StudentModule::on_openCodeEditor_pushButton_clicked()
 {
     // open code editor seperate window
+    // this window will not be closed
+    ideEditor = IDE::getInstance(this);
+    ideEditor->show();
 }
 

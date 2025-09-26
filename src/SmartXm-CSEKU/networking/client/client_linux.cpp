@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <QMessageBox>
 #include <studentmodule.cpp>
+#include <networking/FileMeta.h>
+#include <iomanip>
+#include "dependencies/TarHandler/tarhandler.h"
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -25,6 +28,7 @@ void Client::disconnect() {
   }
 }
 
+/*
 void Client::chatLoop() {
   while (connected) {
     std::string msg;
@@ -35,7 +39,13 @@ void Client::chatLoop() {
   }
   disconnect();
 }
+*/
 
+void receive_file(int client_sock_fd) {
+    // receive file and check, ki aslo
+}
+
+/*
 void receive_file(int client_sock_fd) {
   while (true) {
     size_t file_size;
@@ -75,7 +85,9 @@ void receive_file(int client_sock_fd) {
     delete[] file_buffer;
   }
 }
+*/
 
+/*
 void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
   // Event-driven: wait for "file" message from server, then receive file
   while (connected) {
@@ -105,7 +117,97 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
     // Add more events as needed
   }
 }
+*/
 
+// new
+extern StudentModule *studentModulePointer; // Declare somewhere accessible
+
+void file_receive_loop(int sock_fd) {
+    try {
+        while (true) {
+            std::cout << "[FileReceiver] Waiting for file/message from server..." << std::endl;
+            FileMeta meta = FileMeta::recv_from_socket(sock_fd);
+
+            std::cout << "[FileReceiver] Received file: "
+                      << meta.filename
+                      << " (." << meta.extension << "), "
+                      << "size: " << meta.file_data.size() << " bytes, "
+                      << "sent at: " << std::put_time(std::localtime(&meta.sent_time), "%d-%m-%Y %H:%M:%S")
+                      << std::endl;
+            std::cout << "[FileReceiver] Server message: " << meta.message << std::endl;
+
+            // Use meta.message as the file type/purpose indicator
+            std::string save_name;
+            if (meta.message == "rulebook") {
+                save_name = "./examResources/rulebook." + meta.extension;
+
+                if(studentModulePointer){
+                    std::ofstream ofs(save_name, std::ios::binary);
+                    if (ofs) {
+                        ofs.write(meta.file_data.data(), meta.file_data.size());
+                        ofs.close();
+                        // Notify UI (in main thread)
+                        if (studentModulePointer)
+                            QMetaObject::invokeMethod(
+                                studentModulePointer,
+                                "rulebookArrived", // signal, not slot!
+                                Qt::QueuedConnection
+                                );
+                    }
+                }
+
+            } else if (meta.message == "questions.tar") {
+                save_name = "./examResources/questions." + meta.extension;
+            } else if (meta.message == "extra") {
+                save_name = "./examResources/notice." + meta.extension;
+            }
+            // else { // kisu korbo na
+            //     save_name = meta.filename; // fallback to original filename
+            // }
+
+            std::ofstream ofs(save_name, std::ios::binary);
+            if (!ofs) {
+                std::cerr << "[FileReceiver] Failed to write file: " << save_name << std::endl;
+            } else {
+                ofs.write(meta.file_data.data(), meta.file_data.size());
+                ofs.close();
+                std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
+
+                if (meta.message == "questions.tar") {
+                    TarHandler::extractTar("examResources", "questions.tar");
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[FileReceiver] Error or connection closed: " << e.what() << std::endl;
+    }
+}
+// Send file to server
+bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) return false;
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+
+    std::string fname = std::filesystem::path(path).filename();
+    std::string ext = std::filesystem::path(path).extension().string();
+    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    return meta.send_on_socket(sock_fd);
+}
+
+// Receive file from server
+FileMeta receive_file_from_server(int sock_fd) {
+    std::cout << "received a file from server" << std::endl;
+    return FileMeta::recv_from_socket(sock_fd);
+}
+
+
+/*
 void Client::sendSubmission() { // need to check later
   if (!connected)
     return;
@@ -139,8 +241,10 @@ void Client::sendSubmission() { // need to check later
   infile.close();
   std::cout << "Submission sent!\n";
 }
+*/
 
-void Client::updateAccountInfo() {
+
+void Client::updateAccountInfo() { // kivabe implement korbo ???
   if (!connected)
     return;
   std::string msg = "UPDATE_ACCOUNT";
@@ -269,7 +373,8 @@ bool Client::connectToServer(const std::string &ip_addr, int port) {
   // fileReceiverThread.detach();
 
   // std::thread t(&Client::receiveFileLoop, this);
-  std::thread t(receive_file, sock_fd);
+  // std::thread t(receive_file, sock_fd);
+  std::thread t(file_receive_loop, sock_fd);
   t.detach();
 
   return true;
