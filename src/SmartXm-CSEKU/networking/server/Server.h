@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <vector>
 #include "ClientInfo.h"
+#include <networking/FileMeta.h>
 
 class Server {
 public:
@@ -20,9 +21,12 @@ public:
     static bool isRunning() {return running;};
     std::string getStatus();
     std::string getLocalIP();
-    bool sendFileToAllClients(std::string path);
+    bool sendFileToClient(int client_sock, std::string path, std::string msg); // bad, need FileMeta
+    bool sendFileToAllClients(const FileMeta& meta); // build successful
+    FileMeta receiveFileFromClient(int client_sock);
     void printClientsLoop(int intervalSeconds = 5);
     void stop();
+    static std::string fetchLocalIP();
 
 protected:
     Server(int port = 8080, const std::string& secret = "MySuperSecret123x"); // constructor protected e
@@ -41,7 +45,6 @@ private:
 
     void acceptLoop();
     void handleClient(int client_socket);
-    std::string fetchLocalIP();
 
     std::vector<ClientInfo> clients;
     std::vector<ClientInfo> getClients();

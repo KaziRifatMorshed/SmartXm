@@ -1,4 +1,4 @@
-QT       += core gui sql network
+QT       += core gui sql network concurrent pdfwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,14 +9,17 @@ CONFIG += c++23
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    codeRunner.cpp \
+    dependencies/TarHandler/tarhandler.cpp \
+    ide.cpp \
     main.cpp \
     networking/client/client.cpp \
-    networking/client/client3.cpp \
     networking/client/client_linux.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
     studentmodule.cpp \
     teachermodule.cpp \
+    toast.cpp \
     welcomewindow.cpp \
     dependencies/linux/Encryption/encryption.cpp
 
@@ -28,14 +31,19 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    dependencies/TarHandler/tarhandler.h \
+    ide.h \
+    networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
     studentmodule.h \
     teachermodule.h \
+    toast.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    ide.ui \
     studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui

@@ -18,6 +18,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <networking/FileMeta.h>
 
 #define CLIENT_PORT 8080
 #define CLIENT_BUFFER_SIZE 1024
@@ -33,10 +34,10 @@ public:
         return clientInstance;
     }
 
-    Client(const Client&) = delete;
-    Client& operator=(const Client&) = delete;
-    Client(Client&&) = delete;
-    Client& operator=(Client&&) = delete;
+    Client(const Client&) = delete; // i do not understand
+    Client& operator=(const Client&) = delete; // i do not understand
+    Client(Client&&) = delete; // i do not understand
+    Client& operator=(Client&&) = delete; // i do not understand
 
     bool connectToServer(const std::string& ip_addr = "127.0.0.1", int port = CLIENT_PORT);
 
@@ -53,10 +54,12 @@ public:
         return oss.str();
     };
     bool sendLoginInfoToServer();
-    bool receiveLoginAuthFromServer();
     void storeLoginInfoToCache(); // client will be login for 3 hours; exceeding 3 hour will clear cache
     bool checkLoginInfoInCache(); //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later
+
+    // FileMeta receive_file_from_server(int sock_fd);
+    // bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg);
 
 protected:
     Client();

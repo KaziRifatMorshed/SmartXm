@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <teachermodule.h>
 #include <studentmodule.h>
+// #include <ide.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +37,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_connect_to_local_server_pushButton_3_clicked();
+
 private:
     Ui::WelcomeWindow *ui;
     QNetworkAccessManager *m_networkManager;
@@ -43,5 +46,6 @@ private:
 
     TeacherModule *teacherModuleWindow;
     StudentModule *studentModuleWindow;
+    // IDE *ideEditor;
 };
 #endif // WELCOMEWINDOW_H
