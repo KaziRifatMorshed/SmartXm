@@ -6,7 +6,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
-include_directories("C:/Qt/6.9.1/mingw_64/include")
+include_directories("~/Qt/6.9.2/gcc_64/include/")
 
 qt_add_executable(Notepad
     WIN32 MACOSX_BUNDLE
@@ -16,9 +16,16 @@ qt_add_executable(Notepad
     notepad.ui
     toast.h
     toast.cpp
+
+
 )
 
-set(QSCINTILLA_LIB "C:/Qt/6.9.1/mingw_64/lib/libqscintilla2_qt6.a")
+# set(QSCINTILLA_LIB "~/Qt/6.9.2/gcc_64/lib/libqscintilla2_qt6.so")
+# /usr/lib/libqscintilla2_qt6.so.15.2.1
+# /usr/lib/libqscintilla2_qt6.so
+set(QSCINTILLA_LIB "/usr/lib/libqscintilla2_qt6.so")
+# /home/noobcod3r-rtx/Desktop/temp/QScintilla_src-2.14.1/src/
+include_directories("/home/noobcod3r-rtx/Desktop/temp/QScintilla_src-2.14.1/src/")
 
 target_link_libraries(Notepad
     PRIVATE

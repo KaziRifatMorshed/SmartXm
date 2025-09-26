@@ -1,0 +1,3 @@
+// Editor->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
+Editor->setWrapMode(QsciScintilla::WrapNone);
+

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileSystemModel>
+#include <string>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -39,5 +40,9 @@ private:
     void setEditorName(QString name);
     QString getFileExtension(QString fileName);
     void setLexer();
+    void loadProblem();
+    void setStatement(std::string name);
+    void setSampleInput(std::string name);
+    void setSampleOutput(std::string name);
 };
 #endif // NOTEPAD_H
