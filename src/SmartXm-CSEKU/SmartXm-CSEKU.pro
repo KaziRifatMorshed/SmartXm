@@ -10,6 +10,7 @@ CONFIG += c++23
 
 SOURCES += \
     codeRunner.cpp \
+    createormodifyexam.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     Msg.h \
     Student.h \
     TerminalExecuter.h \
+    createormodifyexam.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -43,6 +45,7 @@ HEADERS += \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    createormodifyexam.ui \
     ide.ui \
     studentmodule.ui \
     teachermodule.ui \
