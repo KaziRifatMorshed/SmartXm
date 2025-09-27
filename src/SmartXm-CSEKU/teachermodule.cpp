@@ -177,8 +177,23 @@ void TeacherModule::on_testExam_pushButton_3_clicked()
 
 void TeacherModule::on_createXm_pushButton_clicked()
 {
+    // Exam creation features will be here
+
     if(!createOrModifyXm){
         createOrModifyXm = new CreateOrModifyExam();
+    }
+    createOrModifyXm->show();
+    createOrModifyXm->raise();
+    createOrModifyXm->activateWindow();
+}
+
+
+void TeacherModule::on_editExam_pushButon_2_clicked()
+{
+    // Exam entry modification
+
+    if(!createOrModifyXm){
+        createOrModifyXm = new CreateOrModifyExam(); // may need to pass ExamId (PrimaryKey)
     }
     createOrModifyXm->show();
     createOrModifyXm->raise();

@@ -34,7 +34,7 @@
       </widget>
       <widget class="QWidget" name="QB_tab">
        <attribute name="title">
-        <string>Questionbank</string>
+        <string>Question Bank</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="Server_tab">
@@ -328,7 +328,7 @@
            <item>
             <widget class="QPushButton" name="testExam_pushButton_3">
              <property name="text">
-              <string>Send Questions</string>
+              <string>Leaderboard</string>
              </property>
             </widget>
            </item>
@@ -377,7 +377,7 @@
      <x>0</x>
      <y>0</y>
      <width>901</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

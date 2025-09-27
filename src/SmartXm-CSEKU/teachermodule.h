@@ -31,6 +31,8 @@ private slots:
 
     void on_createXm_pushButton_clicked();
 
+    void on_editExam_pushButon_2_clicked();
+
 private:
     Ui::TeacherModule *ui;
     CreateOrModifyExam *createOrModifyXm = nullptr;
