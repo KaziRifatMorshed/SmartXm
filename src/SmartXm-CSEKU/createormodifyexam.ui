@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>702</width>
-    <height>680</height>
+    <height>872</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,7 +127,7 @@
      <item row="10" column="1">
       <widget class="QSpinBox" name="totalMarks_spinBox"/>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Please check all info</string>
@@ -162,7 +162,11 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="penaltyPerMinute_spinBox"/>
+         <widget class="QSpinBox" name="penaltyPerMinute_spinBox">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_7">
@@ -172,7 +176,11 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="penaltyPerMarks_doubleSpinBox"/>
+         <widget class="QDoubleSpinBox" name="penaltyPerMarks_doubleSpinBox">
+          <property name="singleStep">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -185,7 +193,11 @@
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QSpinBox" name="quesSet_spinBox"/>
+      <widget class="QSpinBox" name="quesSet_spinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_11">
@@ -205,7 +217,11 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="labTestNoOfCourse_spinBox"/>
+      <widget class="QSpinBox" name="labTestNoOfCourse_spinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
      </item>
      <item row="12" column="0">
       <widget class="QLabel" name="label_13">
@@ -219,6 +235,78 @@
        <property name="text">
         <string>Previous Code Allowed</string>
        </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Participants:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="batch">
+        <attribute name="title">
+         <string>Batch</string>
+        </attribute>
+        <layout class="QFormLayout" name="formLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Select Batch:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="spinBox">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="Include">
+        <attribute name="title">
+         <string>Include</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Write down Student ID of the students to be included (Comma seperated)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="plainTextEdit"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="exclude">
+        <attribute name="title">
+         <string>Exclude</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Write down Student ID of the students to be EXCLUDED (Comma seperated)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
