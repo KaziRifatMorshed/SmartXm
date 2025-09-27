@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 
+
 Server *server;
 QString instructionFileName = "";
 
@@ -171,5 +172,16 @@ void TeacherModule::on_testExam_pushButton_3_clicked()
     } else {
         QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
     }
+}
+
+
+void TeacherModule::on_createXm_pushButton_clicked()
+{
+    if(!createOrModifyXm){
+        createOrModifyXm = new CreateOrModifyExam();
+    }
+    createOrModifyXm->show();
+    createOrModifyXm->raise();
+    createOrModifyXm->activateWindow();
 }
 

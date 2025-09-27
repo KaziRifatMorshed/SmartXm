@@ -2,6 +2,7 @@
 #define TEACHERMODULE_H
 
 #include <QMainWindow>
+#include <createormodifyexam.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,7 +29,10 @@ private slots:
 
     void on_testExam_pushButton_3_clicked();
 
+    void on_createXm_pushButton_clicked();
+
 private:
     Ui::TeacherModule *ui;
+    CreateOrModifyExam *createOrModifyXm = nullptr;
 };
 #endif // TEACHERMODULE_H

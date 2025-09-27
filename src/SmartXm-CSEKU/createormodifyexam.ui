@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Exam Properties</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qt_resources.qrc">
+    <normaloff>:/logo/resources/logo/SmartXm-logo-mid.png</normaloff>:/logo/resources/logo/SmartXm-logo-mid.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -338,6 +342,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="qt_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
