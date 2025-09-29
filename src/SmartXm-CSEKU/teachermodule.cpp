@@ -200,3 +200,14 @@ void TeacherModule::on_editExam_pushButon_2_clicked()
     createOrModifyXm->activateWindow();
 }
 
+
+void TeacherModule::on_createQues_pushButton_clicked()
+{
+    if (!createQuesWidgetWindow){
+        createQuesWidgetWindow = new CreateQuestion();
+    }
+    createQuesWidgetWindow->show();
+    createQuesWidgetWindow->raise();
+    createQuesWidgetWindow->activateWindow();
+}
+
