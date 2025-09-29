@@ -1,12 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
 #include <string>
 #include <cstdlib>
-#include <cstdio>
-#include <algorithm>
-#include <iterator>
+
+
 
 
 
