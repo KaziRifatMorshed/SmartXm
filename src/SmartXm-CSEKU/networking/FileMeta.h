@@ -5,9 +5,10 @@
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
+#ifdef __linux__
 #include <sys/socket.h>
 #include <unistd.h>
-
+#endif
 class FileMeta {
 public:
     std::string filename;
@@ -27,7 +28,7 @@ public:
         std::vector<char> out;
 
         auto write_string = [&](const std::string& s) {
-            uint32_t len = s.size();
+            size_t len = s.size();
             out.insert(out.end(), reinterpret_cast<const char*>(&len), reinterpret_cast<const char*>(&len) + sizeof(len));
             out.insert(out.end(), s.begin(), s.end());
         };
