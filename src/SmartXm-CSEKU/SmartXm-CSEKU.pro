@@ -13,8 +13,10 @@ SOURCES += \
     main.cpp \
     networking/client/client.cpp \
     networking/client/client_linux.cpp \
+    networking/client/client_windows.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
+    networking/server/server_windows.cpp \
     studentmodule.cpp \
     teachermodule.cpp \
     toast.cpp \
