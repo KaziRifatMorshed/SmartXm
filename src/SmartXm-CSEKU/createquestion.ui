@@ -362,7 +362,7 @@
        <item row="1" column="1">
         <widget class="QLabel" name="label_18">
          <property name="text">
-          <string>CPUs</string>
+          <string>Multiplier</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -397,14 +397,18 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="cpp_cpu_limit_lineEdit">
+        <widget class="QLineEdit" name="cpp_multiplier_lineEdit">
          <property name="text">
-          <string>1</string>
+          <string>2</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QLineEdit" name="cpp_mem_limit_lineEdit"/>
+        <widget class="QLineEdit" name="cpp_mem_limit_lineEdit">
+         <property name="text">
+          <string>256</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="3">
         <widget class="QLineEdit" name="cpp_source_limit_lineEdit"/>
@@ -417,14 +421,18 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="java_cpu_limt_lineEdit">
+        <widget class="QLineEdit" name="java_multiplier_lineEdit">
          <property name="text">
-          <string>1</string>
+          <string>2</string>
          </property>
         </widget>
        </item>
        <item row="3" column="2">
-        <widget class="QLineEdit" name="java_mem_limit_lineEdit"/>
+        <widget class="QLineEdit" name="java_mem_limit_lineEdit">
+         <property name="text">
+          <string>256</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="3">
         <widget class="QLineEdit" name="java_source_limit_lineEdit"/>
@@ -437,14 +445,18 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="py_cpu_limit_lineEdit">
+        <widget class="QLineEdit" name="py_multiplier_lineEdit">
          <property name="text">
-          <string>1</string>
+          <string>2</string>
          </property>
         </widget>
        </item>
        <item row="4" column="2">
-        <widget class="QLineEdit" name="py_mem_limit_lineEdit"/>
+        <widget class="QLineEdit" name="py_mem_limit_lineEdit">
+         <property name="text">
+          <string>256</string>
+         </property>
+        </widget>
        </item>
        <item row="4" column="3">
         <widget class="QLineEdit" name="py_source_limit_lineEdit"/>
@@ -524,6 +536,13 @@
        </item>
        <item>
         <widget class="QTextEdit" name="editorialTextBox_textEdit"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="editorialUploadPDF_pushButton_2">
+         <property name="text">
+          <string>or, Upload PDF</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="saveEditorial_pushButton_2">
