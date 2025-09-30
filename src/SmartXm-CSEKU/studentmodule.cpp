@@ -47,9 +47,9 @@ void StudentModule::on_openRuleBook_pushButton_clicked() {
     std::cout << "Opening rulebook/instructions" << std::endl;
     QString rulebookPath;
 
-    QProcess pOpenFile;
 #ifdef _WIN32
-    // Implement Windows version if needed
+    QProcess::startDetached("start \"\"",
+                            QStringList() << "./examResources/rulebook.pdf");
 #elif __linux__
     QProcess::startDetached("./dependencies/qpdfjs/qpdfjs",
                             QStringList() << "./examResources/rulebook.pdf");
