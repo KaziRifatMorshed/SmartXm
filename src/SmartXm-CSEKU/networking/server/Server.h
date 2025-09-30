@@ -8,13 +8,13 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #endif
 
 #include <string>
 #include <mutex>
 #include <sys/types.h>
 #include <thread>
-#include <unistd.h>
 #include <vector>
 #include "ClientInfo.h"
 #include <networking/FileMeta.h>

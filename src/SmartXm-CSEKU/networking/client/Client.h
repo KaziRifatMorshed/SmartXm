@@ -5,9 +5,9 @@
 #ifdef __linux__
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #endif
 
-#include <unistd.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
