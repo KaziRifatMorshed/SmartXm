@@ -119,8 +119,8 @@ void WelcomeWindow::on_pushButton_clicked() {
       teacherModuleWindow->show();
     } else if (inputtedEmail == "s") {
       close();
-      studentModuleWindow = new StudentModule();
-      studentModuleWindow->show();
+      // studentModuleWindow = new StudentModule();
+      // studentModuleWindow->show();
     }
   }
 }
