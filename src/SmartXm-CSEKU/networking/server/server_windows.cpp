@@ -236,32 +236,36 @@ void Server::printClientsLoop(int intervalSeconds) {
 }
 
 std::string Server::fetchLocalIP() {
-    char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
-        std::cerr << "gethostname() error: " << WSAGetLastError() << std::endl;
-        return "error";
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        std::cerr << "WSAStartup failed in fetchLocalIP" << std::endl;
+        return "127.0.0.1"; // Default to localhost on failure
     }
 
-    addrinfo hints = {}, *info = nullptr;
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-    if (getaddrinfo(hostname, NULL, &hints, &info) != 0) {
-        std::cerr << "getaddrinfo() error: " << WSAGetLastError() << std::endl;
-        return "error";
+    char hostName[256];
+    if (gethostname(hostName, sizeof(hostName)) == SOCKET_ERROR) {
+        std::cerr << "gethostname failed: " << WSAGetLastError() << std::endl;
+        WSACleanup();
+        return "127.0.0.1";
     }
 
-    std::string found = "error";
-    for (addrinfo* p = info; p != nullptr; p = p->ai_next) {
-        sockaddr_in* sa = (sockaddr_in*)p->ai_addr;
-        char* ip = inet_ntoa(sa->sin_addr);
-        if (strcmp(ip, "127.0.0.1") != 0) {
-            found = std::string(ip);
-            break;
-        }
+    hostent* hostEntry = gethostbyname(hostName);
+    if (!hostEntry) {
+        std::cerr << "gethostbyname failed: " << WSAGetLastError() << std::endl;
+        WSACleanup();
+        return "127.0.0.1";
     }
-    freeaddrinfo(info);
-    return found;
+
+    char* ipAddress = inet_ntoa(*((in_addr*)hostEntry->h_addr_list[0]));
+    if (!ipAddress) {
+        std::cerr << "inet_ntoa failed" << std::endl;
+        WSACleanup();
+        return "127.0.0.1";
+    }
+
+    std::string localIP = std::string(ipAddress);
+    WSACleanup();
+    return localIP;
 }
 
 // send to specific client
