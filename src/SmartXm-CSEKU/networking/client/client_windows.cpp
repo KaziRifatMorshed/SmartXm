@@ -1,29 +1,31 @@
-#ifdef __linux__
+#ifdef _WIN32
+#include <ShlObj.h> // Include for SHGetFolderPath
 
 #include "./../server/Server.h"
 #include "Client.h"
 #include <filesystem>
-#include <QMessageBox>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <networking/FileMeta.h>
 #include <iomanip>
-#include "dependencies/TarHandler/tarhandler.h"
 #include <studentmodulev2.h>
+
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "Shell32.lib") // Link with Shell32.lib for SHGetFolderPath
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
 
-Client::Client() : sock_fd(-1), connected(false) {
-#ifdef DEBUG_ON
-    std::cout << "[Client] Client object created." << std::endl;
-#endif
-}
+Client::Client() : sock_fd(INVALID_SOCKET), connected(false) {}
 
-Client::~Client() {
-#ifdef DEBUG_ON
-    std::cout << "[Client] Client object destroyed." << std::endl;
-#endif
-    disconnect();
-}
+Client::~Client() { disconnect(); }
+
+
 
 void Client::disconnect() {
     std::lock_guard<std::mutex> lock(connMutex);
@@ -38,26 +40,63 @@ void Client::disconnect() {
 #endif
             fileReceiverThread.join();
         }
-        ::close(sock_fd);
-        sock_fd = -1;
+        closesocket(sock_fd);
+        sock_fd = INVALID_SOCKET;
+        WSACleanup();
 #ifdef DEBUG_ON
         std::cout << "[Client::disconnect] Disconnected successfully." << std::endl;
 #endif
     }
 }
 
-void receive_file(int client_sock_fd) { // UNNECESSARY, ei kaj file receive loop e kore dicche 
-    // receive file and check, ki aslo
+
+
+// Receive file from server
+FileMeta receive_file_from_server(SOCKET sock_fd) {
+#ifdef DEBUG_ON
+    std::cout << "[receive_file_from_server] Received a file from server" << std::endl;
+#endif
+    return FileMeta::recv_from_socket(sock_fd);
 }
 
 
+
+// Send file to server
+bool send_file_to_server(SOCKET sock_fd, const std::string& path, const std::string& msg) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) {
+#ifdef DEBUG_ON
+        std::cerr << "[send_file_to_server] Failed to open file: " << path << std::endl;
+#endif
+        return false;
+    }
+    file.seekg(0, std::ios::end);
+    size_t sz = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> filedata(sz);
+    file.read(filedata.data(), sz);
+#ifdef DEBUG_ON
+    std::cout << "[send_file_to_server] Read " << sz << " bytes from file." << std::endl;
+#endif
+
+    std::string fname = std::filesystem::path(path).filename().string();
+    std::string ext = std::filesystem::path(path).extension().string();
+    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
+
+    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+#ifdef DEBUG_ON
+    std::cout << "[send_file_to_server] Created FileMeta object." << std::endl;
+#endif
+    return meta.send_on_socket(sock_fd);
+}
+
 extern StudentModuleV2 *studentModuleV2Pointer; // Declare somewhere accessible
 
-void file_receive_loop(int sock_fd) {
+void file_receive_loop(SOCKET sock_fd) {
     try {
         while (true) {
 #ifdef DEBUG_ON
-            std::cout << "[FileReceiver] Waiting for file/message from server..." << std::endl;
+            std::cout << "[FileReceiver][file_receive_loop] Waiting for file/message from server..." << std::endl;
 #endif
             FileMeta meta = FileMeta::recv_from_socket(sock_fd);
 #ifdef DEBUG_ON
@@ -124,63 +163,110 @@ void file_receive_loop(int sock_fd) {
                 std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
 #endif
 
-                if (meta.message == "questions.tar") {
-                    TarHandler::extractTar("examResources", "questions.tar");
+       // if (meta.message == "questions.tar") { // TarHandler class is not provided, thus commenting it out
+       //     TarHandler::extractTar("examResources", "questions.tar");
 #ifdef DEBUG_ON
-                    std::cout << "[FileReceiver] Extracted questions.tar." << std::endl;
+                //     std::cout << "[FileReceiver] Extracted questions.tar." << std::endl;
 #endif
-                }
+       // }
             }
         }
     } catch (const std::exception& e) {
         std::cerr << "[FileReceiver] Error or connection closed: " << e.what() << std::endl;
     }
 }
-// Send file to server
-bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg) {
-    std::ifstream file(path, std::ios::binary);
-    if (!file.is_open()) {
-#ifdef DEBUG_ON
-        std::cerr << "[send_file_to_server] Failed to open file: " << path << std::endl;
-#endif
+
+bool Client::connectToServer(const std::string &ip_addr, int port) {
+    std::lock_guard<std::mutex> lock(connMutex);
+
+    if (connected)
+        return true;
+
+    WSADATA wsaData;
+    int wsaErr = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (wsaErr != 0) {
+        std::cerr << "WSAStartup failed: " << wsaErr << std::endl;
         return false;
     }
-    file.seekg(0, std::ios::end);
-    size_t sz = file.tellg();
-    file.seekg(0, std::ios::beg);
-    std::vector<char> filedata(sz);
-    file.read(filedata.data(), sz);
+
+    sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sock_fd == INVALID_SOCKET) {
+        std::cerr << "Error creating socket: " << WSAGetLastError() << std::endl;
+        WSACleanup();
+        return false;
+    }
 #ifdef DEBUG_ON
-    std::cout << "[send_file_to_server] Read " << sz << " bytes from file." << std::endl;
+    std::cout << "[Client::connectToServer] Socket created." << std::endl;
 #endif
 
-    std::string fname = std::filesystem::path(path).filename();
-    std::string ext = std::filesystem::path(path).extension().string();
-    if (ext.size() && ext[0] == '.') ext = ext.substr(1);
-
-    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    sockaddr_in server_addr = {};
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    if (InetPtonA(AF_INET, ip_addr.c_str(), &server_addr.sin_addr) != 1) {
+        std::cerr << "Invalid address/ Address not supported\n";
+        closesocket(sock_fd);
+        WSACleanup();
+        return false;
+    }
 #ifdef DEBUG_ON
-    std::cout << "[send_file_to_server] Created FileMeta object." << std::endl;
+    std::cout << "[Client::connectToServer] Address configured." << std::endl;
 #endif
-    return meta.send_on_socket(sock_fd);
+
+    if (connect(sock_fd, (SOCKADDR *)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+        std::cerr << "Connection Failed: " << WSAGetLastError() << std::endl;
+        closesocket(sock_fd);
+        WSACleanup();
+        return false;
+    } else {
+#ifdef DEBUG_ON
+        std::cout << "Connected to server at: " << ip_addr << " : " << port << std::endl;
+#endif
+    }
+#ifdef DEBUG_ON
+    std::cout << "[Client::connectToServer] Connected to server." << std::endl;
+#endif
+
+           // Authenticate with secret key
+    if (send(sock_fd, CLIENT_SECRET_KEY, (int)strlen(CLIENT_SECRET_KEY), 0) < 0) {
+        std::cerr << "Authentication failed" << std::endl;
+    } else {
+#ifdef DEBUG_ON
+        std::cout << "Server Authentication Successful" << std::endl;
+#endif
+    }
+#ifdef DEBUG_ON
+    std::cout << "[Client::connectToServer] Authentication sent." << std::endl;
+#endif
+
+           // Send client name to server
+    std::string clientIdentity = Server::fetchLocalIP();
+    if (send(sock_fd, clientIdentity.c_str(), (int)clientIdentity.length(), 0) < 0) {
+        std::cerr << "Client info sent failed" << std::endl;
+    }
+#ifdef DEBUG_ON
+    std::cout << "[Client::connectToServer] Client identity sent." << std::endl;
+#endif
+
+    connected = true;
+
+    // Start file receiving thread (optional)
+    std::thread t(file_receive_loop, sock_fd);
+    t.detach();
+#ifdef DEBUG_ON
+    std::cout << "[Client::connectToServer] File receiver thread detached." << std::endl;
+#endif
+
+    return true;
 }
-
-// Receive file from server
-FileMeta receive_file_from_server(int sock_fd) {
-#ifdef DEBUG_ON
-    std::cout << "[receive_file_from_server] Receiving a file from server" << std::endl;
-#endif
-    return FileMeta::recv_from_socket(sock_fd);
-}
-
 
 void Client::updateAccountInfo() { // kivabe implement korbo ???
     if (!connected)
         return;
     std::string msg = "UPDATE_ACCOUNT";
-    send(sock_fd, msg.c_str(), msg.size(), 0);
+    send(sock_fd, msg.c_str(), (int)msg.size(), 0);
     // Add implementation for sending updated info as needed
 }
+
 
 bool Client::sendLoginInfoToServer() {
     if (!connected)
@@ -188,13 +274,13 @@ bool Client::sendLoginInfoToServer() {
     std::string email, password;
 
     std::string login_data = "LOGIN:" + email + ":" + password; // vulnerable
-    send(sock_fd, login_data.c_str(), login_data.size(), 0);
+    send(sock_fd, login_data.c_str(), (int)login_data.size(), 0);
 #ifdef DEBUG_ON
     std::cout << "[Client::sendLoginInfoToServer] Login data sent." << std::endl;
 #endif
 
     char buffer[CLIENT_BUFFER_SIZE]{};
-    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+    int valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
     std::string response(buffer, valread);
     if (response == "LOGIN_SUCCESS") {
         clientName = email;
@@ -246,105 +332,15 @@ void Client::getLeaderboardDataFromServer() { // FUTURE IMPLEMENTATION
     if (!connected)
         return;
     std::string msg = "GET_LEADERBOARD";
-    send(sock_fd, msg.c_str(), msg.size(), 0);
+    send(sock_fd, msg.c_str(), (int)msg.size(), 0);
 #ifdef DEBUG_ON
     std::cout << "[Client::getLeaderboardDataFromServer] Sent request for leaderboard data." << std::endl;
 #endif
     char buffer[CLIENT_BUFFER_SIZE]{};
-    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
+    int valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
     if (valread > 0) {
         std::cout << "Leaderboard:\n" << std::string(buffer, valread) << "\n";
     }
-}
-
-bool Client::connectToServer(const std::string &ip_addr, int port) {
-    std::lock_guard<std::mutex> lock(connMutex);
-
-    if (connected)
-        return true;
-
-    if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        std::cerr << "Error creating socket\n";
-        return false;
-    }
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] Socket created." << std::endl;
-#endif
-
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, ip_addr.c_str(), &server_addr.sin_addr) <= 0) {
-        std::cerr << "Invalid address/ Address not supported\n";
-        ::close(sock_fd);
-        return false;
-    }
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] Address configured." << std::endl;
-#endif
-
-    if (connect(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) <
-        0) {
-        std::cerr << "Connection Failed" << std::endl;
-        ::close(sock_fd);
-        return false;
-    } else {
-        std::cout << "Connected to server at: " << ip_addr << " : " << port
-                  << std::endl;
-    }
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] Connected to server." << std::endl;
-#endif
-
-           // Authenticate with secret key
-           // connect houar por secret key poathiye check korbe je amar dol er lok ki na
-    if (send(sock_fd, CLIENT_SECRET_KEY, strlen(CLIENT_SECRET_KEY), 0) < 0) {
-        std::cerr << "Authentication failed" << std::endl;
-    } else {
-        std::cout << "Server Authentication Successful" << std::endl;
-    }
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] Authentication sent." << std::endl;
-#endif
-
-    /* amar ager code e silo:
-        // Send client name to server (ensure null-terminated)
-        if (send(client_sock_fd, client_name, strlen(client_name), 0) < 0) {
-            error("Client information sent failed");
-        }
-    */
-    std::string clientIdentity = Server::fetchLocalIP();
-    if (send(sock_fd, clientIdentity.c_str(), clientIdentity.length(), 0) < 0) {
-        std::cerr << "Client info sent failed" << std::endl;
-    }
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] Client identity sent." << std::endl;
-#endif
-
-           // char buffer[CLIENT_BUFFER_SIZE]{};
-           // ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
-           // if (valread <= 0 || std::string(buffer) != "OK") {
-           //     std::cerr << "Secret key mismatch or server error\n";
-           //     ::close(sock_fd);
-           //     return false;
-           // }
-
-    connected = true;
-    // Start file receiving thread
-    // fileReceiverThread = std::thread(&Client::receiveFileLoop, this);
-    // fileReceiverThread = std::thread(&Client::receiveFileLoop, sock_fd); // not
-    // working fileReceiverThread = std::thread(receiveFileLoop(), sock_fd);
-    // fileReceiverThread.detach();
-
-           // std::thread t(&Client::receiveFileLoop, this);
-           // std::thread t(receive_file, sock_fd);
-    std::thread t(file_receive_loop, sock_fd);
-    t.detach();
-#ifdef DEBUG_ON
-    std::cout << "[Client::connectToServer] File receiver thread detached." << std::endl;
-#endif
-
-    return true;
 }
 
 #endif

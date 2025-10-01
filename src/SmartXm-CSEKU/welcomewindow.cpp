@@ -6,13 +6,13 @@
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
-#include "studentmodule.h"
+#include <studentmodulev2.h>
 
 Client *client;
 bool clientConnectedToLocalServer = false;
 
 // Provide the actual storage for the extern variable
-StudentModule* studentModulePointer = nullptr;
+StudentModuleV2* studentModuleV2Pointer = nullptr;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::WelcomeWindow),
@@ -122,10 +122,10 @@ void WelcomeWindow::on_pushButton_clicked() {
        */
       teacherModuleWindow->show();
     } else if (inputtedEmail == "s") {
-      close();
-      studentModuleWindow = new StudentModule();
-      studentModulePointer = studentModuleWindow; // assign after construction
-      studentModuleWindow->show();
+        close();
+        studentModuleV2Window = new StudentModuleV2();
+        studentModuleV2Window->show();
+        studentModuleV2Pointer = studentModuleV2Window;
     }
   }
 }
@@ -149,6 +149,7 @@ void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
           "<html><head/><body><p align=\"center\"><span style=\" "
           "font-size:11pt;\">Local Server Connection Status: <span "
           "style=\"color: green;\">CONNECTED</span></span></p></body></html>");
+      ui->connect_to_local_server_pushButton_3->setEnabled(false);
       clientConnectedToLocalServer = true;
     } else {
       ui->localServerStatus_label_6->setText(

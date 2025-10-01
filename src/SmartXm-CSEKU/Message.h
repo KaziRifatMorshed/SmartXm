@@ -1,9 +1,9 @@
-#ifndef MSG
-#define MSG
+#ifndef MESSAGE
+#define MESSAGE
 
 #define BUFFER_SIZE 1024
 
-class Msg
+class Message
 {
 public:
     char sender_name[50];
