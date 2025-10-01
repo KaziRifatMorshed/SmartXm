@@ -6,7 +6,7 @@
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
-// #include "studentmodule.h"
+#include <studentmodulev2.h>
 
 Client *client;
 bool clientConnectedToLocalServer = false;
