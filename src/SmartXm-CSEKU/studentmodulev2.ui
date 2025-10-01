@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>StudentModule</class>
- <widget class="QMainWindow" name="StudentModule">
+ <class>StudentModuleV2</class>
+ <widget class="QMainWindow" name="StudentModuleV2">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1010</width>
-    <height>678</height>
+    <width>986</width>
+    <height>694</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SmartXm-CSEKU (Student)</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="studentWelcome_label">
+     <widget class="QLabel" name="welcomeStudent_label">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Welcome , Student XYZ (230200)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Welcome, Student&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="MainTabWidget">
+     <widget class="QTabWidget" name="stuModuVII_tabWidget">
       <property name="currentIndex">
        <number>2</number>
       </property>
-      <widget class="QWidget" name="ProfileTab">
+      <widget class="QWidget" name="profile_tab">
        <attribute name="title">
         <string>Profile</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QGroupBox" name="profileInfo_groupBox">
+         <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Profile Informations</string>
+           <string>Profile Information</string>
           </property>
           <layout class="QFormLayout" name="formLayout">
            <item row="0" column="0">
-            <widget class="QLabel" name="nameColon_label">
+            <widget class="QLabel" name="label">
              <property name="text">
               <string>Name:</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLabel" name="name_label">
+            <widget class="QLabel" name="stuName_label_2">
              <property name="text">
-              <string>My Name Is xyz</string>
+              <string>Student name xyz</string>
              </property>
             </widget>
            </item>
@@ -56,7 +56,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="exitBtn_profileTab_pushButton_2">
+         <widget class="QPushButton" name="exit_profileTab_pushButton">
           <property name="text">
            <string>Exit</string>
           </property>
@@ -64,28 +64,28 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="examTab">
+      <widget class="QWidget" name="allExam_tab">
        <attribute name="title">
         <string>All Exams</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QGroupBox" name="RuleBook_groupBox">
+         <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
-           <string>Instructions/Rulebook</string>
+           <string>Rulebook</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QLabel" name="roolbook_receive_status_text_label">
+            <widget class="QLabel" name="rulebook_recv_status_label_2">
              <property name="text">
               <string>No rulebook received from server yet</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="openRuleBook_pushButton">
+            <widget class="QPushButton" name="openRulebook_pushButton">
              <property name="text">
-              <string>Open Instructions/Rulebook</string>
+              <string>Open Rulebook</string>
              </property>
             </widget>
            </item>
@@ -93,11 +93,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QTableWidget" name="exam_list_tableWidget">
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
-          </property>
-          <row/>
+         <widget class="QTableWidget" name="tableWidget">
           <column>
            <property name="text">
             <string>Course Code</string>
@@ -105,7 +101,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Course</string>
+            <string>Course Name</string>
            </property>
           </column>
           <column>
@@ -130,7 +126,7 @@
           </column>
           <column>
            <property name="text">
-            <string>End Time</string>
+            <string>Ending Time</string>
            </property>
           </column>
           <column>
@@ -143,51 +139,11 @@
             <string>Action</string>
            </property>
           </column>
-          <item row="0" column="0">
-           <property name="text">
-            <string>CSE 1100</string>
-           </property>
-          </item>
-          <item row="0" column="1">
-           <property name="text">
-            <string>Structured Programming Sessional</string>
-           </property>
-          </item>
-          <item row="0" column="2">
-           <property name="text">
-            <string>1</string>
-           </property>
-          </item>
-          <item row="0" column="3">
-           <property name="text">
-            <string>Array</string>
-           </property>
-          </item>
-          <item row="0" column="4">
-           <property name="text">
-            <string>dummy</string>
-           </property>
-          </item>
-          <item row="0" column="5">
-           <property name="text">
-            <string>dummy</string>
-           </property>
-          </item>
-          <item row="0" column="6">
-           <property name="text">
-            <string>dummy</string>
-           </property>
-          </item>
-          <item row="0" column="7">
-           <property name="text">
-            <string>Scheduled</string>
-           </property>
-          </item>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="currentExamTab">
+      <widget class="QWidget" name="currentExam_tab">
        <attribute name="title">
         <string>Current Exam</string>
        </attribute>
@@ -204,9 +160,9 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="serve_status_label">
+     <widget class="QLabel" name="mainWindowServerStatus_label">
       <property name="text">
-       <string>Server Status: (not implemented)</string>
+       <string>Server Status:</string>
       </property>
      </widget>
     </item>
@@ -217,7 +173,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1010</width>
+     <width>986</width>
      <height>21</height>
     </rect>
    </property>

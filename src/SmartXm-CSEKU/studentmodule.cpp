@@ -1,47 +1,48 @@
 #include "studentmodule.h"
 #include "ui_studentmodule.h"
-#include <QDesktopServices>
+
+// #include <QDesktopServices>
 #include <QDir>
-#include <QMessageBox>
-#include <QPushButton>  // <-- ADD THIS LINE!
+// #include <QMessageBox>
+// #include <QPushButton>  // <-- ADD THIS LINE!
 #include <QProcess>
 #include <QTime>
 #include <QUrl>
-#include <TerminalExecuter.h>
+// #include <TerminalExecuter.h>
 #include <iostream>
 
-StudentModule::StudentModule(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::StudentModule) {
-    ui->setupUi(this);
-    ui->openRuleBook_pushButton->setDisabled(false);
+StudentModule::StudentModule(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModule) {
 
-    QPushButton *examTableActionBtn = new QPushButton("Enter");
-    ui->exam_list_tableWidget->setCellWidget(0, 8, examTableActionBtn);
+    ui->setupUi(this);
+    // ui->openRuleBook_pushButton->setDisabled(false);
+
+    // QPushButton *examTableActionBtn = new QPushButton("Enter");
+    // ui->exam_list_tableWidget->setCellWidget(0, 8, examTableActionBtn);
 }
 
 StudentModule::~StudentModule() { delete ui; }
 
 void StudentModule::on_exitBtn_profileTab_pushButton_2_clicked() { close(); }
 
-void _showMsgBox(QWidget *parent, QString type, QString title, QString text) {
-    if (type == "information") {
-        QMessageBox::information(parent, title, text);
-    } else if (type == "warning") {
-        QMessageBox::warning(parent, title, text);
-    } else if (type == "critical") {
-        QMessageBox::critical(parent, title, text);
-    }
-}
+// void _showMsgBox(QWidget *parent, QString type, QString title, QString text) {
+//     if (type == "information") {
+//         QMessageBox::information(parent, title, text);
+//     } else if (type == "warning") {
+//         QMessageBox::warning(parent, title, text);
+//     } else if (type == "critical") {
+//         QMessageBox::critical(parent, title, text);
+//     }
+// }
 
-void StudentModule::showMsgBox(QString type, QString title, QString text) {
-    if (type == "information") {
-        QMessageBox::information(this, title, text);
-    } else if (type == "warning") {
-        QMessageBox::warning(this, title, text);
-    } else if (type == "critical") {
-        QMessageBox::critical(this, title, text);
-    }
-}
+// void StudentModule::showMsgBox(QString type, QString title, QString text) {
+//     if (type == "information") {
+//         QMessageBox::information(this, title, text);
+//     } else if (type == "warning") {
+//         QMessageBox::warning(this, title, text);
+//     } else if (type == "critical") {
+//         QMessageBox::critical(this, title, text);
+//     }
+// }
 
 void StudentModule::on_openRuleBook_pushButton_clicked() {
     std::cout << "Opening rulebook/instructions" << std::endl;
