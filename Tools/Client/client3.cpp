@@ -2,7 +2,7 @@
 // put server ip address in argv
 
 #include "client3.h"
-#include "/home/seam/Desktop/SmartXm/Tools/TarHandler/tarhandler.h"
+#include "../TarHandler/tarhandler.h"
 
 void error(const char* msg) {
     perror(msg);

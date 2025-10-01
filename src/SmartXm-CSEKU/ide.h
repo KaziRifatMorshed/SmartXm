@@ -18,7 +18,7 @@ private:
     explicit IDE(QWidget* parent = nullptr);
 
     ~IDE();
-    void loadPdfInQuesTab(QWidget* ques_tab, const QString& pdfFilePath);
+    void loadPdfInQuesTab(QWidget* ques_tab, std::string pdfFilePath);
     static IDE *ideInstance;
 
     IDE(const IDE&) = delete;
@@ -49,6 +49,8 @@ private:
     QString currentFile;
     QString getFileContent(QString path);
     void initialize();
+    void loadInput(std::string path);
+    void loadOutput(std::string path);
 };
 
 #endif // IDE_H

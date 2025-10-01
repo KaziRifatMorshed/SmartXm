@@ -11,6 +11,8 @@ CONFIG += c++20
 win32:LIBS += -lws2_32
 
 SOURCES += \
+    codeRunner.cpp \
+    dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
     networking/client/client.cpp \
@@ -19,7 +21,7 @@ SOURCES += \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
     networking/server/server_windows.cpp \
-    studentmodule.cpp \
+    studentmodulev2.cpp \
     teachermodule.cpp \
     toast.cpp \
     welcomewindow.cpp \
@@ -33,11 +35,12 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    dependencies/TarHandler/tarhandler.h \
     ide.h \
     networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
-    studentmodule.h \
+    studentmodulev2.h \
     teachermodule.h \
     toast.h \
     welcomewindow.h \
@@ -45,7 +48,7 @@ HEADERS += \
 
 FORMS += \
     ide.ui \
-    studentmodule.ui \
+    studentmodulev2.ui \
     teachermodule.ui \
     welcomewindow.ui
 
