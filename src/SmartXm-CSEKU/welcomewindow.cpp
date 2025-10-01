@@ -12,7 +12,7 @@ Client *client;
 bool clientConnectedToLocalServer = false;
 
 // Provide the actual storage for the extern variable
-StudentModule* studentModulePointer = nullptr;
+StudentModuleV2* studentModuleV2Pointer = nullptr;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::WelcomeWindow),
