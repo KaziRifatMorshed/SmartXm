@@ -20,6 +20,13 @@
 bool Server::running = false;
 Server* Server::serverInstance = nullptr;
 
+/*
+C:\Users\n00bCod3r-tiny10\Documents\GitHub\SmartXm\src\SmartXm-CSEKU\networking\server\server_windows.cpp:24: warning: overflow in conversion from 'SOCKET' {aka 'long long unsigned int'} to 'int' changes value from '18446744073709551615' to '-1' [-Woverflow]
+..\..\networking\server\server_windows.cpp:24:72: warning: overflow in conversion from 'SOCKET' {aka 'long long unsigned int'} to 'int' changes value from '18446744073709551615' to '-1' [-Woverflow]
+   24 |     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(INVALID_SOCKET)
+      |                                                                        ^~~~~~~~~~~~~~
+ */
+
 Server::Server(int port_, const std::string& secret)
     : port(port_), secretKey(secret), status("NOT RUNNING"), server_fd(INVALID_SOCKET)
 {
@@ -60,7 +67,7 @@ int Server::start() {
     }
 
     server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (server_fd == INVALID_SOCKET) {
+    if (server_fd == (int)INVALID_SOCKET) {
         std::cerr << "socket() failed: " << WSAGetLastError() << std::endl;
         WSACleanup();
         status = "FAILED";
@@ -150,7 +157,7 @@ void Server::acceptLoop() {
 
         int client_socket = accept(server_fd, (SOCKADDR*)&client_addr, &client_addr_len);
         if (!running) break;
-        if (client_socket == INVALID_SOCKET) {
+        if (client_socket == (int)INVALID_SOCKET) {
             if (serverInstance == nullptr) std::cerr << "failed to accept connection ???" << std::endl;
             continue;
         }
