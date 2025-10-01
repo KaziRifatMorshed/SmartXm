@@ -6,7 +6,7 @@
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
-#include "studentmodule.h"
+// #include "studentmodule.h"
 
 Client *client;
 bool clientConnectedToLocalServer = false;
@@ -122,10 +122,9 @@ void WelcomeWindow::on_pushButton_clicked() {
        */
       teacherModuleWindow->show();
     } else if (inputtedEmail == "s") {
-      close();
-      studentModuleWindow = new StudentModule();
-      studentModulePointer = studentModuleWindow; // assign after construction
-      studentModuleWindow->show();
+        close();
+        studentModuleV2Window = new StudentModuleV2();
+        studentModuleV2Window->show();
     }
   }
 }

@@ -1,16 +1,20 @@
 #ifndef SERVER_H
 #define SERVER_H
 #pragma once
+
+#ifdef __linux__
 #include <arpa/inet.h>
 #include <ifaddrs.h>
-#include <mutex>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <string>
 #include <sys/socket.h>
+#include <unistd.h>
+#endif
+
+#include <string>
+#include <mutex>
 #include <sys/types.h>
 #include <thread>
-#include <unistd.h>
 #include <vector>
 #include "ClientInfo.h"
 #include <networking/FileMeta.h>

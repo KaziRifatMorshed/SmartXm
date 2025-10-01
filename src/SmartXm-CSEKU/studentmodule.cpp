@@ -1,82 +1,74 @@
-#include "studentmodule.h"
-#include "ui_studentmodule.h"
-#include <QDesktopServices>
-#include <QDir>
-#include <QMessageBox>
-#include <QProcess>
-#include <QTime>
-#include <QUrl>
-#include <TerminalExecuter.h>
-#include <iostream>
+// // #include "studentmodule.h"
+// // #include "ui_studentmodule.h"
 
-StudentModule::StudentModule(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::StudentModule) {
-  ui->setupUi(this);
-  ui->openRuleBook_pushButton->setDisabled(
-      true); // after implementation, need to fix it
 
-  // using a button
-  QPushButton *examTableActionBtn = new QPushButton("Enter");
-  ui->exam_list_tableWidget->setCellWidget(0, 8, examTableActionBtn);
+// // #include <QDesktopServices>
+// #include <QDir>
+// // #include <QMessageBox>
+// // #include <QPushButton>  // <-- ADD THIS LINE!
+// #include <QProcess>
+// #include <QTime>
+// #include <QUrl>
+// // #include <TerminalExecuter.h>
+// #include <iostream>
 
-  connect(this, &StudentModule::rulebookArrived, this, &StudentModule::ruleBookReceived);
-}
+// StudentModule::StudentModule(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModule) {
 
-StudentModule::~StudentModule() { delete ui; }
 
-void StudentModule::on_exitBtn_profileTab_pushButton_2_clicked() { close(); }
+//     ui->setupUi(this);
+//     // ui->openRuleBook_pushButton->setDisabled(false);
 
-void _showMsgBox(QWidget *parent, QString type, QString title,
-                 QString text) { // currently useless
-  if (type == "information") {
-    QMessageBox::information(parent, title, text);
-  } else if (type == "warning") {
-    QMessageBox::warning(parent, title, text);
-  } else if (type == "critical") {
-    QMessageBox::critical(parent, title, text);
-  }
-}
+//     // QPushButton *examTableActionBtn = new QPushButton("Enter");
+//     // ui->exam_list_tableWidget->setCellWidget(0, 8, examTableActionBtn);
+// }
 
-void StudentModule::showMsgBox(QString type, QString title, QString text) {
-  if (type == "information") {
-    QMessageBox::information(this, title, text);
-  } else if (type == "warning") {
-    QMessageBox::warning(this, title, text);
-  } else if (type == "critical") {
-    QMessageBox::critical(this, title, text);
-  }
-}
+// StudentModule::~StudentModule() { delete ui; }
 
-void StudentModule::on_openRuleBook_pushButton_clicked() {
-  // showMsgBox("information", "Rulebook", "Rulebook received! Click OK to open
-  // rulebook."); // remove later
-  std::cout << "Opening rulebook/instructions" << std::endl;
-  QString rulebookPath; // this needs to modify
+// void StudentModule::on_exitBtn_profileTab_pushButton_2_clicked() { close(); }
 
-  QProcess pOpenFile;
-#ifdef __WIN32
+// // void _showMsgBox(QWidget *parent, QString type, QString title, QString text) {
+// //     if (type == "information") {
+// //         QMessageBox::information(parent, title, text);
+// //     } else if (type == "warning") {
+// //         QMessageBox::warning(parent, title, text);
+// //     } else if (type == "critical") {
+// //         QMessageBox::critical(parent, title, text);
+// //     }
+// // }
 
-#elif __linux__
-  QProcess::startDetached("./dependencies/qpdfjs/qpdfjs",
-                          QStringList() << "./examResources/rulebook.pdf");
+// // void StudentModule::showMsgBox(QString type, QString title, QString text) {
+// //     if (type == "information") {
+// //         QMessageBox::information(this, title, text);
+// //     } else if (type == "warning") {
+// //         QMessageBox::warning(this, title, text);
+// //     } else if (type == "critical") {
+// //         QMessageBox::critical(this, title, text);
+// //     }
+// // }
 
-#endif
-}
+// void StudentModule::on_openRuleBook_pushButton_clicked() {
+//     std::cout << "Opening rulebook/instructions" << std::endl;
+//     QString rulebookPath;
 
-void StudentModule::ruleBookReceived() {
-  QString currentTime = QTime::currentTime().toString();
-  ui->openRuleBook_pushButton->setDisabled(false);
-  ui->roolbook_receive_status_text_label->setText(
-      "Rulebook received from server at " + currentTime);
-  std::cout << "Rulebook received from server at " << currentTime.toStdString()
-            << std::endl;
-}
+// #ifdef _WIN32
+//     QProcess::startDetached("start \"\"",
+//                             QStringList() << "./examResources/rulebook.pdf");
+// #elif __linux__
+//     QProcess::startDetached("./dependencies/qpdfjs/qpdfjs",
+//                             QStringList() << "./examResources/rulebook.pdf");
+// #endif
+// }
 
-void StudentModule::on_openCodeEditor_pushButton_clicked()
-{
-    // open code editor seperate window
-    // this window will not be closed
-    ideEditor = IDE::getInstance(this);
-    ideEditor->show();
-}
+// void StudentModule::ruleBookReceived() {
+//     QString currentTime = QTime::currentTime().toString();
+//     ui->openRuleBook_pushButton->setDisabled(false);
+//     ui->roolbook_receive_status_text_label->setText(
+//         "Rulebook received from server at " + currentTime);
+//     std::cout << "Rulebook received from server at " << currentTime.toStdString()
+//               << std::endl;
+// }
 
+// void StudentModule::on_openCodeEditor_pushButton_clicked() {
+//     ideEditor = IDE::getInstance(this);
+//     ideEditor->show();
+// }
