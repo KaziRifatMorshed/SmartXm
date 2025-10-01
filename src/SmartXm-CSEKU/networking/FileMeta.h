@@ -61,11 +61,11 @@ public:
 
         write_string(filename);
 #ifdef DEBUG_ON
-        std::cout << "[FileMeta::serialize] Filename written." << std::endl;
+        std::cout << "[FileMeta::serialize] Filename written: " << filename << std::endl;
 #endif
         write_string(extension);
 #ifdef DEBUG_ON
-        std::cout << "[FileMeta::serialize] Extension written." << std::endl;
+        std::cout << "[FileMeta::serialize] Extension written: " << extension << std::endl;
 #endif
         write_string(message);
 #ifdef DEBUG_ON

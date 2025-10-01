@@ -51,6 +51,8 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
   } else {
     std::cout << "One server instance should be running already." << std::endl;
   }
+  ui->StartServer_toolButton->setEnabled(false);
+  ui->StopServer_toolButton_2->setEnabled(true);
 }
 
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
@@ -69,6 +71,8 @@ void TeacherModule::on_StopServer_toolButton_2_clicked() {
   } else {
     std::cout << "No server instance should be running..." << std::endl;
   }
+  ui->StartServer_toolButton->setEnabled(true);
+  ui->StopServer_toolButton_2->setEnabled(false);
 }
 
 /*
