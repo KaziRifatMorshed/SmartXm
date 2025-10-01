@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SmartXm : Student Module</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qt_resources.qrc">
+    <normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -180,6 +184,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="qt_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -6,3 +6,10 @@ StudentModuleV2::StudentModuleV2(QWidget* parent) : QMainWindow(parent), ui(new 
 }
 
 StudentModuleV2::~StudentModuleV2() { delete ui; }
+
+void StudentModuleV2::on_openCodeEditor_pushButton_clicked()
+{
+    ideEditor = IDE::getInstance(this);
+    ideEditor->show();
+}
+

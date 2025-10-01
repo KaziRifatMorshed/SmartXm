@@ -2,6 +2,7 @@
 #define STUDENTMODULEV2_H
 
 #include <QMainWindow>
+#include <ide.h>
 
 namespace Ui
 {
@@ -16,8 +17,12 @@ public:
     explicit StudentModuleV2(QWidget* parent = nullptr);
     ~StudentModuleV2();
 
+private slots:
+    void on_openCodeEditor_pushButton_clicked();
+
 private:
     Ui::StudentModuleV2* ui;
+    IDE *ideEditor;
 };
 
 #endif // STUDENTMODULEV2_H
