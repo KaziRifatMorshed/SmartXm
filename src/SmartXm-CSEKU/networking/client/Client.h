@@ -2,16 +2,19 @@
 #define CLIENT_H
 #pragma once
 
+#ifdef __linux__
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <mutex>
 #include <string>
-#include <sys/socket.h>
 #include <thread>
-#include <unistd.h>
 #include <vector>
 #include "Msg.h"
 #include <ctime>
