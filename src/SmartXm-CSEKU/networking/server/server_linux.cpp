@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 #include "networking/FileMeta.h"
-#include "Msg.h"
+#include "Message.h"
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -186,7 +186,7 @@ void Server::acceptLoop() { // accept new connections
 }
 
 void Server::handleClient(int client_socket) { // after client is accepted, this needs
-    Msg msg;
+    Message msg;
     while (running) {
     // while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
