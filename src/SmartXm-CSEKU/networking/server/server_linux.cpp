@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 #include "networking/FileMeta.h"
-#include "Msg.h"
+#include "Message.h"
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -186,7 +186,7 @@ void Server::acceptLoop() { // accept new connections
 }
 
 void Server::handleClient(int client_socket) { // after client is accepted, this needs
-    Msg msg;
+    Message msg;
     while (running) {
     // while (serverInstance != nullptr) {
         ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
@@ -310,15 +310,25 @@ bool Server::sendFileToClient(int client_sock, const std::string path, const std
 }
 
 // Broadcast to all // might be easier
-bool Server::sendFileToAllClients(const std::string path, const std::string msg) {
-    std::lock_guard<std::mutex> lock(clientsMutex);
+bool Server::sendFileToAllClients(const FileMeta& meta) {
+    // Snapshot sockets
+    std::vector<int> sockets;
+    {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        for (const auto& c : clients) sockets.push_back(c.socfd);
+    }
     bool all_ok = true;
-    for (auto& client : clients) {
-        if (!sendFileToClient(client.socfd, path, msg)) {
-            std::cerr << "Failed to send to " << client.clientName << "\n";
+    std::vector<std::thread> workers;
+    for (int sock : sockets) {
+        workers.emplace_back([&, sock]() {
+            // meta.send_on_socket(sock);
+        if (!meta.send_on_socket(sock)) {
+            std::cerr << "Failed to send FileMeta to client socket: " << sock << "\n";
             all_ok = false;
         }
+        });
     }
+    for (auto& t : workers) t.detach();
     return all_ok;
 }
 

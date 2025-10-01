@@ -1,16 +1,20 @@
 #ifndef SERVER_H
 #define SERVER_H
 #pragma once
+
+#ifdef __linux__
 #include <arpa/inet.h>
 #include <ifaddrs.h>
-#include <mutex>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <string>
 #include <sys/socket.h>
+#include <unistd.h>
+#endif
+
+#include <string>
+#include <mutex>
 #include <sys/types.h>
 #include <thread>
-#include <unistd.h>
 #include <vector>
 #include "ClientInfo.h"
 #include <networking/FileMeta.h>
@@ -21,8 +25,8 @@ public:
     static bool isRunning() {return running;};
     std::string getStatus();
     std::string getLocalIP();
-    bool sendFileToClient(int client_sock, std::string path, std::string msg);
-    bool sendFileToAllClients(std::string path, std::string msg);
+    bool sendFileToClient(int client_sock, std::string path, std::string msg); // bad, need FileMeta
+    bool sendFileToAllClients(const FileMeta& meta); // build successful
     FileMeta receiveFileFromClient(int client_sock);
     void printClientsLoop(int intervalSeconds = 5);
     void stop();

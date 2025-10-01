@@ -4,9 +4,10 @@
 #include "Client.h"
 #include <filesystem>
 #include <QMessageBox>
-#include <studentmodule.cpp>
 #include <networking/FileMeta.h>
 #include <iomanip>
+#include "dependencies/TarHandler/tarhandler.h"
+#include <studentmodulev2.h>
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -119,6 +120,7 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
 */
 
 // new
+extern StudentModuleV2 *studentModuleV2Pointer; // Declare somewhere accessible
 
 void file_receive_loop(int sock_fd) {
     try {
@@ -138,7 +140,23 @@ void file_receive_loop(int sock_fd) {
             std::string save_name;
             if (meta.message == "rulebook") {
                 save_name = "./examResources/rulebook." + meta.extension;
-            } else if (meta.message == "question") {
+
+                if(studentModuleV2Pointer){
+                    std::ofstream ofs(save_name, std::ios::binary);
+                    if (ofs) {
+                        ofs.write(meta.file_data.data(), meta.file_data.size());
+                        ofs.close();
+                        // Notify UI (in main thread)
+                        if (studentModuleV2Pointer)
+                            QMetaObject::invokeMethod(
+                                studentModuleV2Pointer,
+                                "rulebookArrived", // signal, not slot!
+                                Qt::QueuedConnection
+                                );
+                    }
+                }
+
+            } else if (meta.message == "questions.tar") {
                 save_name = "./examResources/questions." + meta.extension;
             } else if (meta.message == "extra") {
                 save_name = "./examResources/notice." + meta.extension;
@@ -154,6 +172,10 @@ void file_receive_loop(int sock_fd) {
                 ofs.write(meta.file_data.data(), meta.file_data.size());
                 ofs.close();
                 std::cout << "[FileReceiver] File saved as: " << save_name << std::endl;
+
+                if (meta.message == "questions.tar") {
+                    TarHandler::extractTar("examResources", "questions.tar");
+                }
             }
         }
     } catch (const std::exception& e) {

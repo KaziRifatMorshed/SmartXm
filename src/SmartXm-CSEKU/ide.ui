@@ -14,7 +14,8 @@
    <string>SmartXm IDE</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="accessories-text-editor"/>
+   <iconset resource="qt_resources.qrc">
+    <normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,6">
@@ -60,6 +61,11 @@
          <attribute name="title">
           <string>Editor 1</string>
          </attribute>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QTextEdit" name="Editor"/>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QSplitter" name="splitter_InputOutput">
@@ -120,9 +126,15 @@
      <x>0</x>
      <y>0</y>
      <width>1036</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -137,6 +149,8 @@
    </attribute>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="qt_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
