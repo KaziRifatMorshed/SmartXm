@@ -19,7 +19,6 @@ SOURCES += \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
     networking/server/server_windows.cpp \
-    studentmodule.cpp \
     teachermodule.cpp \
     toast.cpp \
     welcomewindow.cpp \
@@ -37,7 +36,6 @@ HEADERS += \
     networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
-    studentmodule.h \
     teachermodule.h \
     toast.h \
     welcomewindow.h \
@@ -45,7 +43,6 @@ HEADERS += \
 
 FORMS += \
     ide.ui \
-    studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui
 
