@@ -29,7 +29,7 @@ SOURCES += \
 
 HEADERS += \
     ClientInfo.h \
-    Msg.h \
+    Message.h \
     Student.h \
     TerminalExecuter.h \
     csv.h \
