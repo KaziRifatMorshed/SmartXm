@@ -42,9 +42,9 @@ void StudentModuleV2::on_openRulebook_pushButton_clicked()
 #endif
 }
 
-void StudentModuleV2::ruleBookReceived() {
+void StudentModuleV2::rulebookReceived() {
     QString currentTime = QTime::currentTime().toString();
-    ui->openRulebook_pushButton->setDisabled(false);
+    ui->openRulebook_pushButton->setEnabled(true);
     ui->rulebook_recv_status_label_2->setText(
         "Rulebook received from server at " + currentTime);
     std::cout << "Rulebook received from server at " << currentTime.toStdString()
