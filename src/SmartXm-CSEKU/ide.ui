@@ -14,8 +14,7 @@
    <string>SmartXm IDE</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qt_resources.qrc">
-    <normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</iconset>
+   <iconset theme="accessories-text-editor"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,6">
@@ -126,7 +125,7 @@
      <x>0</x>
      <y>0</y>
      <width>1036</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -149,8 +148,6 @@
    </attribute>
   </widget>
  </widget>
- <resources>
-  <include location="qt_resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
