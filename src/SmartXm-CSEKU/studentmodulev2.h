@@ -25,6 +25,7 @@ private slots:
 private:
     Ui::StudentModuleV2* ui;
     IDE *ideEditor;
+    void ruleBookReceived();
 };
 
 #endif // STUDENTMODULEV2_H
