@@ -148,6 +148,7 @@ void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
           "<html><head/><body><p align=\"center\"><span style=\" "
           "font-size:11pt;\">Local Server Connection Status: <span "
           "style=\"color: green;\">CONNECTED</span></span></p></body></html>");
+      ui->connect_to_local_server_pushButton_3->setEnabled(false);
       clientConnectedToLocalServer = true;
     } else {
       ui->localServerStatus_label_6->setText(
