@@ -16,8 +16,14 @@ public:
     explicit CreateQuestion(QWidget* parent = nullptr);
     ~CreateQuestion();
 
+private slots:
+    void on_save_pushButton_clicked();
+
 private:
     Ui::CreateQuestion* ui;
+    QString path;
+    void createFolder();
+    void writeQuestionToHTML();
 };
 
 #endif // CREATEQUESTION_H
