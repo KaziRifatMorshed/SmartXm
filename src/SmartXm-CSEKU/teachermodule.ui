@@ -25,7 +25,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Dashboard_tab">
        <attribute name="title">
@@ -34,8 +34,29 @@
       </widget>
       <widget class="QWidget" name="QB_tab">
        <attribute name="title">
-        <string>Questionbank</string>
+        <string>Question Bank</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>List of all questions in SmartXm Question Bank</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QTableWidget" name="allQuesList_tableWidget"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="createQues_pushButton">
+          <property name="text">
+           <string>Create Question</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="Server_tab">
        <attribute name="title">
@@ -328,7 +349,7 @@
            <item>
             <widget class="QPushButton" name="testExam_pushButton_3">
              <property name="text">
-              <string>Send Questions</string>
+              <string>Leaderboard</string>
              </property>
             </widget>
            </item>
@@ -377,7 +398,7 @@
      <x>0</x>
      <y>0</y>
      <width>901</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

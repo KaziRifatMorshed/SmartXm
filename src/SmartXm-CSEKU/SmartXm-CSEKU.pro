@@ -12,6 +12,8 @@ win32:LIBS += -lws2_32
 
 SOURCES += \
     codeRunner.cpp \
+    createormodifyexam.cpp \
+    createquestion.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
@@ -32,6 +34,8 @@ HEADERS += \
     Message.h \
     Student.h \
     TerminalExecuter.h \
+    createormodifyexam.h \
+    createquestion.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -47,6 +51,8 @@ HEADERS += \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    createormodifyexam.ui \
+    createquestion.ui \
     ide.ui \
     studentmodulev2.ui \
     teachermodule.ui \

@@ -43,7 +43,6 @@ CREATE TABLE Exam (
     topic_name VARCHAR(255) NOT NULL,
     exam_no INT,
     course_code VARCHAR(50) NOT NULL,
-    show_marks BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (course_code) REFERENCES Course(course_code)
 );
 
