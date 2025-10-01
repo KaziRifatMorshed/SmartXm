@@ -13,7 +13,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "networking/FileMeta.h"
-#include "Msg.h"
+#include "Message.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -200,7 +200,7 @@ void Server::acceptLoop() {
 }
 
 void Server::handleClient(int client_socket) {
-    Msg msg;
+    Message msg;
     while (running) {
         int valread = recv(client_socket, (char*)&msg, sizeof(msg), 0);
         if (valread <= 0) {

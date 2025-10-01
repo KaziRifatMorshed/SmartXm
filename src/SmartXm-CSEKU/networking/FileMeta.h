@@ -12,11 +12,22 @@
 #endif
 
 #ifdef _WIN32
+// Define these before any Windows includes to avoid conflicts
+#define WIN32_LEAN_AND_MEAN
+// #define NOMINMAX
+#define NOGDI
+#define NOSERVICE
+#define NOMCX
+#define NOIME
+#define NORPC          // This specifically helps with the byte conflict
+
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #endif
 
 #include <iostream>
+
+// Rest of your FileMeta class...
 
 
 class FileMeta {
@@ -55,15 +66,15 @@ public:
         return out;
     }
 
-    static FileMeta deserialize(const std::vector<char>& bytes) {
+    static FileMeta deserialize(const std::vector<char>& byte_s) {
         FileMeta m;
         size_t offset = 0;
 
         auto read_string = [&](std::string& out) {
             uint32_t len;
-            std::memcpy(&len, bytes.data() + offset, sizeof(len));
+            std::memcpy(&len, byte_s.data() + offset, sizeof(len));
             offset += sizeof(len);
-            out.assign(bytes.data() + offset, len);
+            out.assign(byte_s.data() + offset, len);
             offset += len;
         };
 
@@ -71,15 +82,15 @@ public:
         read_string(m.extension);
         read_string(m.message);
 
-        std::memcpy(&m.sent_time, bytes.data() + offset, sizeof(m.sent_time));
+        std::memcpy(&m.sent_time, byte_s.data() + offset, sizeof(m.sent_time));
         offset += sizeof(m.sent_time);
 
         uint64_t datasz;
-        std::memcpy(&datasz, bytes.data() + offset, sizeof(datasz));
+        std::memcpy(&datasz, byte_s.data() + offset, sizeof(datasz));
         offset += sizeof(datasz);
         m.file_data.resize(datasz);
         if (datasz > 0) {
-            std::memcpy(m.file_data.data(), bytes.data() + offset, datasz);
+            std::memcpy(m.file_data.data(), byte_s.data() + offset, datasz);
             offset += datasz;
         }
         return m;
@@ -87,13 +98,13 @@ public:
 
 #ifdef __linux__
     bool send_on_socket(int sock_fd) const {
-        std::vector<char> bytes = serialize();
-        uint64_t total_size = bytes.size();
+        std::vector<char> byte_s = serialize();
+        uint64_t total_size = byte_s.size();
         if (::send(sock_fd, &total_size, sizeof(total_size), 0) != sizeof(total_size))
             return false;
         size_t sent = 0;
         while (sent < total_size) {
-            ssize_t n = ::send(sock_fd, bytes.data() + sent, total_size - sent, 0);
+            ssize_t n = ::send(sock_fd, byte_s.data() + sent, total_size - sent, 0);
             if (n <= 0) return false;
             sent += n;
         }
@@ -121,13 +132,13 @@ public:
 
 #ifdef _WIN32
     bool send_on_socket(SOCKET sock_fd) const {
-        std::vector<char> bytes = serialize();
-        uint64_t total_size = bytes.size();
+        std::vector<char> byte_s = serialize();
+        uint64_t total_size = byte_s.size();
         if (::send(sock_fd, reinterpret_cast<const char*>(&total_size), sizeof(total_size), 0) != sizeof(total_size))
             return false;
         size_t sent = 0;
         while (sent < total_size) {
-            int n = ::send(sock_fd, bytes.data() + sent, static_cast<int>(total_size - sent), 0);
+            int n = ::send(sock_fd, byte_s.data() + sent, static_cast<int>(total_size - sent), 0);
             if (n <= 0) return false;
             sent += n;
         }
