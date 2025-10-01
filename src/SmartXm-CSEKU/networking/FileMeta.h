@@ -199,7 +199,10 @@ public:
     }
 #endif
 
+
 #ifdef _WIN32
+
+
     bool send_on_socket(SOCKET sock_fd) const {
         std::vector<char> byte_s = serialize();
 #ifdef DEBUG_ON
@@ -231,6 +234,9 @@ public:
 #endif
         return true;
     }
+
+
+
     static FileMeta recv_from_socket(SOCKET sock_fd) {
 #ifdef DEBUG_ON
         std::cout << "[FileMeta::recv_from_socket] Processing a received file from server" << std::endl;
@@ -257,5 +263,7 @@ public:
 #endif
         return deserialize(buffer);
     }
+
+
 #endif
 };

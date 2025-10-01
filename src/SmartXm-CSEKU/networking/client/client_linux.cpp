@@ -46,98 +46,11 @@ void Client::disconnect() {
     }
 }
 
-/*
-void Client::chatLoop() {
-  while (connected) {
-    std::string msg;
-    std::getline(std::cin, msg);
-    if (msg == "/quit")
-      break;
-    send(sock_fd, msg.c_str(), msg.size(), 0);
-  }
-  disconnect();
-}
-*/
-
-void receive_file(int client_sock_fd) {
+void receive_file(int client_sock_fd) { // UNNECESSARY, ei kaj file receive loop e kore dicche 
     // receive file and check, ki aslo
 }
 
-/*
-void receive_file(int client_sock_fd) {
-  while (true) {
-    size_t file_size;
-    size_t bytes_received =
-        recv(client_sock_fd, &file_size, sizeof(file_size), MSG_WAITALL);
-    if (bytes_received <= 0) {
-      std::cerr << "Server disconnected or error receiving file size."
-                << std::endl;
-      break;
-    }
 
- std::cout << "Receiving file of size: " << file_size << " bytes."
-           << std::endl;
-
- char *file_buffer = new char[file_size];
- bytes_received = recv(client_sock_fd, file_buffer, file_size, MSG_WAITALL);
- if (bytes_received != file_size) {
-   std::cerr << "Error receiving file data. Expected: " << file_size
-             << ", received: " << bytes_received << std::endl;
-   delete[] file_buffer;
-   break;
- }
-
- std::string filename = "rulebook.pdf";
- std::ofstream output_file(filename, std::ios::binary);
- if (!output_file.is_open()) {
-   std::cerr << "Error opening file for writing: " << filename << std::endl;
-   delete[] file_buffer;
-   break;
- }
-
-
- output_file.write(file_buffer, file_size);
- output_file.close();
- std::cout << "File saved as: " << filename << std::endl;
-
- delete[] file_buffer;
-}
-}
-*/
-
-/*
-void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
-  // Event-driven: wait for "file" message from server, then receive file
-  while (connected) {
-    char buffer[CLIENT_BUFFER_SIZE]{};
-    ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
-    if (valread <= 0)
-      break;
-
- std::string msg(buffer, valread);
-
- if (msg == "RULEBOOK_TRANSFER") {
-   // Receive file size
-   ssize_t sz = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
-   size_t file_size = std::stoul(std::string(buffer, sz));
-   std::ofstream outfile("rulebook.pdf", std::ios::binary);
-   size_t total_received = 0;
-   while (total_received < file_size) {
-     ssize_t n = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
-     if (n <= 0)
-       break;
-     outfile.write(buffer, n);
-     total_received += n;
-   }
-   outfile.close();
-   std::cout << "Rulebook received!\n";
- }
- // Add more events as needed
-}
-}
-*/
-
-// new
 extern StudentModuleV2 *studentModuleV2Pointer; // Declare somewhere accessible
 
 void file_receive_loop(int sock_fd) {
@@ -259,43 +172,6 @@ FileMeta receive_file_from_server(int sock_fd) {
 #endif
     return FileMeta::recv_from_socket(sock_fd);
 }
-
-
-/*
-void Client::sendSubmission() { // need to check later
-  if (!connected)
-    return;
-  std::string submissionPath;
-  std::cout << "Enter submission file path: ";
-  std::getline(std::cin, submissionPath);
-
-if (!std::filesystem::exists(submissionPath)) {
- std::cerr << "Submission file not found.\n";
- return;
-}
-
-std::ifstream infile(submissionPath, std::ios::binary | std::ios::ate);
-auto file_size = infile.tellg();
-infile.seekg(0);
-
-// Notify server
-std::string header = "SUBMISSION_TRANSFER";
-send(sock_fd, header.c_str(), header.size(), 0);
-std::this_thread::sleep_for(std::chrono::milliseconds(100));
-std::string size_str = std::to_string(file_size);
-send(sock_fd, size_str.c_str(), size_str.size(), 0);
-std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-char buffer[CLIENT_BUFFER_SIZE]{};
-while (!infile.eof()) {
- infile.read(buffer, CLIENT_BUFFER_SIZE);
- std::streamsize n = infile.gcount();
- send(sock_fd, buffer, n, 0);
-}
-infile.close();
-std::cout << "Submission sent!\n";
-}
-*/
 
 
 void Client::updateAccountInfo() { // kivabe implement korbo ???
