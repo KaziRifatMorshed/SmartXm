@@ -16,11 +16,14 @@ class StudentModuleV2 : public QMainWindow
 public:
     explicit StudentModuleV2(QWidget* parent = nullptr);
     ~StudentModuleV2();
+    // void showMsgBox(QString type, QString title, QString text);
 
 private slots:
     void on_openCodeEditor_pushButton_clicked();
 
     void on_openRulebook_pushButton_clicked();
+
+    void on_exit_profileTab_pushButton_clicked();
 
 private:
     Ui::StudentModuleV2* ui;

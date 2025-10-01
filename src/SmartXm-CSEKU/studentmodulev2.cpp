@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <QTime>
+// #include <QMessageBox>
 
 StudentModuleV2::StudentModuleV2(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModuleV2) {
     ui->setupUi(this);
@@ -49,3 +50,30 @@ void StudentModuleV2::ruleBookReceived() {
     std::cout << "Rulebook received from server at " << currentTime.toStdString()
               << std::endl;
 }
+
+
+// void StudentModule::showMsgBox(QString type, QString title, QString text) {
+//     if (type == "information") {
+//         QMessageBox::information(this, title, text);
+//     } else if (type == "warning") {
+//         QMessageBox::warning(this, title, text);
+//     } else if (type == "critical") {
+//         QMessageBox::critical(this, title, text);
+//     }
+// }
+
+// void _showMsgBox(QWidget *parent, QString type, QString title, QString text) {
+//     if (type == "information") {
+//         QMessageBox::information(parent, title, text);
+//     } else if (type == "warning") {
+//         QMessageBox::warning(parent, title, text);
+//     } else if (type == "critical") {
+//         QMessageBox::critical(parent, title, text);
+//     }
+// }
+
+void StudentModuleV2::on_exit_profileTab_pushButton_clicked()
+{
+    close();
+}
+
