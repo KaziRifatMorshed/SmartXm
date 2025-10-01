@@ -90,7 +90,7 @@ void file_receive_loop(int sock_fd) {
                         if (studentModuleV2Pointer)
                             QMetaObject::invokeMethod(
                                 studentModuleV2Pointer,
-                                "rulebookArrived", // signal, not slot!
+                                "rulebookReceived",
                                 Qt::QueuedConnection
                                 );
 #ifdef DEBUG_ON
