@@ -11,6 +11,8 @@ CONFIG += c++20
 win32:LIBS += -lws2_32
 
 SOURCES += \
+    codeRunner.cpp \
+    dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
     networking/client/client.cpp \
@@ -33,6 +35,7 @@ HEADERS += \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
+    dependencies/TarHandler/tarhandler.h \
     ide.h \
     networking/FileMeta.h \
     networking/client/Client.h \

@@ -6,9 +6,13 @@
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
+// #include "studentmodule.h"
 
 Client *client;
 bool clientConnectedToLocalServer = false;
+
+// Provide the actual storage for the extern variable
+StudentModule* studentModulePointer = nullptr;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::WelcomeWindow),
@@ -118,11 +122,9 @@ void WelcomeWindow::on_pushButton_clicked() {
        */
       teacherModuleWindow->show();
     } else if (inputtedEmail == "s") {
-      close();
+        close();
         studentModuleV2Window = new StudentModuleV2();
         studentModuleV2Window->show();
-      // studentModuleWindow = new StudentModule();
-      // studentModuleWindow->show();
     }
   }
 }

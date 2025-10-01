@@ -16,6 +16,9 @@
 #pragma comment(lib, "ws2_32.lib")
 #endif
 
+#include <iostream>
+
+
 class FileMeta {
 public:
     std::string filename;
@@ -97,6 +100,7 @@ public:
         return true;
     }
     static FileMeta recv_from_socket(int sock_fd) {
+        std::cout << "processing a received file from server" << std::endl;
         uint64_t total_size = 0;
         size_t recvd = 0;
         while (recvd < sizeof(total_size)) {

@@ -1,6 +1,7 @@
 // // #include "studentmodule.h"
 // // #include "ui_studentmodule.h"
 
+
 // // #include <QDesktopServices>
 // #include <QDir>
 // // #include <QMessageBox>
@@ -12,6 +13,7 @@
 // #include <iostream>
 
 // StudentModule::StudentModule(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModule) {
+
 
 //     ui->setupUi(this);
 //     // ui->openRuleBook_pushButton->setDisabled(false);
