@@ -54,7 +54,7 @@ public:
         std::vector<char> out;
 
         auto write_string = [&](const std::string& s) {
-            size_t len = s.size();
+            uint32_t len = static_cast<uint32_t>(s.size()); // Use uint32_t
             out.insert(out.end(), reinterpret_cast<const char*>(&len), reinterpret_cast<const char*>(&len) + sizeof(len));
             out.insert(out.end(), s.begin(), s.end());
         };
