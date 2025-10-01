@@ -4,10 +4,10 @@
 #include "Client.h"
 #include <filesystem>
 #include <QMessageBox>
-#include <studentmodule.cpp>
 #include <networking/FileMeta.h>
 #include <iomanip>
 #include "dependencies/TarHandler/tarhandler.h"
+#include <studentmodulev2.h>
 
 Client *Client::clientInstance = nullptr;
 std::time_t Client::lastLoginTime = 0;
@@ -120,7 +120,7 @@ void Client::receiveFileLoop() { // NOT USING ANYMORE !!!!!!!!
 */
 
 // new
-extern StudentModule *studentModulePointer; // Declare somewhere accessible
+extern StudentModuleV2 *studentModuleV2Pointer; // Declare somewhere accessible
 
 void file_receive_loop(int sock_fd) {
     try {
@@ -141,15 +141,15 @@ void file_receive_loop(int sock_fd) {
             if (meta.message == "rulebook") {
                 save_name = "./examResources/rulebook." + meta.extension;
 
-                if(studentModulePointer){
+                if(studentModuleV2Pointer){
                     std::ofstream ofs(save_name, std::ios::binary);
                     if (ofs) {
                         ofs.write(meta.file_data.data(), meta.file_data.size());
                         ofs.close();
                         // Notify UI (in main thread)
-                        if (studentModulePointer)
+                        if (studentModuleV2Pointer)
                             QMetaObject::invokeMethod(
-                                studentModulePointer,
+                                studentModuleV2Pointer,
                                 "rulebookArrived", // signal, not slot!
                                 Qt::QueuedConnection
                                 );
