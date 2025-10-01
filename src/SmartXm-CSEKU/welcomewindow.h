@@ -5,7 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <teachermodule.h>
-#include <studentmodule.h>
+// #include <studentmodule.h>
 #include <studentmodulev2.h>
 // #include <ide.h>
 
@@ -46,7 +46,7 @@ private:
     void checkConnection();
 
     TeacherModule *teacherModuleWindow;
-    StudentModule *studentModuleWindow;
+    // StudentModule *studentModuleWindow;
     StudentModuleV2 *studentModuleV2Window;
     // IDE *ideEditor;
 };
