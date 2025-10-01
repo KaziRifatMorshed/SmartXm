@@ -20,6 +20,8 @@ public:
 private slots:
     void on_openCodeEditor_pushButton_clicked();
 
+    void on_openRulebook_pushButton_clicked();
+
 private:
     Ui::StudentModuleV2* ui;
     IDE *ideEditor;
