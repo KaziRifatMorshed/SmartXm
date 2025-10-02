@@ -18,17 +18,17 @@ public:
     ~StudentModuleV2();
     // void showMsgBox(QString type, QString title, QString text);
 
-public slots:
-    void rulebookReceived();  // <--- Only this slot, no signal needed
-
 private slots:
     void on_openCodeEditor_pushButton_clicked();
+
     void on_openRulebook_pushButton_clicked();
+
     void on_exit_profileTab_pushButton_clicked();
 
 private:
     Ui::StudentModuleV2* ui;
     IDE *ideEditor;
+    void ruleBookReceived();
 };
 
 #endif // STUDENTMODULEV2_H
