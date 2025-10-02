@@ -125,7 +125,6 @@ void WelcomeWindow::on_pushButton_clicked() {
         close();
         studentModuleV2Window = new StudentModuleV2();
         studentModuleV2Window->show();
-        studentModuleV2Pointer = studentModuleV2Window;
     }
   }
 }
