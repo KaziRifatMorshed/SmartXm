@@ -19,12 +19,18 @@ public:
 private slots:
     void on_save_pushButton_clicked();
 
+    void on_soluSrcCodeSaveBtn_pushButton_2_clicked();
+
+    void on_saveEditorial_pushButton_2_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
     void createFolder();
     void writeQuestionToHTML();
-    void convertHtmlToPdf();
+    void convertHtmlToPdf(QString source, QString destination);
+    QString getFileContent(QString path);
+    void saveToFile(QString path, QString& textToSave);
 };
 
 #endif // CREATEQUESTION_H

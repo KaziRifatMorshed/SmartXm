@@ -13,14 +13,25 @@ CreateQuestion::~CreateQuestion() { delete ui; }
 
 void CreateQuestion::createFolder()
 {
-    QString questionName = ui->quesTitle_lineEdit->text();
+    QString questionName = ui->quesTitle_lineEdit->text().replace(' ', '_');
+
+    if (questionName.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Please write question name first.");
+
+        return;
+    }
 
     qDebug() << questionName << "\n";
 
-    std::filesystem::create_directory(questionName.toStdString());
-
     path = std::filesystem::current_path().c_str();
     path += "/" + questionName + "/";
+
+    if (!std::filesystem::is_directory(path.toStdString())) {
+        std::filesystem::create_directory(questionName.toStdString());
+    }
+    else {
+        qDebug() << path << " already exists\n";
+    }
 
     qDebug() << path << "\n";
 }
@@ -68,17 +79,13 @@ void CreateQuestion::writeQuestionToHTML()
     ToastManager::showMessage(this, "Statement saved as: " + questionName + ".html");
 }
 
-void CreateQuestion::convertHtmlToPdf()
+void CreateQuestion::convertHtmlToPdf(QString source, QString destination)
 {
     QWebEnginePage *page = new QWebEnginePage;
 
-    QString questionName = ui->quesTitle_lineEdit->text();
-    QString htmlFilePath = path + questionName + ".html";
-    QString pdfFilePath = path + questionName + ".pdf";
-
-    QFile htmlFile(htmlFilePath);
+    QFile htmlFile(source);
     if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "Failed to open HTML file:" << htmlFilePath;
+        qDebug() << "Failed to open HTML file:" << source;
         return;
     }
 
@@ -88,9 +95,9 @@ void CreateQuestion::convertHtmlToPdf()
 
     QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
         if (ok) {
-            page->printToPdf(pdfFilePath);
+            page->printToPdf(destination);
         } else {
-            qDebug() << "Failed to load HTML content from file:" << htmlFilePath;
+            qDebug() << "Failed to load HTML content from file:" << source;
         }
     });
 }
@@ -104,12 +111,87 @@ void CreateQuestion::on_save_pushButton_clicked()
     writeQuestionToHTML();
 
     // Convert html to pdf
-    convertHtmlToPdf();
+    QString questionName = ui->quesTitle_lineEdit->text();
+
+    convertHtmlToPdf(path + questionName + ".html", path + questionName + ".pdf");
 
     // Save the testcases
     // Save checker
     // Save limits
     // Save solutions
+    on_soluSrcCodeSaveBtn_pushButton_2_clicked();
+
     // Save editorial
+}
+
+QString CreateQuestion::getFileContent(QString path) {
+    QFile file(path);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot read file: " + file.errorString());
+
+        return QString();
+    }
+
+    QString text = file.readAll();
+
+    file.close();
+
+    return text;
+}
+
+void CreateQuestion::saveToFile(QString path, QString& textToSave) {
+    QFile file(path);
+
+    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot write to file: " + file.errorString());
+
+        return;
+    }
+
+    QTextStream out(&file);
+    out << textToSave;
+
+    file.close();
+}
+
+void CreateQuestion::on_soluSrcCodeSaveBtn_pushButton_2_clicked()
+{
+    createFolder();
+
+    QString fileName = "Solution";
+
+    if (ui->solutionLanguage_comboBox->currentText() == "C/C++") {
+        fileName += ".cpp";
+    }
+    else if (ui->solutionLanguage_comboBox->currentText() == "Python") {
+        fileName += ".py";
+    }
+    else {
+        fileName += ".java";
+    }
+
+    QString solution = ui->soluSourceCode_textEdit->toPlainText();
+
+    saveToFile(path + fileName, solution);
+
+    ToastManager::showMessage(this, "Saved as: " + fileName);
+}
+
+
+void CreateQuestion::on_saveEditorial_pushButton_2_clicked()
+{
+    createFolder();
+
+    QString fileName = "Editorial.html";
+    QString outFileName = "Editorial.pdf";
+
+    QString editorial = ui->editorialTextBox_textEdit->toHtml();
+
+    saveToFile(path + fileName, editorial);
+
+    convertHtmlToPdf(path + fileName, path + outFileName);
+
+    ToastManager::showMessage(this, "Saved as: " + outFileName);
 }
 
