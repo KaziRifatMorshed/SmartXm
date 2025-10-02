@@ -28,6 +28,9 @@ try {
 
 CREATE DATABASE IF NOT EXISTS SmartXmRemoteServer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- 2. CRITICAL FIX: Select the database to work in
+USE SmartXmRemoteServer;
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -52,11 +55,11 @@ CREATE TABLE IF NOT EXISTS users (
 -- Dummy data for users table
 
 INSERT INTO users (name, email, password, student_id, role) VALUES
-('Alice Smith', 'alice.smith@example.com', 'password123', 'S10001', 'Student'),
-('Bob Johnson', 'bob.johnson@example.com', 'mypassword', 'S10002', 'Student'),
-('Carol Williams', 'carol.williams@example.com', 'securepass', 'S10003', 'Student'),
+('Alice Smith', 'alice.smith@example.com', 'password123', '230201', 'Student'),
+('Bob Johnson', 'bob.johnson@example.com', 'mypassword', '240205', 'Student'),
+('Carol Williams', 'carol.williams@example.com', 'securepass', '210236', 'Student'),
 ('David Brown', 'david.brown@example.com', 'letmein', 'T20001', 'Teacher'),
-('Eve Davis', 'eve.davis@example.com', 'passw0rd', 'S10004', 'Student'),
+('Eve Davis', 'eve.davis@example.com', 'passw0rd', '250202', 'Student'),
 ('Frank Miller', 'frank.miller@example.com', 'qwerty', 'T20002', 'Teacher');
 
 */
