@@ -122,6 +122,7 @@ void CreateQuestion::on_save_pushButton_clicked()
     on_soluSrcCodeSaveBtn_pushButton_2_clicked();
 
     // Save editorial
+    on_saveEditorial_pushButton_2_clicked();
 }
 
 QString CreateQuestion::getFileContent(QString path) {
@@ -186,9 +187,16 @@ void CreateQuestion::on_saveEditorial_pushButton_2_clicked()
     QString fileName = "Editorial.html";
     QString outFileName = "Editorial.pdf";
 
-    QString editorial = ui->editorialTextBox_textEdit->toHtml();
+    QString questionName = ui->quesTitle_lineEdit->text();
+    QString document;
 
-    saveToFile(path + fileName, editorial);
+    document = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>" + questionName + "</title></head><body>\n";
+
+    document += "<pre>" + ui->editorialTextBox_textEdit->toPlainText() + "</pre>\n";
+
+    document += "</body></html>\n";
+
+    saveToFile(path + fileName, document);
 
     convertHtmlToPdf(path + fileName, path + outFileName);
 
