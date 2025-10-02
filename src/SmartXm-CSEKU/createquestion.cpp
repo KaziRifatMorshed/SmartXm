@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <toast.h>
-// #include <QWebEnginePage>
+#include <QWebEnginePage>
 
 CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) { ui->setupUi(this); }
 
@@ -68,39 +68,32 @@ void CreateQuestion::writeQuestionToHTML()
     ToastManager::showMessage(this, "Statement saved as: " + questionName + ".html");
 }
 
-// void convertHtmlToPdf(const QString &htmlFilePath, const QString &outputPdfPath)
-// {
-//     // Create a QWebEnginePage to handle the HTML content
-//     QWebEnginePage *page = new QWebEnginePage;
+void CreateQuestion::convertHtmlToPdf()
+{
+    QWebEnginePage *page = new QWebEnginePage;
 
-//            // Read the HTML content from the file
-//     QFile htmlFile(htmlFilePath);
-//     if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//         qDebug() << "Failed to open HTML file:" << htmlFilePath;
-//         return;
-//     }
+    QString questionName = ui->quesTitle_lineEdit->text();
+    QString htmlFilePath = path + questionName + ".html";
+    QString pdfFilePath = path + questionName + ".pdf";
 
-//     QString htmlContent = htmlFile.readAll();
+    QFile htmlFile(htmlFilePath);
+    if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Failed to open HTML file:" << htmlFilePath;
+        return;
+    }
 
-//            // Load the HTML content into the QWebEnginePage
-//     page->setHtml(htmlContent);
+    QString htmlContent = htmlFile.readAll();
 
-//            // Connect the loadFinished signal to the slot that generates the PDF
-//     QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
-//         if (ok) {
-//             // Print to PDF
-//             page->printToPdf(outputPdfPath, [](bool success) {
-//                 if (success) {
-//                     qDebug() << "PDF generated successfully at" << outputPdfPath;
-//                 } else {
-//                     qDebug() << "Failed to generate PDF.";
-//                 }
-//             });
-//         } else {
-//             qDebug() << "Failed to load HTML content from file:" << htmlFilePath;
-//         }
-//     });
-// }
+    page->setHtml(htmlContent);
+
+    QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
+        if (ok) {
+            page->printToPdf(pdfFilePath);
+        } else {
+            qDebug() << "Failed to load HTML content from file:" << htmlFilePath;
+        }
+    });
+}
 
 void CreateQuestion::on_save_pushButton_clicked()
 {
@@ -111,6 +104,8 @@ void CreateQuestion::on_save_pushButton_clicked()
     writeQuestionToHTML();
 
     // Convert html to pdf
+    convertHtmlToPdf();
+
     // Save the testcases
     // Save checker
     // Save limits

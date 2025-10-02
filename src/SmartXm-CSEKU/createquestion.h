@@ -24,6 +24,7 @@ private:
     QString path;
     void createFolder();
     void writeQuestionToHTML();
+    void convertHtmlToPdf();
 };
 
 #endif // CREATEQUESTION_H
