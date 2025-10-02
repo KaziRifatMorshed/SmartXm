@@ -6,20 +6,23 @@
 #include <QSqlError>
 #include <QDebug>
 
-void connectToXamppDb() {
+void connectToXamppDB() {
+    // check all drivers
     qDebug() << QSqlDatabase::drivers();
+
     QSqlDatabase db = QSqlDatabase::addDatabase("QMARIADB"); // "QMYSQL" driver
-    db.setHostName("127.0.0.1");
-    db.setPort(3306);
-    db.setDatabaseName("your_db_name"); // Replace with your DB name
+    db.setHostName("localhost"); // localhost / 127.0.0.1
+    db.setPort(3306); // default
+    db.setDatabaseName("smartxmremoteserver"); // Replace with your DB name
     db.setUserName("root");             // Default XAMPP user
     db.setPassword("");                 // Default XAMPP password (empty)
 
     if (!db.open()) {
         qDebug() << "Database connection failed:" << db.lastError().text();
         return;
+    } else {
+        qDebug() << "Connected!";
     }
-    qDebug() << "Connected!";
 }
 
 #endif // DB_XAMPP_H

@@ -33,7 +33,7 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
   ui->tabWidget->setTabEnabled(3, false);
   ui->tabWidget->setCurrentIndex(1);
 
-  connectToXamppDb();
+  connectToXamppDB();
 }
 
 void WelcomeWindow::on_studentWelcome_pushButton_4_clicked() {
