@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "QMYSQLDriver",
+            "lineNumber": 36,
+            "object": true,
+            "qualifiedClassName": "QMYSQLDriver",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QSqlDriver"
+                }
+            ]
+        }
+    ],
+    "inputFile": "qsql_mysql_p.h",
+    "outputRevision": 69
+}

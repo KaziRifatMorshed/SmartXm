@@ -1,0 +1,4 @@
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.tests/binary_for_strip_built/CMakeFiles/lib1.dir
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.tests/binary_for_strip_built/CMakeFiles/print_lib_path.dir
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.tests/binary_for_strip_built/CMakeFiles/edit_cache.dir
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.tests/binary_for_strip_built/CMakeFiles/rebuild_cache.dir

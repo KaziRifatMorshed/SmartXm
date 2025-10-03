@@ -1,0 +1,267 @@
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: qsqlitedriverplugins-6.9.2
+DocumentNamespace: https://qt.io/spdxdocs/qsqlitedriverplugins-6.9.2
+Creator: Organization: TheQtCompany
+Creator: Tool: Qt Build System
+CreatorComment: <text>This SPDX document was created from CMake 4.1.1, using the qt
+build system from https://code.qt.io/cgit/qt/qtbase.git/tree/cmake/QtPublicSbomHelpers.cmake</text>
+Created: 2025-10-03T20:16:15Z${QT_SBOM_EXTERNAL_DOC_REFS}
+
+PackageName: GNU
+SPDXID: SPDXRef-compiler
+PackageVersion: 15.2.1
+PackageDownloadLocation: NOASSERTION
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+PackageCopyrightText: NOASSERTION
+PackageSupplier: Organization: Anonymous
+FilesAnalyzed: false
+PackageSummary: <text>The compiler as identified by CMake, running on Linux (x86_64)</text>
+PrimaryPackagePurpose: APPLICATION
+Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-Package-qsqlitedriverplugins
+RelationshipComment: <text>SPDXRef-Package-qsqlitedriverplugins is built by compiler GNU version 15.2.1</text>
+
+PackageName: qsqlitedriverplugins
+SPDXID: SPDXRef-Package-qsqlitedriverplugins
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.2:*:*:*:*:*:*:*
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins@6.9.2
+PackageVersion: 6.9.2
+PackageSupplier: Organization: TheQtCompany
+PackageDownloadLocation: git://code.qt.io/qt/qsqlitedriverplugins.git
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+PackageCopyrightText: Copyright (C) The Qt Company Ltd. and other contributors.
+PackageHomePage: https://qt.io
+PackageComment: <text>Built by CMake 4.1.1 with RelWithDebInfo configuration for Linux (x86_64)</text>
+PackageVerificationCode: ${QT_SBOM_VERIFICATION_CODE}
+BuiltDate: 2025-10-03T20:16:15Z
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-Package-qsqlitedriverplugins
+
+PackageName: QPSQLDriverPlugin
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin
+PackageDownloadLocation: git://code.qt.io/qt/qsqlitedriverplugins.git
+PackageVersion: 6.9.2
+PackageSupplier: Organization: TheQtCompany
+PackageLicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+PackageLicenseDeclared: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qsqlitedriverplugins?library_name=QPSQLDriverPlugin#psql
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins-QPSQLDriverPlugin?vcs_url=https://code.qt.io/qt/qsqlitedriverplugins.git&library_name=QPSQLDriverPlugin#psql
+FilesAnalyzed: true
+PackageCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: QPSQLDriverPlugin
+</text>
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qt:6.9.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.2:*:*:*:*:*:*:*
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Core
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Sql
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-PlatformPluginInternal
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin DEPENDS_ON SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-PostgreSQL
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin
+
+FileName: ./plugins/sqldrivers/libqsqlpsql.so
+SPDXID: SPDXRef-PackagedFile-qt-plugin-QPSQLDriverPlugin
+FileType: BINARY
+FileChecksum: SHA1: 98e23a3b1a5ed8b3fa02f53c98933ebf4946c070
+LicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+FileCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+LicenseInfoInFile: NOASSERTION
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QPSQLDriverPlugin CONTAINS SPDXRef-PackagedFile-qt-plugin-QPSQLDriverPlugin
+Relationship: SPDXRef-PackagedFile-qt-plugin-QPSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/psql/main.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QPSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/psql/qsql_psql.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QPSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/psql/qsql_psql_p.h
+
+PackageName: QMYSQLDriverPlugin
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin
+PackageDownloadLocation: git://code.qt.io/qt/qsqlitedriverplugins.git
+PackageVersion: 6.9.2
+PackageSupplier: Organization: TheQtCompany
+PackageLicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+PackageLicenseDeclared: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qsqlitedriverplugins?library_name=QMYSQLDriverPlugin#mysql
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins-QMYSQLDriverPlugin?vcs_url=https://code.qt.io/qt/qsqlitedriverplugins.git&library_name=QMYSQLDriverPlugin#mysql
+FilesAnalyzed: true
+PackageCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: QMYSQLDriverPlugin
+</text>
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qt:6.9.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.2:*:*:*:*:*:*:*
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Core
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Sql
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-PlatformPluginInternal
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin DEPENDS_ON SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-MySQL
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin
+
+FileName: ./plugins/sqldrivers/libqsqlmysql.so
+SPDXID: SPDXRef-PackagedFile-qt-plugin-QMYSQLDriverPlugin
+FileType: BINARY
+FileChecksum: SHA1: 05179556bdd3aca38ae2c0fa3477c989b545578b
+LicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+FileCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+LicenseInfoInFile: NOASSERTION
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin CONTAINS SPDXRef-PackagedFile-qt-plugin-QMYSQLDriverPlugin
+Relationship: SPDXRef-PackagedFile-qt-plugin-QMYSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/mysql/main.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QMYSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/mysql/qsql_mysql.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QMYSQLDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/mysql/qsql_mysql_p.h
+
+PackageName: QSQLiteDriverPlugin_Attribution_sqlite
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-qt-3rdparty-sources-QSQLiteDriverPlugin-Attribution-sqlite
+PackageDownloadLocation: https://www.sqlite.org/2025/sqlite-amalgamation-3500400.zip
+PackageVersion: 3.50.4
+PackageSupplier: Organization: TheQtCompany
+PackageLicenseConcluded: blessing
+PackageLicenseDeclared: NOASSERTION
+ExternalRef: PACKAGE-MANAGER purl pkg:github/sqlite/sqlite@version-3.50.4
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qsqlitedriverplugins?library_name=QSQLiteDriverPlugin_Attribution_sqlite#sqlite
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins-QSQLiteDriverPlugin_Attribution_sqlite?vcs_url=https://code.qt.io/qt/qsqlitedriverplugins.git&library_name=QSQLiteDriverPlugin_Attribution_sqlite#sqlite
+FilesAnalyzed: true
+PackageCopyrightText: <text>The authors disclaim copyright to the source code. However, a license can be obtained if needed.</text>
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: QSQLiteDriverPlugin_Attribution_sqlite
+    Information extracted from:
+     /home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite/qt_attribution.json
+    Entry index: 0
+    Id: sqlite
+    Name: SQLite
+    Description: SQLite is a small C library that implements a self-contained, embeddable, zero-configuration SQL database engine.
+    Qt usage: Used in Qt SQL Lite plugin. Configure Qt with -system-sqlite or -no-sqlite to avoid.
+    License: SQLite Blessing
+</text>
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:sqlite:sqlite:3.50.4:*:*:*:*:*:*:*
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-qt-3rdparty-sources-QSQLiteDriverPlugin-Attribution-sqlite
+
+PackageName: QSQLiteDriverPlugin
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin
+PackageDownloadLocation: git://code.qt.io/qt/qsqlitedriverplugins.git
+PackageVersion: 6.9.2
+PackageSupplier: Organization: TheQtCompany
+PackageLicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+PackageLicenseDeclared: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qsqlitedriverplugins?library_name=QSQLiteDriverPlugin#sqlite
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins-QSQLiteDriverPlugin?vcs_url=https://code.qt.io/qt/qsqlitedriverplugins.git&library_name=QSQLiteDriverPlugin#sqlite
+FilesAnalyzed: true
+PackageCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: QSQLiteDriverPlugin
+</text>
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qt:6.9.2:*:*:*:*:*:*:*
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.2:*:*:*:*:*:*:*
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Core
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-Sql
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin DEPENDS_ON DocumentRef-qtbase:SPDXRef-Package-qtbase-qt-module-PlatformPluginInternal
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin DEPENDS_ON SPDXRef-Package-qsqlitedriverplugins-qt-3rdparty-sources-QSQLiteDriverPlugin-Attribution-sqlite
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin
+
+FileName: ./plugins/sqldrivers/libqsqlite.so
+SPDXID: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin
+FileType: BINARY
+FileChecksum: SHA1: 1c3c4ace94a29aa5fad6cc25e48cb245f5000573
+LicenseConcluded: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+FileCopyrightText: <text>Copyright (C) The Qt Company Ltd. and other contributors.</text>
+LicenseInfoInFile: NOASSERTION
+Relationship: SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin CONTAINS SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/qsql_sqlite.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/qsql_sqlite_p.h
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/qsql_sqlite_vfs.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/qsql_sqlite_vfs_p.h
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/smain.cpp
+Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
+RelationshipComment: /home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
+
+PackageName: PostgreSQL
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-PostgreSQL
+PackageDownloadLocation: NOASSERTION
+PackageVersion: unknown
+PackageSupplier: Person: Anonymous
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+FilesAnalyzed: true
+PackageCopyrightText: NOASSERTION
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: PostgreSQL::PostgreSQL
+</text>
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-PostgreSQL
+
+PackageName: MySQL
+SPDXID: SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-MySQL
+PackageDownloadLocation: https://www.mysql.com
+PackageVersion: unknown
+PackageSupplier: Person: Anonymous
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+FilesAnalyzed: true
+PackageCopyrightText: NOASSERTION
+PrimaryPackagePurpose: LIBRARY
+PackageComment: <text>
+CMake target name: MySQL::MySQL
+</text>
+Relationship: SPDXRef-Package-qsqlitedriverplugins CONTAINS SPDXRef-Package-qsqlitedriverplugins-system-3rdparty-MySQL
+
+LicenseID: LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception
+ExtractedText: <text>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+EXEMPTION FOR BINARY LIBRARY-LIKE PACKAGES
+------------------------------------------
+
+The second condition in the BSD licence (covering binary redistributions) does not apply all the way down a chain of software. If binary package A includes PCRE2, it must respect the condition, but if package B is software that includes package A, the condition is not imposed on package B unless it uses PCRE2 independently.
+</text>
+
+LicenseID: LicenseRef-ICC-License
+ExtractedText: <text>For the file sRGB2014.icc:
+
+Copyright International Color Consortium, 2015
+
+This profile is made available by the International Color Consortium, and may be copied,
+distributed, embedded, made, used, and sold without restriction. Altered versions of this
+profile shall have the original identification and copyright information removed and
+shall not be misrepresented as the original profile.
+
+(original source location: http://www.color.org/srgbprofiles.xalter)
+</text>
+
+LicenseID: LicenseRef-Lcs-Telegraphics
+ExtractedText: <text>The text and information contained in this file may be freely used,
+copied, or distributed without compensation or licensing restrictions.
+</text>
+
+LicenseID: LicenseRef-Qt-Commercial
+ExtractedText: <text>Licensees holding valid commercial Qt licenses may use this software in
+accordance with the the terms contained in a written agreement between
+you and The Qt Company. Alternatively, the terms and conditions that were
+accepted by the licensee when buying and/or downloading the
+software do apply.
+
+For the latest licensing terms and conditions, see https://www.qt.io/terms-conditions.
+For further information use the contact form at https://www.qt.io/contact-us.
+</text>
+
+LicenseID: LicenseRef-SHA1-Public-Domain
+ExtractedText: <text>100% free public domain implementation of the SHA-1 algorithm
+by Dominik Reichl <dominik.reichl@t-online.de>
+Web: http://www.dominik-reichl.de/
+</text>
