@@ -1,1 +1,89 @@
 youtube video : https://youtu.be/prMux00gZyE?si=_kFVO5nSCRSHfOGW
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------
+
+
+/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/bin/qt-cmake -G Ninja "/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/" -DCMAKE_INSTALL_PREFIX="/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/" -DMySQL_ROOT="/usr/bin/mariadb"
+
+-- The CXX compiler identification is GNU 15.2.1
+-- The C compiler identification is GNU 15.2.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Force setting build type to 'RelWithDebInfo'.
+
+-- Configuration summary has been written to /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.summary
+
+-- Configuring done (2.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX
+⏎                                                                         cmake --build .
+[26/26] Linking CXX shared module plugins/sqldrivers/libqsqlite.so
+noobcod3r-rtx@noobcod3r-rtx ~/D/G/S/T/D/mysql-kaziRTX (XAMPP-connection)> cmake --install .
+-- Install configuration: "RelWithDebInfo"
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginConfig.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginConfigVersion.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginConfigVersionImpl.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so
+-- Set non-toolchain portion of runtime path of "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so" to "$ORIGIN/../../lib"
+-- Old export file "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginTargets.cmake" will be replaced.  Removing files [/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginTargets-relwithdebinfo.cmake].
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginTargets.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginTargets-relwithdebinfo.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/qsqlpsql.debug
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginAdditionalTargetInfo.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginConfig.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginConfigVersion.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginConfigVersionImpl.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlmysql.so
+-- Set non-toolchain portion of runtime path of "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlmysql.so" to "$ORIGIN/../../lib"
+-- Old export file "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginTargets.cmake" will be replaced.  Removing files [/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginTargets-relwithdebinfo.cmake].
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginTargets.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginTargets-relwithdebinfo.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/qsqlmysql.debug
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QMYSQLDriverPluginAdditionalTargetInfo.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginConfig.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginConfigVersion.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginConfigVersionImpl.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlite.so
+-- Set non-toolchain portion of runtime path of "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/libqsqlite.so" to "$ORIGIN/../../lib"
+-- Old export file "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginTargets.cmake" will be replaced.  Removing files [/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginTargets-relwithdebinfo.cmake].
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginTargets.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginTargets-relwithdebinfo.cmake
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/plugins/sqldrivers/qsqlite.debug
+-- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginAdditionalTargetInfo.cmake
+-- Starting SBOM generation in build dir: /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/staging-qsqlitedriverplugins.spdx.in
+-- Finalizing SBOM generation in install dir: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/sbom/qsqlitedriverplugins-6.9.2.spdx
+noobcod3r-rtx@noobcod3r-rtx ~/D/G/S/T/D/mysql-kaziRTX (XAMPP-connection)>
