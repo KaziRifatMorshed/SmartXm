@@ -13,9 +13,9 @@ void connectToXamppDB() {
     qDebug() << QSqlDatabase::drivers();
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QMARIADB"); // "QMYSQL" driver / QMARIADB
-    db.setHostName("localhost"); // localhost / 127.0.0.1
+    db.setHostName("127.0.0.1"); // localhost / 127.0.0.1
     db.setPort(3306); // default
-    db.setDatabaseName("smartxmremoteserver"); // Replace with your DB name
+    db.setDatabaseName("SmartXmRemoteServer"); // Replace with your DB name
     db.setUserName("root");             // Default XAMPP user
     db.setPassword("");                 // Default XAMPP password (empty)
 
