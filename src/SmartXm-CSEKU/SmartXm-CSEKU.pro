@@ -13,6 +13,7 @@ win32:LIBS += -lws2_32 \
 
 SOURCES += \
     codeRunner.cpp \
+    db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
