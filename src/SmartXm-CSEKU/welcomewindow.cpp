@@ -12,7 +12,7 @@ Client *client;
 bool clientConnectedToLocalServer = false;
 
 // Provide the actual storage for the extern variable
-StudentModuleV2* studentModuleV2Pointer = nullptr;
+StudentModuleV2 *studentModuleV2Pointer = nullptr;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::WelcomeWindow),
@@ -27,13 +27,86 @@ WelcomeWindow::~WelcomeWindow() { delete ui; }
 
 void WelcomeWindow::on_exit_welcome_pushButton_4_clicked() { close(); }
 
+bool isXamppInstalled() {
+  QString installPath;
+
+#ifdef Q_OS_WIN
+  // Check standard Windowspaths (C: and D:)
+  if (QDir("C:/xampp").exists()) {
+    installPath = "C:/xampp";
+  } else if (QDir("D:/xampp").exists()) {
+    installPath = "D:/xampp";
+  }
+#elif defined(Q_OS_LINUX)
+  // Check standard Linux (LAMPP) path
+  if (QDir("/opt/lampp").exists()) {
+    installPath = "/opt/lampp";
+  }
+#else
+  // If the OS is neither Windows nor Linux, we bypass the check.
+  qDebug() << "XAMPP installation check skipped for this OS.";
+  return true;
+#endif
+
+  if (!installPath.isEmpty()) {
+    qDebug() << "XAMPP appears to be installed at:" << installPath;
+    return true;
+  } else {
+    qDebug() << "XAMPP installation directory not found at common locations.";
+    return false;
+  }
+}
+
+bool isXamppServiceRunning(const QString &host, int port) {
+  // qDebug() << "Checking if MariaDB service is running on" << host << ":" << port
+  //          << "...";
+  QTcpSocket socket;
+  // Set a short timeout (e.g., 1 second)
+  socket.connectToHost(host, port);
+  bool connected = socket.waitForConnected(1000);
+
+  if (connected) {
+    socket.disconnectFromHost();
+    qDebug() << "MariaDB service is running on " << host << ", port: " << port;
+  } else {
+    qDebug() << "MariaDB service is NOT running (Connection attempt failed).";
+  }
+
+  return connected;
+}
+
 void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
   ui->tabWidget->setTabEnabled(1, true);
   ui->tabWidget->setTabEnabled(2, false);
   ui->tabWidget->setTabEnabled(3, false);
   ui->tabWidget->setCurrentIndex(1);
 
-  connectToXamppDB();
+  if (isXamppInstalled()) {
+      ui->xampp_installation_label_2->setText("<html><head/><body><p align=\"center\">XAMPP installation: <span style=\"color:green;\">XAMPP installation detected. ✅️</span></p></body></html>");
+  } else {
+      ui->xampp_installation_label_2->setText(
+          "<html><head/><body>"
+          "<p align=\"center\">"
+          "XAMPP installation: <span style=\"color:red;\">XAMPP installation not found. Please install XAMPP "
+          "(<a href=\"https://www.apachefriends.org/download.html\" style=\"color:red;\">https://www.apachefriends.org/download.html</a>)"
+          "</span></p></body></html>"
+          );
+      ui->xampp_installation_label_2->setOpenExternalLinks(true);
+  }
+
+  if (isXamppServiceRunning("127.0.0.1", 3306)) { // need multithreading to ensure real time update
+      ui->xampp_status_label->setText("<html><head/><body><p align=\"center\">XAMPP status: <span style=\"color:green;\">XAMPP is running. ✅️</span></p></body></html>");
+  } else {
+      ui->xampp_status_label->setText(
+          "<html><head/><body>"
+          "<p align=\"center\">"
+          "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. <br>Please start XAMPP."
+          "</span></p></body></html>"
+          );
+  }
+
+  // connectToXamppDB();
+  // testDBchanging();
 }
 
 void WelcomeWindow::on_studentWelcome_pushButton_4_clicked() {
@@ -122,9 +195,9 @@ void WelcomeWindow::on_pushButton_clicked() {
        */
       teacherModuleWindow->show();
     } else if (inputtedEmail == "s") {
-        close();
-        studentModuleV2Window = new StudentModuleV2();
-        studentModuleV2Window->show();
+      close();
+      studentModuleV2Window = new StudentModuleV2();
+      studentModuleV2Window->show();
     }
   }
 }

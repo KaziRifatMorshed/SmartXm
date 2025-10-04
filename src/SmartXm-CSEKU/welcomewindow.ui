@@ -90,6 +90,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="xampp_installation_label_2">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;XAMPP installation: &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="xampp_status_label">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;XAMPP DB Server Status: not implemented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -128,6 +135,9 @@
          <widget class="QLabel" name="label">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;If synchronization takes too much time, please visit &lt;a href=&quot;https://cseku-smartxm.free.nf/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#27bf73;&quot;&gt;https://cseku-smartxm.free.nf/&lt;/span&gt;&lt;/a&gt; to awake remote server&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -295,7 +305,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
