@@ -25,12 +25,21 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Dashboard_tab">
        <attribute name="title">
         <string>Dashboard</string>
        </attribute>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="insertDummyDataDB_pushButton">
+          <property name="text">
+           <string>Insert some dummy data to DB to check DB</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="QB_tab">
        <attribute name="title">
@@ -377,7 +386,7 @@
      <x>0</x>
      <y>0</y>
      <width>901</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

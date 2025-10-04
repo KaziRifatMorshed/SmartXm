@@ -5,8 +5,9 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <db_xampp.h>
 
 Server *server;
 QString instructionFileName = "";
@@ -21,7 +22,7 @@ TeacherModule::TeacherModule(QWidget *parent)
       "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
       "NOT STARTED</span></p></body></html>");
 
-// ServerConnectedPC_Table:
+  // ServerConnectedPC_Table:
   ui->connectedPCwithServer_tableWidget->setRowCount(100);
   for (int var = 0; var < 20; ++var) {
     ui->connectedPCwithServer_tableWidget->setItem(
@@ -58,7 +59,7 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
   std::cout << "Stop Server button clicked" << std::endl;
   if (server != nullptr && Server::isRunning()) {
-  // if (server != nullptr) {
+    // if (server != nullptr) {
     std::cout << "trying to stop server..." << std::endl;
     server->stop();
     server = nullptr;
@@ -119,44 +120,11 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
   if (instructionFileName.length() <= 0) {
     QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
   } else {
-      // Prepare file
-      std::ifstream file(instructionFileName.toStdString(), std::ios::binary);
-      if (!file.is_open()) {
-          QMessageBox::warning(this, "failed!", "Rulebook File Open Failed!!!");
-          return;
-      }
-      file.seekg(0, std::ios::end);
-      size_t sz = file.tellg();
-      file.seekg(0, std::ios::beg);
-      std::vector<char> filedata(sz);
-      file.read(filedata.data(), sz);
-
-      std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
-      std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
-      std::string msg = "rulebook"; // or "question", etc.
-
-      FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
-      bool t = server->sendFileToAllClients(meta);
-      if (t) {
-          QMessageBox::information(this, "Success", "Rulebook sent to all clients.");
-      } else {
-          QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
-      }
-  }
-}
-
-void TeacherModule::on_testExam_pushButton_3_clicked()
-{
-    QString filter = "Tar (*.tar)";
-
-    QString quesFilePath = QFileDialog::getOpenFileName(this,
-                                                        "Select a tar file containing question to "
-                                                        "sent it to all connected clients",
-                                                        QDir::homePath(), filter);
-    std::ifstream file(quesFilePath.toStdString(), std::ios::binary);
+    // Prepare file
+    std::ifstream file(instructionFileName.toStdString(), std::ios::binary);
     if (!file.is_open()) {
-        QMessageBox::warning(this, "failed!", "Questions File Open Failed!!!");
-        return;
+      QMessageBox::warning(this, "failed!", "Rulebook File Open Failed!!!");
+      return;
     }
     file.seekg(0, std::ios::end);
     size_t sz = file.tellg();
@@ -164,16 +132,58 @@ void TeacherModule::on_testExam_pushButton_3_clicked()
     std::vector<char> filedata(sz);
     file.read(filedata.data(), sz);
 
-    std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
-    std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
-    std::string msg = "questions.tar"; // or "question", etc.
+    std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
+    std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
+    std::string msg = "rulebook"; // or "question", etc.
 
     FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
     bool t = server->sendFileToAllClients(meta);
     if (t) {
-        QMessageBox::information(this, "Success", "Questions tar file sent to all clients.");
+      QMessageBox::information(this, "Success",
+                               "Rulebook sent to all clients.");
     } else {
-        QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
+      QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
     }
+  }
 }
 
+void TeacherModule::on_testExam_pushButton_3_clicked() {
+  QString filter = "Tar (*.tar)";
+
+  QString quesFilePath =
+      QFileDialog::getOpenFileName(this,
+                                   "Select a tar file containing question to "
+                                   "sent it to all connected clients",
+                                   QDir::homePath(), filter);
+  std::ifstream file(quesFilePath.toStdString(), std::ios::binary);
+  if (!file.is_open()) {
+    QMessageBox::warning(this, "failed!", "Questions File Open Failed!!!");
+    return;
+  }
+  file.seekg(0, std::ios::end);
+  size_t sz = file.tellg();
+  file.seekg(0, std::ios::beg);
+  std::vector<char> filedata(sz);
+  file.read(filedata.data(), sz);
+
+  std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
+  std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
+  std::string msg = "questions.tar"; // or "question", etc.
+
+  FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+  bool t = server->sendFileToAllClients(meta);
+  if (t) {
+    QMessageBox::information(this, "Success",
+                             "Questions tar file sent to all clients.");
+  } else {
+    QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
+  }
+}
+
+
+void TeacherModule::on_insertDummyDataDB_pushButton_clicked() {
+  localDB* db = localDB::DB();
+  db->execQuery("INSERT INTO `users` (`id`, `name`, `email`, `password`, "
+                "`student_id`, `role`, `created_at`) VALUES (NULL, 'bbb', "
+                "'kkk', 'ddd', '230204', 'Student', current_timestamp());");
+}

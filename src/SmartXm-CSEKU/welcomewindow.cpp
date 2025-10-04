@@ -10,6 +10,8 @@
 #include <studentmodulev2.h>
 
 Client *client;
+localDB *dbInstance = nullptr;
+
 bool clientConnectedToLocalServer = false;
 
 // Provide the actual storage for the extern variable
@@ -112,45 +114,9 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
     ui->xampp_installation_label_2->setOpenExternalLinks(true);
   }
 
-  //   if (isXamppServiceRunning(
-  //           "127.0.0.1",
-  //           3306)) { // need multithreading to ensure real time update
-  //     ui->xampp_status_label->setText(
-  //         "<html><head/><body><p align=\"center\">XAMPP status: <span "
-  //         "style=\"color:green;\">XAMPP is running.
-  //         ✅️</span></p></body></html>");
-  //   } else {
-  //     ui->xampp_status_label->setText(
-  //         "<html><head/><body>"
-  //         "<p align=\"center\">"
-  //         "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or
-  //         " "any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. "
-  //         "<br>Please start XAMPP."
-  //         "</span></p></body></html>");
-  //   }
+  dbInstance = localDB::DB();
+  dbInstance->testDB();
 
-  // #ifdef __linux__
-  //   if (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0) {
-  // #elif _WIN32
-  //   if (system("ping -n 1") == 0) {
-  // #endif
-  //     ui->netConnectionStatus_label->setText(
-  //         "<html><head/><body><p align=\"center\">Internet conenction status:
-  //         "
-  //         "<span style=\"color:green;\">This PC is connected to internet. "
-  //         "✅️</span></p></body></html>");
-  //   } else {
-  //     ui->netConnectionStatus_label->setText(
-  //         "<html><head/><body>"
-  //         "<p align=\"center\">"
-  //         "Internet conenction status: <span style=\"color:red;\">This PC is
-  //         not " "connected to internet. <br>Please connect to internet to
-  //         fetch data " "from remote server."
-  //         "</span></p></body></html>");
-  //   }
-
-  // connectToXamppDB();
-  // testDBchanging();
 }
 
 void WelcomeWindow::updateStatusLabels() {
@@ -261,8 +227,6 @@ void WelcomeWindow::on_pushButton_clicked() {
       studentModuleV2Window->show();
     }
   }
-
-
 }
 
 void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
