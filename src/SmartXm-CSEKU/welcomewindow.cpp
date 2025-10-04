@@ -6,6 +6,7 @@
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
+#include <stdlib.h>
 #include <studentmodulev2.h>
 
 Client *client;
@@ -58,7 +59,8 @@ bool isXamppInstalled() {
 }
 
 bool isXamppServiceRunning(const QString &host, int port) {
-  // qDebug() << "Checking if MariaDB service is running on" << host << ":" << port
+  // qDebug() << "Checking if MariaDB service is running on" << host << ":" <<
+  // port
   //          << "...";
   QTcpSocket socket;
   // Set a short timeout (e.g., 1 second)
@@ -82,27 +84,55 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
   ui->tabWidget->setCurrentIndex(1);
 
   if (isXamppInstalled()) {
-      ui->xampp_installation_label_2->setText("<html><head/><body><p align=\"center\">XAMPP installation: <span style=\"color:green;\">XAMPP installation detected. ✅️</span></p></body></html>");
+    ui->xampp_installation_label_2->setText(
+        "<html><head/><body><p align=\"center\">XAMPP installation: <span "
+        "style=\"color:green;\">XAMPP installation detected. "
+        "✅️</span></p></body></html>");
   } else {
-      ui->xampp_installation_label_2->setText(
-          "<html><head/><body>"
-          "<p align=\"center\">"
-          "XAMPP installation: <span style=\"color:red;\">XAMPP installation not found. Please install XAMPP "
-          "(<a href=\"https://www.apachefriends.org/download.html\" style=\"color:red;\">https://www.apachefriends.org/download.html</a>)"
-          "</span></p></body></html>"
-          );
-      ui->xampp_installation_label_2->setOpenExternalLinks(true);
+    ui->xampp_installation_label_2->setText(
+        "<html><head/><body>"
+        "<p align=\"center\">"
+        "XAMPP installation: <span style=\"color:red;\">XAMPP installation not "
+        "found. Please install XAMPP "
+        "(<a href=\"https://www.apachefriends.org/download.html\" "
+        "style=\"color:red;\">https://www.apachefriends.org/download.html</a>)"
+        "</span></p></body></html>");
+    ui->xampp_installation_label_2->setOpenExternalLinks(true);
   }
 
-  if (isXamppServiceRunning("127.0.0.1", 3306)) { // need multithreading to ensure real time update
-      ui->xampp_status_label->setText("<html><head/><body><p align=\"center\">XAMPP status: <span style=\"color:green;\">XAMPP is running. ✅️</span></p></body></html>");
+  if (isXamppServiceRunning(
+          "127.0.0.1",
+          3306)) { // need multithreading to ensure real time update
+    ui->xampp_status_label->setText(
+        "<html><head/><body><p align=\"center\">XAMPP status: <span "
+        "style=\"color:green;\">XAMPP is running. ✅️</span></p></body></html>");
   } else {
-      ui->xampp_status_label->setText(
-          "<html><head/><body>"
-          "<p align=\"center\">"
-          "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. <br>Please start XAMPP."
-          "</span></p></body></html>"
-          );
+    ui->xampp_status_label->setText(
+        "<html><head/><body>"
+        "<p align=\"center\">"
+        "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or "
+        "any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. "
+        "<br>Please start XAMPP."
+        "</span></p></body></html>");
+  }
+
+#ifdef __linux__
+  if (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0) {
+#elif _WIN32
+  if (system("ping -n 1") == 0) {
+#endif
+    ui->netConnectionStatus_label->setText(
+        "<html><head/><body><p align=\"center\">Internet conenction status: "
+        "<span style=\"color:green;\">This PC is connected to internet. "
+        "✅️</span></p></body></html>");
+  } else {
+    ui->netConnectionStatus_label->setText(
+        "<html><head/><body>"
+        "<p align=\"center\">"
+        "Internet conenction status: <span style=\"color:red;\">This PC is not "
+        "connected to internet. <br>Please connect to internet to fetch data "
+        "from remote server."
+        "</span></p></body></html>");
   }
 
   // connectToXamppDB();
