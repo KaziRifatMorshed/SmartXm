@@ -2,7 +2,7 @@
 #include "TerminalExecuter.h"
 #include "dependencies/linux/Encryption/encryption.h"
 #include "ui_welcomewindow.h"
-#include <QtConcurrent/QtConcurrent> // At the top
+#include <QtConcurrent>
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
@@ -26,13 +26,14 @@ WelcomeWindow::WelcomeWindow(QWidget *parent)
 
   connect(statusUpdateTimer, &QTimer::timeout, this,
           &WelcomeWindow::updateStatusLabels);
-  connect(ui->tabWidget, &QTabWidget::currentChanged, this, [this](int index) { // not working, dunno why
-      if (index == 1) {
-          statusUpdateTimer->start(2000);
-      } else {
-          statusUpdateTimer->stop();
-      }
-  });
+  connect(ui->tabWidget, &QTabWidget::currentChanged, this,
+          [this](int index) { // not working, dunno why
+            if (index == 1) {
+              statusUpdateTimer->start(2000);
+            } else {
+              statusUpdateTimer->stop();
+            }
+          });
 }
 
 WelcomeWindow::~WelcomeWindow() { delete ui; }
@@ -183,6 +184,11 @@ void WelcomeWindow::updateStatusLabels() {
                 "status: <span style=\"color:red;\">This PC is not connected "
                 "to internet. <br>Please connect to internet to fetch data "
                 "from remote server.</span></p></body></html>");
+      if (internetConnected && xamppRunning) {
+        ui->sync_remoteS_pushButton_2->setEnabled(true);
+      } else {
+        ui->sync_remoteS_pushButton_2->setEnabled(false);
+      }
     });
   });
 }
@@ -205,30 +211,6 @@ void WelcomeWindow::on_NextLocalServer_pushButton_4_clicked() {
   statusUpdateTimer->stop();
 }
 
-void WelcomeWindow::checkConnection() {
-  QNetworkRequest request(QUrl("http://www.google.com"));
-  m_networkManager->head(request);
-  qDebug() << "Checking for internet connection...";
-}
-
-/*
-// void WelcomeWindow::handleConnectionCheck(QNetworkReply *reply)
-// {
-//     if (reply->error() == QNetworkReply::NoError) {
-//         // Success
-//         qDebug() << "Internet connection is available.";
-//         // You could update a status label here, e.g.:
-//         // ui->statusLabel->setText("Status: Connected");
-//     } else {
-//         // Failure
-//         qDebug() << "Internet connection is not available.";
-//         qDebug() << "Error:" << reply->errorString();
-//         // ui->statusLabel->setText("Status: Disconnected");
-//     }
-//     reply->deleteLater();
-// }
-*/
-
 void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked() {
   QString executablePath = QCoreApplication::applicationDirPath();
   QString pyFetcherPath;
@@ -239,7 +221,7 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked() {
   pyFetcherPath = executablePath + "/dependencies/win/WebScrap2.exe"; // forgot
 #endif
 
-DownloadDataAndSaveCSV:
+  // DownloadDataAndSaveCSV
   std::cout
       << "Downloading Data from Remote Server and Saving CSV file inside db"
       << std::endl;
@@ -249,7 +231,7 @@ DownloadDataAndSaveCSV:
   std::string downCSVdataOutput = termiExec(downCSVdataCMD.c_str());
   // std::cout << downCSVdataOutput << std::endl;
 
-DecryptCSVdata:
+  // DecryptCSVdata
   Encryption encryption =
       Encryption("./db/remoteData.csv", "./db/remoteData-dec.csv", 20);
   std::cout << "Decrypting Data" << std::endl;
@@ -279,6 +261,8 @@ void WelcomeWindow::on_pushButton_clicked() {
       studentModuleV2Window->show();
     }
   }
+
+
 }
 
 void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
@@ -299,7 +283,8 @@ void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
       ui->localServerStatus_label_6->setText(
           "<html><head/><body><p align=\"center\"><span style=\" "
           "font-size:11pt;\">Local Server Connection Status: <span "
-          "style=\"color: green;\">CONNECTED</span></span></p></body></html>");
+          "style=\"color: "
+          "green;\">CONNECTED</span></span></p></body></html>");
       ui->connect_to_local_server_pushButton_3->setEnabled(false);
       clientConnectedToLocalServer = true;
     } else {
