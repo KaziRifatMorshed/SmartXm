@@ -11,12 +11,12 @@ const QString DB_NAME = "SmartXmRemoteServer";
 
 class localDB {
 public:
-  static localDB *dbInstance;
+  static localDB* _dbInstance;
   static localDB *DB() {
-    if (dbInstance == nullptr) {
-      dbInstance = new localDB();
+    if (_dbInstance == nullptr) {
+      _dbInstance = new localDB();
     }
-    return dbInstance;
+    return _dbInstance;
   }
 
   void testDB() {
@@ -166,6 +166,8 @@ private:
   }
 };
 
+
+/*
 void _testDBchanging() { // BACKUP
   // 1. Initial Connection: Connect to a default database to gain permissions
   //    to create a new one. "test" or "" (empty string) works here.
@@ -284,5 +286,5 @@ void _testDBchanging() { // BACKUP
 
   db1.close();
 }
-
+*/
 #endif // DB_XAMPP_H
