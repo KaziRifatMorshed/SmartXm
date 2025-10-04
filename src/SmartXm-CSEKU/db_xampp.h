@@ -14,9 +14,6 @@ public:
   static localDB *startDB();
 
 protected:
-  QString createDBquery = "CREATE DATABASE IF NOT EXISTS SmartXmRemoteServer "
-                          "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
-  QString selectDB = "USE SmartXmRemoteServer;";
 
 private:
 };
