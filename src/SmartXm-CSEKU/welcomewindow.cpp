@@ -17,11 +17,22 @@ StudentModuleV2 *studentModuleV2Pointer = nullptr;
 
 WelcomeWindow::WelcomeWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::WelcomeWindow),
-      m_networkManager(new QNetworkAccessManager(this)) {
+      m_networkManager(new QNetworkAccessManager(this)),
+      statusUpdateTimer(new QTimer(this)) {
   ui->setupUi(this);
   ui->tabWidget->setTabEnabled(1, false);
   ui->tabWidget->setTabEnabled(2, false);
   ui->tabWidget->setTabEnabled(3, false);
+
+  connect(statusUpdateTimer, &QTimer::timeout, this,
+          &WelcomeWindow::updateStatusLabels);
+  connect(ui->tabWidget, &QTabWidget::currentChanged, this, [this](int index) { // not working, dunno why
+      if (index == 1) {
+          statusUpdateTimer->start(2000);
+      } else {
+          statusUpdateTimer->stop();
+      }
+  });
 }
 
 WelcomeWindow::~WelcomeWindow() { delete ui; }
@@ -100,43 +111,80 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
     ui->xampp_installation_label_2->setOpenExternalLinks(true);
   }
 
-  if (isXamppServiceRunning(
-          "127.0.0.1",
-          3306)) { // need multithreading to ensure real time update
-    ui->xampp_status_label->setText(
-        "<html><head/><body><p align=\"center\">XAMPP status: <span "
-        "style=\"color:green;\">XAMPP is running. ✅️</span></p></body></html>");
-  } else {
-    ui->xampp_status_label->setText(
-        "<html><head/><body>"
-        "<p align=\"center\">"
-        "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or "
-        "any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. "
-        "<br>Please start XAMPP."
-        "</span></p></body></html>");
-  }
+  //   if (isXamppServiceRunning(
+  //           "127.0.0.1",
+  //           3306)) { // need multithreading to ensure real time update
+  //     ui->xampp_status_label->setText(
+  //         "<html><head/><body><p align=\"center\">XAMPP status: <span "
+  //         "style=\"color:green;\">XAMPP is running.
+  //         ✅️</span></p></body></html>");
+  //   } else {
+  //     ui->xampp_status_label->setText(
+  //         "<html><head/><body>"
+  //         "<p align=\"center\">"
+  //         "XAMPP installation: <span style=\"color:red;\">XAMPP DB server (or
+  //         " "any MySQL/MariaDB Server in 127.0.0.1:3306) is not running. "
+  //         "<br>Please start XAMPP."
+  //         "</span></p></body></html>");
+  //   }
 
-#ifdef __linux__
-  if (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0) {
-#elif _WIN32
-  if (system("ping -n 1") == 0) {
-#endif
-    ui->netConnectionStatus_label->setText(
-        "<html><head/><body><p align=\"center\">Internet conenction status: "
-        "<span style=\"color:green;\">This PC is connected to internet. "
-        "✅️</span></p></body></html>");
-  } else {
-    ui->netConnectionStatus_label->setText(
-        "<html><head/><body>"
-        "<p align=\"center\">"
-        "Internet conenction status: <span style=\"color:red;\">This PC is not "
-        "connected to internet. <br>Please connect to internet to fetch data "
-        "from remote server."
-        "</span></p></body></html>");
-  }
+  // #ifdef __linux__
+  //   if (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0) {
+  // #elif _WIN32
+  //   if (system("ping -n 1") == 0) {
+  // #endif
+  //     ui->netConnectionStatus_label->setText(
+  //         "<html><head/><body><p align=\"center\">Internet conenction status:
+  //         "
+  //         "<span style=\"color:green;\">This PC is connected to internet. "
+  //         "✅️</span></p></body></html>");
+  //   } else {
+  //     ui->netConnectionStatus_label->setText(
+  //         "<html><head/><body>"
+  //         "<p align=\"center\">"
+  //         "Internet conenction status: <span style=\"color:red;\">This PC is
+  //         not " "connected to internet. <br>Please connect to internet to
+  //         fetch data " "from remote server."
+  //         "</span></p></body></html>");
+  //   }
 
   // connectToXamppDB();
   // testDBchanging();
+}
+
+void WelcomeWindow::updateStatusLabels() {
+  QtConcurrent::run([this]() {
+    bool xamppRunning = isXamppServiceRunning("127.0.0.1", 3306);
+    bool internetConnected =
+#ifdef __linux__
+        (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0);
+#elif _WIN32
+        (system("ping -n 1 8.8.8.8 > nul") == 0);
+#endif
+
+    // Use Qt's signal/slot to update UI in main thread
+    QMetaObject::invokeMethod(this, [this, xamppRunning, internetConnected]() {
+      ui->xampp_status_label->setText(
+          xamppRunning
+              ? "<html><head/><body><p align=\"center\">XAMPP status: <span "
+                "style=\"color:green;\">XAMPP is running. "
+                "✅️</span></p></body></html>"
+              : "<html><head/><body><p align=\"center\">XAMPP status: <span "
+                "style=\"color:red;\">XAMPP DB server (or any MySQL/MariaDB "
+                "Server in 127.0.0.1:3306) is not running. <br>Please start "
+                "XAMPP.</span></p></body></html>");
+
+      ui->netConnectionStatus_label->setText(
+          internetConnected
+              ? "<html><head/><body><p align=\"center\">Internet connection "
+                "status: <span style=\"color:green;\">This PC is connected to "
+                "internet. ✅️</span></p></body></html>"
+              : "<html><head/><body><p align=\"center\">Internet connection "
+                "status: <span style=\"color:red;\">This PC is not connected "
+                "to internet. <br>Please connect to internet to fetch data "
+                "from remote server.</span></p></body></html>");
+    });
+  });
 }
 
 void WelcomeWindow::on_studentWelcome_pushButton_4_clicked() {
@@ -154,6 +202,7 @@ void WelcomeWindow::on_nextRemoteServer_pushButton_4_clicked() {
 void WelcomeWindow::on_NextLocalServer_pushButton_4_clicked() {
   ui->tabWidget->setTabEnabled(3, true);
   ui->tabWidget->setCurrentIndex(3);
+  statusUpdateTimer->stop();
 }
 
 void WelcomeWindow::checkConnection() {
