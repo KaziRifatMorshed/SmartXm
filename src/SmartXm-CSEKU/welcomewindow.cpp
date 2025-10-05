@@ -2,6 +2,7 @@
 #include "TerminalExecuter.h"
 #include "dependencies/linux/Encryption/encryption.h"
 #include "ui_welcomewindow.h"
+#include <QMessageBox>
 #include <QtConcurrent>
 #include <db_xampp.h>
 #include <iostream>
@@ -116,7 +117,6 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
 
   dbInstance = localDB::DB();
   dbInstance->testDB();
-
 }
 
 void WelcomeWindow::updateStatusLabels() {
@@ -205,9 +205,11 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked() {
 } // working
 
 void WelcomeWindow::on_pushButton_clicked() {
-  QString inputtedEmail = ui->email_lineEdit->text();
-  QString inputtedPass = ui->pass_lineEdit_2->text();
+  QString inputtedEmail = ui->email_lineEdit->text().trimmed();
+  QString inputtedPass = ui->pass_lineEdit_2->text().trimmed();
 
+// #define LOGIN_DEBUG
+#ifdef LOGIN_DEBUG
   bool temp = true; // if login info are true
   // bool isTeacher = (inputtedEmail == "t") ? true : false;
   /// login info checking code goes here
@@ -227,6 +229,49 @@ void WelcomeWindow::on_pushButton_clicked() {
       studentModuleV2Window->show();
     }
   }
+#else
+  if (inputtedEmail.contains("@cse.ku.ac.bd")) {
+    dbInstance = localDB::DB();
+    QSqlQuery loginDataValidationFromDB = dbInstance->execQuery(
+        "SELECT * FROM `users` WHERE users.email = '" + inputtedEmail +
+        "' AND users.password = '" + inputtedPass + "';");
+
+    if (loginDataValidationFromDB.isActive() &&
+        loginDataValidationFromDB.size() == 1) {
+      close();
+      teacherModuleWindow = new TeacherModule();
+      teacherModuleWindow->show();
+    } else {
+      QMessageBox::critical(
+          this, "Email & Password does not match",
+          "Your inputted email and password does not match with local "
+          "server database.\n\nPlease ensure local server has fetched "
+          "latest data from remote server. If system fails again and again, "
+          "contact "
+          "an admin/maintainer of the system.");
+    }
+  } else if (inputtedEmail.contains("@ku.ac.bd")) {
+    if (client->sendLoginInfoToServer()) {
+      close();
+      studentModuleV2Window = new StudentModuleV2();
+      studentModuleV2Window->show();
+    } else {
+      QMessageBox::critical(
+          this, "Email & Password does not match",
+          "Your inputted email and password does not match with local "
+          "server database.\n\nPlease ensure local server has fetched "
+          "latest data from remote server and you have inputted latest "
+          "email & password set in the remote server. Otherwise, contact "
+          "an admin/maintainer of the system.");
+    }
+  } else {
+    QMessageBox::critical(
+        this, "Invalid Email",
+        "Only '@ku.ac.bd'(for students) and '@cse.ku.ac.bd'(for teachers) "
+        "emails are allowed. To register or for any support, contact an "
+        "admin/maintainer of the system.");
+  }
+#endif
 }
 
 void WelcomeWindow::on_connect_to_local_server_pushButton_3_clicked() {
