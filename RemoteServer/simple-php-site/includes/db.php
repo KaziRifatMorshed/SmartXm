@@ -55,12 +55,12 @@ CREATE TABLE IF NOT EXISTS users (
 -- Dummy data for users table
 
 INSERT INTO users (name, email, password, student_id, role) VALUES
-('Alice Smith', 'alice.smith@example.com', 'password123', '230201', 'Student'),
-('Bob Johnson', 'bob.johnson@example.com', 'mypassword', '240205', 'Student'),
-('Carol Williams', 'carol.williams@example.com', 'securepass', '210236', 'Student'),
-('David Brown', 'david.brown@example.com', 'letmein', 'T20001', 'Teacher'),
-('Eve Davis', 'eve.davis@example.com', 'passw0rd', '250202', 'Student'),
-('Frank Miller', 'frank.miller@example.com', 'qwerty', 'T20002', 'Teacher');
+('Alice Smith', '230201@ku.ac.bd', 'password123', '230201', 'Student'),
+('Bob Johnson', '240205@ku.ac.bd', 'mypassword', '240205', 'Student'),
+('Carol Williams', '210236@ku.ac.bd', 'securepass', '210236', 'Student'),
+('David Brown', 'david.brown@cse.ku.ac.bd', 'letmein', 'T20001', 'Teacher'),
+('Eve Davis', '250202@ku.ac.bd', 'passw0rd', '250202', 'Student'),
+('Frank Miller', 'frank.miller@cse.ku.ac.bd', 'qwerty', 'T20002', 'Teacher');
 
 */
 
