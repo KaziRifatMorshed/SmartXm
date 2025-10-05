@@ -135,9 +135,12 @@ private:
                                                             // skip existing
                                                             // unique keys
         "student_id, role) VALUES "
-        "('Alice Smith tid', 'alice.smith@example.com', 'password123', "
-        "'230201', "
-        "'Student');";
+        "('Alice Smith', '230201@ku.ac.bd', 'password123', '230201', 'Student'),"
+        "('Bob Johnson', '240205@ku.ac.bd', 'mypassword', '240205', 'Student'),"
+        "('Carol Williams', '210236@ku.ac.bd', 'securepass', '210236', 'Student'),"
+        "('David Brown', 'david.brown@cse.ku.ac.bd', 'letmein', 'T20001', 'Teacher'),"
+        "('Eve Davis', '250202@ku.ac.bd', 'passw0rd', '250202', 'Student'),"
+        "('Frank Miller', 'frank.miller@cse.ku.ac.bd', 'qwerty', 'T20002', 'Teacher');"        ;
 
     QSqlQuery insertIntoDB;
     if (insertIntoDB.exec(insertData)) {
