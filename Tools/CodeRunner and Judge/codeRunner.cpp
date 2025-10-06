@@ -205,8 +205,17 @@ void CodeRunner::runCppOrCFile()
      std::string directoryPath = getDirectoryPath(currentFile);
 
 #ifdef _WIN32
-     exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
-     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+     // exeFile = "\"" + directoryPath + filename + "-runner.exe" + "\"";
+     // compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+     int i;
+     for (i = 1; i <= 100; i++)
+     {
+          int temp=i;
+          std::string s=std::to_string(temp);
+          exeFile = "\"" + directoryPath + filename +"-"+s +"-runner.exe" + "\"";
+          compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+          std::string compileOutput = executeCommand(compileCmd);
+     }
 
 #else
      exeFile = "\"" + directoryPath + "./" + filename + "\"";
@@ -297,4 +306,3 @@ void CodeRunner::runPythonFile()
           fout.close();
      }
 }
-

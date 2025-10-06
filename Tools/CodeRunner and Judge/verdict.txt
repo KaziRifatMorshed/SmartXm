@@ -1,2 +1,2 @@
 Problem: A
-Compilation error.
+Pretest Case 1: Accepted	Pretest Case 2: Accepted	Pretest Case 3: Wrong Answer	

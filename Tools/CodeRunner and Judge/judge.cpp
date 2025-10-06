@@ -1,6 +1,5 @@
 #include "judge.h"
 
-
 int Judge::runWithTimeout(const string &cmd, const string &inputFile,
                           const string &outputFile, int timeLimitMS)
 {
@@ -95,7 +94,14 @@ void Judge::setCurrentProblem(const string &cProblem)
 {
      currentProblem = cProblem;
 }
-
+void Judge::setPretestCasesPath(const string &path)
+{
+     pretestCasesPath = path;
+}
+void Judge::setJudgeInfoPath(const string &path)
+{
+     judgeInfoPath = path;
+}
 void Judge::runOnTestCases()
 {
 
@@ -132,44 +138,46 @@ void Judge::runOnTestCases()
           return;
      }
      std::ofstream foutt("verdict.txt", std::ios::app);
-     foutt<<"Problem: "<<currentProblem<<endl;
+     foutt << "Problem: " << currentProblem << endl;
      foutt.close();
-     string judgeInfoPath="D:\\Programming for Sessional and Project\\SmartXam Project\\SmartXm\\Tools\\CodeRunner and Judge\\Judge Info\\";
-     string pretestCasesPath="D:\\Programming for Sessional and Project\\SmartXam Project\\SmartXm\\Tools\\CodeRunner and Judge\\Pretest Cases\\"+currentProblem+"\\";
-     double timeLimit,cTimeLimit,cppTimeLimit,pyTimeLimit,javaTimeLimit;
+    
+     double timeLimit, cTimeLimit, cppTimeLimit, pyTimeLimit, javaTimeLimit;
      int checker;
      int numberOfTestCases;
-     string judgeInfoFile=judgeInfoPath+currentProblem+".txt";
+     judgeInfoPath+="\\";
+     pretestCasesPath+="\\"+currentProblem+"\\";
+     string judgeInfoFile = judgeInfoPath + currentProblem + ".txt";
+     cout<<judgeInfoFile<<endl;
 
      ifstream fin(judgeInfoFile);
-     if(!fin)
+     if (!fin)
      {
           std::ofstream fout("verdict.txt", std::ios::app);
-          fout<<"Judge Information not found.\n";
+          fout << "Judge Information not found.\n";
           fout.close();
           return;
      }
-     fin>>checker>>timeLimit>>cTimeLimit>>cppTimeLimit>>pyTimeLimit>>javaTimeLimit>>numberOfTestCases;
+     fin >> checker >> timeLimit >> cTimeLimit >> cppTimeLimit >> pyTimeLimit >> javaTimeLimit >> numberOfTestCases;
 
      fin.close();
 
-     string ext=CodeRunner::getFileExtension(currentFile);
+     string ext = CodeRunner::getFileExtension(currentFile);
      int effectiveTimeLimit;
-     if(ext=="c")
+     if (ext == "c")
      {
-          effectiveTimeLimit=timeLimit*cTimeLimit*1000;
+          effectiveTimeLimit = timeLimit * cTimeLimit * 1000;
      }
-     else  if(ext=="cpp")
+     else if (ext == "cpp")
      {
-          effectiveTimeLimit=timeLimit*cppTimeLimit*1000;
+          effectiveTimeLimit = timeLimit * cppTimeLimit * 1000;
      }
-     else  if(ext=="py")
+     else if (ext == "py")
      {
-          effectiveTimeLimit=timeLimit*pyTimeLimit*1000;
+          effectiveTimeLimit = timeLimit * pyTimeLimit * 1000;
      }
-     else 
+     else
      {
-          effectiveTimeLimit=timeLimit*javaTimeLimit*1000;
+          effectiveTimeLimit = timeLimit * javaTimeLimit * 1000;
      }
 
      if (!CodeRunner::checkCompiler(ext))
@@ -191,22 +199,15 @@ void Judge::runOnTestCases()
 
      if (ext == "c" || ext == "cpp" || ext == "c++")
      {
-          runCppOrCFile(checker,effectiveTimeLimit,numberOfTestCases,pretestCasesPath);
+          runCppOrCFile(checker, effectiveTimeLimit, numberOfTestCases, pretestCasesPath);
      }
      else if (ext == "py")
      {
           runPythonFile();
      }
-
-
-
-
-
-
-     
 }
 
-void Judge::runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string testCasesPath)
+void Judge::runCppOrCFile(int checker, int timeLimit, int numOfTestCases, string testCasesPath)
 {
      std::string filename = CodeRunner::getFileName(currentFile);
 
@@ -215,9 +216,17 @@ void Judge::runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string te
      std::string directoryPath = CodeRunner::getDirectoryPath(currentFile);
 
 #ifdef _WIN32
-     exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
-     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
-
+     // exeFile = "\"" + directoryPath + filename + "-pretest.exe" + "\"";
+     // compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+      int i;
+     for (i = 1; i <= 100; i++)
+     {
+          int temp=i;
+          std::string s=std::to_string(temp);
+          exeFile = "\"" + directoryPath + filename +"-"+s +"-pretest.exe" + "\"";
+          compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+          std::string compileOutput = CodeRunner::executeCommand(compileCmd);
+     }
 #else
      exeFile = "\"" + directoryPath + "./" + filename + "\"";
      compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
@@ -228,14 +237,12 @@ void Judge::runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string te
 
      if (!compileOutput.empty())
      {
-         
 
-          
           if (compileOutput.find("error") != std::string::npos)
           {
                std::ofstream fout("verdict.txt", std::ios::app);
-          fout << "Compilation error." << std::endl;
-          fout.close();
+               fout << "Compilation error." << std::endl;
+               fout.close();
 
                return;
           }
@@ -249,37 +256,39 @@ void Judge::runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string te
           return;
      }
 
-     for(int i=1;i<=numOfTestCases;i++)
+     for (int i = 1; i <= numOfTestCases; i++)
      {
-          int caseNo=i;
-          string inputFile=testCasesPath+to_string(caseNo)+".in";
-          string outputFile=testCasesPath+to_string(caseNo)+".output";
-          string output_file="\""+testCasesPath+to_string(caseNo)+".output\"";
-          string expectedFile=testCasesPath+to_string(caseNo)+".out";
-          
-          int status=runWithTimeout(exeFile,inputFile,outputFile,timeLimit);
-          if(status==2)
+          int caseNo = i;
+          string inputFile = testCasesPath + to_string(caseNo) + ".in";
+          string outputFile = testCasesPath + to_string(caseNo) + ".output";
+          string output_file = "\"" + testCasesPath + to_string(caseNo) + ".output\"";
+          string expectedFile = testCasesPath + to_string(caseNo) + ".out";
+
+          int status = runWithTimeout(exeFile, inputFile, outputFile, timeLimit);
+          if (status == 2)
           {
                std::ofstream fout("verdict.txt", std::ios::app);
-               fout<<"Pretest Case "<<caseNo<<": "<<"Time Limit Exceeded\t";
+               fout << "Pretest Case " << caseNo << ": " << "Time Limit Exceeded\t";
                fout.close();
                continue;
           }
-          else if(status==1)
+          else if (status == 1)
           {
-                std::ofstream fout("verdict.txt", std::ios::app);
-               fout<<"Pretest Case "<<caseNo<<": "<<"Runtime Error\t";
+               std::ofstream fout("verdict.txt", std::ios::app);
+               fout << "Pretest Case " << caseNo << ": " << "Runtime Error\t";
                fout.close();
                continue;
           }
-          if(!checker)
+          if (!checker)
           {
                ifstream out(outputFile), exp(expectedFile);
-               if (!out || !exp) {
-                   std::ofstream fout("verdict.txt", std::ios::app);
-                    fout << "Couldn't open output file.\n" << std::endl;
+               if (!out || !exp)
+               {
+                    std::ofstream fout("verdict.txt", std::ios::app);
+                    fout << "Couldn't open output file.\n"
+                         << std::endl;
                     fout.close();
-                    return ;
+                    return;
                }
                string s1((istreambuf_iterator<char>(out)), {});
                string s2((istreambuf_iterator<char>(exp)), {});
@@ -287,39 +296,34 @@ void Judge::runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string te
                if (normalize(s1) == normalize(s2))
                {
                     std::ofstream fout("verdict.txt", std::ios::app);
-                    fout<<"Pretest Case "<<caseNo<<": "<<"Accepted\t";
+                    fout << "Pretest Case " << caseNo << ": " << "Accepted\t";
                     fout.close();
                }
                else
                {
                     std::ofstream fout("verdict.txt", std::ios::app);
-                    fout<<"Pretest Case "<<caseNo<<": "<<"Wrong Answer\t";
-                    fout.close(); 
+                    fout << "Pretest Case " << caseNo << ": " << "Wrong Answer\t";
+                    fout.close();
                }
           }
-
-
-
-
-
      }
-
-     
 }
 
 void Judge::runPythonFile()
 {
-
 }
 
-string Judge::normalize(const string &s) {
-    stringstream ss(s);
-    string line, result = "";
-    while (getline(ss, line)) {
-        size_t start = line.find_first_not_of(" \t\r\n");
-        if (start == string::npos) continue;
-        size_t end = line.find_last_not_of(" \t\r\n");
-        result += line.substr(start, end - start + 1) + "\n";
-    }
-    return result;
+string Judge::normalize(const string &s)
+{
+     stringstream ss(s);
+     string line, result = "";
+     while (getline(ss, line))
+     {
+          size_t start = line.find_first_not_of(" \t\r\n");
+          if (start == string::npos)
+               continue;
+          size_t end = line.find_last_not_of(" \t\r\n");
+          result += line.substr(start, end - start + 1) + "\n";
+     }
+     return result;
 }
