@@ -140,14 +140,19 @@ void Judge::runOnTestCases()
      std::ofstream foutt("verdict.txt", std::ios::app);
      foutt << "Problem: " << currentProblem << endl;
      foutt.close();
-    
+
      double timeLimit, cTimeLimit, cppTimeLimit, pyTimeLimit, javaTimeLimit;
      int checker;
      int numberOfTestCases;
-     judgeInfoPath+="\\";
-     pretestCasesPath+="\\"+currentProblem+"\\";
+#ifdef _WIN32
+     judgeInfoPath += "\\";
+     pretestCasesPath += "\\" + currentProblem + "\\";
+#else
+     judgeInfoPath += "/";
+     pretestCasesPath += "/" + currentProblem + "/";
+#endif
      string judgeInfoFile = judgeInfoPath + currentProblem + ".txt";
-     cout<<judgeInfoFile<<endl;
+     cout << judgeInfoFile << endl;
 
      ifstream fin(judgeInfoFile);
      if (!fin)
@@ -218,12 +223,12 @@ void Judge::runCppOrCFile(int checker, int timeLimit, int numOfTestCases, string
 #ifdef _WIN32
      // exeFile = "\"" + directoryPath + filename + "-pretest.exe" + "\"";
      // compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
-      int i;
+     int i;
      for (i = 1; i <= 100; i++)
      {
-          int temp=i;
-          std::string s=std::to_string(temp);
-          exeFile = "\"" + directoryPath + filename +"-"+s +"-pretest.exe" + "\"";
+          int temp = i;
+          std::string s = std::to_string(temp);
+          exeFile = "\"" + directoryPath + filename + "-" + s + "-pretest.exe" + "\"";
           compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
           std::string compileOutput = CodeRunner::executeCommand(compileCmd);
      }
