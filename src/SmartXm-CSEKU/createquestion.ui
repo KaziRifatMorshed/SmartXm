@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Create/Modify Question</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="applications-accessories"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -34,7 +37,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Question Title:</string>
+          <string>Question Title: *</string>
          </property>
         </widget>
        </item>
@@ -64,13 +67,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Chose one:</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QRadioButton" name="radioButton">
            <property name="text">
@@ -85,53 +81,88 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Chose one:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="title">
           <string>Type question manually</string>
          </property>
-         <layout class="QFormLayout" name="formLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Question Body:</string>
-            </property>
-           </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_11" stretch="2,1,1">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,9">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Question Body:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="QuesBody_plainTextEdit"/>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QPlainTextEdit" name="QuesBody_plainTextEdit"/>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,4,1,4">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input&lt;br/&gt;Constraints:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="input_textEdit"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Output&lt;br/&gt;Constraints:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="output_textEdit"/>
+            </item>
+           </layout>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Input:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QTextEdit" name="input_textEdit"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Output:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QTextEdit" name="output_textEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Notes:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QTextEdit" name="notes_textEdit"/>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,9">
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Notes:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="notes_textEdit"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -550,7 +581,7 @@
       <attribute name="title">
        <string>Editorial</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_10">
+      <layout class="QVBoxLayout" name="verticalLayout_12">
        <item>
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
@@ -568,14 +599,54 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_21">
-         <property name="text">
-          <string>Editorial Content:</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>Choose one:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="typeEditManually_radioButton_3">
+           <property name="text">
+            <string>Type editorial manually</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_3">
+           <property name="text">
+            <string>Upload PDF</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QTextEdit" name="editorialTextBox_textEdit"/>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="title">
+          <string>Editorial Content:</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QTextEdit" name="editorialTextBox_textEdit"/>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="editorialUploadPDF_pushButton_2">
@@ -592,6 +663,11 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="previewPdfTab">
+      <attribute name="title">
+       <string>Preview PDF</string>
+      </attribute>
      </widget>
     </widget>
    </item>
