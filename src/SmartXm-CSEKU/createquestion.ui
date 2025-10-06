@@ -27,7 +27,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="attribute_tab">
       <attribute name="title">
@@ -199,6 +199,11 @@
             </column>
             <column>
              <property name="text">
+              <string>Category</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
               <string>Input File Size</string>
              </property>
             </column>
@@ -261,13 +266,13 @@
          <property name="title">
           <string>Create or Modify Test Case</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QFormLayout" name="formLayout_3">
             <item row="0" column="0">
              <widget class="QLabel" name="label_11">
               <property name="text">
-               <string>Test Case Title:</string>
+               <string>Testcase Title:</string>
               </property>
              </widget>
             </item>
@@ -277,9 +282,47 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <widget class="QLabel" name="label_24">
+              <property name="text">
+               <string>Category:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="preTestCase_radioButton_4">
+              <property name="text">
+               <string>pre testcase</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="systemTestCase_radioButton_5">
+              <property name="text">
+               <string>system testcase</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <layout class="QVBoxLayout" name="input_verticalLayout_5">
               <item>
                <widget class="QLabel" name="label_9">
                 <property name="text">
@@ -288,19 +331,37 @@
                </widget>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QRadioButton" name="inputTypeManually_radioButton_4">
+                  <property name="text">
+                   <string>type manually</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="inputSeleceFile_radioButton_4">
+                  <property name="text">
+                   <string>select file</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QTextEdit" name="inputOfTestCase___textEdit"/>
               </item>
               <item>
                <widget class="QPushButton" name="inoutSelectFile_pushButton_2">
                 <property name="text">
-                 <string>or, select file</string>
+                 <string>or, select input file</string>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
+             <layout class="QVBoxLayout" name="output_verticalLayout_6">
               <item>
                <widget class="QLabel" name="label_10">
                 <property name="text">
@@ -309,12 +370,30 @@
                </widget>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <item>
+                 <widget class="QRadioButton" name="outputTypeManually_radioButton_4">
+                  <property name="text">
+                   <string>type manually</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="outputSelectFileradioButton_4">
+                  <property name="text">
+                   <string>select file</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QTextEdit" name="outputOfTestCase__textEdit"/>
               </item>
               <item>
                <widget class="QPushButton" name="outputSelectFile_pushButton_3">
                 <property name="text">
-                 <string>or, select file</string>
+                 <string>or, select output file</string>
                 </property>
                </widget>
               </item>
@@ -325,7 +404,7 @@
           <item>
            <widget class="QPushButton" name="saveCurrentTestCase_pushButton_2">
             <property name="text">
-             <string>Save</string>
+             <string>Save this testcase</string>
             </property>
            </widget>
           </item>
