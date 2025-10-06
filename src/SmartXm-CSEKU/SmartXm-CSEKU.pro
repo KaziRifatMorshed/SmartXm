@@ -12,6 +12,7 @@ win32:LIBS += -lws2_32 \
     -lShell32
 
 SOURCES += \
+    Users.cpp \
     codeRunner.cpp \
     db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     Message.h \
     Student.h \
     TerminalExecuter.h \
+    Users.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \

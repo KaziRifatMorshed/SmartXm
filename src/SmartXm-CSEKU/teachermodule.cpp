@@ -8,9 +8,11 @@
 #include <fstream>
 #include <iostream>
 #include <db_xampp.h>
+#include <Users.h>
 
 Server *server;
 QString instructionFileName = "";
+Users &currentUser = Users::getInstance();
 
 TeacherModule::TeacherModule(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::TeacherModule) {
@@ -21,6 +23,11 @@ TeacherModule::TeacherModule(QWidget *parent)
   ui->serverIP_label_3->setText(
       "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
       "NOT STARTED</span></p></body></html>");
+  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Welcome, " + QString::fromStdString(currentUser.getName()) + " Sir</span></p></body></html>");
+  ui->dashboard_teacherName->setText(QString::fromStdString(currentUser.getName()));
+  ui->dashboard_teacherEmail->setText(QString::fromStdString(currentUser.getEmail()));
+  ui->dashboard_TeacherDesignation->setText(QString::fromStdString(currentUser.getId()));
+  ui->tabWidget->setCurrentIndex(1);
 
   // ServerConnectedPC_Table:
   ui->connectedPCwithServer_tableWidget->setRowCount(100);
@@ -180,10 +187,3 @@ void TeacherModule::on_testExam_pushButton_3_clicked() {
   }
 }
 
-
-void TeacherModule::on_insertDummyDataDB_pushButton_clicked() {
-  localDB* db = localDB::DB();
-  db->execQuery("INSERT INTO `users` (`id`, `name`, `email`, `password`, "
-                "`student_id`, `role`, `created_at`) VALUES (NULL, 'bbb', "
-                "'kkk', 'ddd', '230204', 'Student', current_timestamp());");
-}

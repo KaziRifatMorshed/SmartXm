@@ -4,6 +4,7 @@
 #include "ui_welcomewindow.h"
 #include <QMessageBox>
 #include <QtConcurrent>
+#include <Users.h>
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
@@ -233,14 +234,30 @@ void WelcomeWindow::on_pushButton_clicked() {
   if (inputtedEmail.contains("@cse.ku.ac.bd")) {
     dbInstance = localDB::DB();
     QSqlQuery loginDataValidationFromDB = dbInstance->execQuery(
-        "SELECT * FROM `users` WHERE users.email = '" + inputtedEmail +
-        "' AND users.password = '" + inputtedPass + "';");
+        "SELECT * FROM `Users` WHERE Users.email = '" + inputtedEmail +
+        "' AND Users.password = '" + inputtedPass + "';");
 
-    if (loginDataValidationFromDB.isActive() &&
+    if (loginDataValidationFromDB.isActive() && loginDataValidationFromDB.next() &&
         loginDataValidationFromDB.size() == 1) {
       close();
+
+      Users &currentUser = Users::getInstance();
+      currentUser.setName(
+          loginDataValidationFromDB.value("name").toString().toStdString());
+      currentUser.setEmail(
+          loginDataValidationFromDB.value("email").toString().toStdString());
+      currentUser.setPassword(
+          loginDataValidationFromDB.value("password").toString().toStdString());
+      currentUser.setIdentity(
+          Users::identityFromString(loginDataValidationFromDB.value("identity")
+                                        .toString()
+                                        .toStdString()));
+      currentUser.setId(
+          loginDataValidationFromDB.value("id").toString().toStdString());
+
       teacherModuleWindow = new TeacherModule();
       teacherModuleWindow->show();
+
     } else {
       QMessageBox::critical(
           this, "Email & Password does not match",

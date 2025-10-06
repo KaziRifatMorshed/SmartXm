@@ -110,19 +110,20 @@ private:
 
   void prepareDB() {
     QString createTable =
-        "CREATE TABLE IF NOT EXISTS users ("
-        "id INT AUTO_INCREMENT PRIMARY KEY,"
-        "name VARCHAR(100) NOT NULL,"
-        "email VARCHAR(100) NOT NULL UNIQUE,"
-        "password VARCHAR(255) NOT NULL, "
-        "student_id VARCHAR(50) UNIQUE,"
-        "role ENUM('Teacher', 'Student') NOT NULL DEFAULT 'Student',"
-        "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-        ");";
+      "CREATE TABLE Users ("
+      "user_id INT AUTO_INCREMENT PRIMARY KEY,"
+      "name VARCHAR(50) NOT NULL,"
+      "email VARCHAR(50) NOT NULL UNIQUE,"
+      "password VARCHAR(255) NOT NULL,"
+      "identity ENUM('teacher', 'student'),"
+      "id VARCHAR(50) UNIQUE,"
+      "creation_time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,"
+      "last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL"
+      ");";
 
     QSqlQuery createTableDB;
     if (createTableDB.exec(createTable)) {
-      std::cout << "Table 'users' created successfully." << std::endl;
+      std::cout << "Table 'Users' created successfully." << std::endl;
     } else {
       qDebug() << "Error creating table:" << createTableDB.lastError().text();
     }
@@ -131,16 +132,13 @@ private:
   void insertTestData() {
     // --- 5. Insert Data ---
     QString insertData =
-        "INSERT IGNORE INTO users (name, email, password, " // Use IGNORE to
-                                                            // skip existing
-                                                            // unique keys
-        "student_id, role) VALUES "
-        "('Alice Smith', '230201@ku.ac.bd', 'password123', '230201', 'Student'),"
-        "('Bob Johnson', '240205@ku.ac.bd', 'mypassword', '240205', 'Student'),"
-        "('Carol Williams', '210236@ku.ac.bd', 'securepass', '210236', 'Student'),"
-        "('David Brown', 'david.brown@cse.ku.ac.bd', 'letmein', 'T20001', 'Teacher'),"
-        "('Eve Davis', '250202@ku.ac.bd', 'passw0rd', '250202', 'Student'),"
-        "('Frank Miller', 'frank.miller@cse.ku.ac.bd', 'qwerty', 'T20002', 'Teacher');"        ;
+        "INSERT IGNORE INTO Users (name, email, password, identity, id) VALUES"
+        "('Alice Smith', '230201@ku.ac.bd', 'password123', 'student', '230201'),"
+        "('Bob Johnson', '240205@ku.ac.bd', 'mypassword', 'student', '240205'),"
+        "('Carol Williams', '210236@ku.ac.bd', 'securepass', 'student', '210236'),"
+        "('David Brown', 'david.brown@cse.ku.ac.bd', 'letmein', 'teacher', 'Professor'),"
+        "('Eve Davis', '250202@ku.ac.bd', 'passw0rd', 'student', '250202'),"
+        "('Frank Miller', 'frank.miller@cse.ku.ac.bd', 'qwerty', 'teacher', 'Assistant Professor');";
 
     QSqlQuery insertIntoDB;
     if (insertIntoDB.exec(insertData)) {
