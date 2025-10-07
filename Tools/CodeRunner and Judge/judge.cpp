@@ -144,6 +144,7 @@ void Judge::runOnTestCases()
      double timeLimit, cTimeLimit, cppTimeLimit, pyTimeLimit, javaTimeLimit;
      int checker;
      int numberOfTestCases;
+
 #ifdef _WIN32
      judgeInfoPath += "\\";
      pretestCasesPath += "\\" + currentProblem + "\\";
@@ -221,17 +222,9 @@ void Judge::runCppOrCFile(int checker, int timeLimit, int numOfTestCases, string
      std::string directoryPath = CodeRunner::getDirectoryPath(currentFile);
 
 #ifdef _WIN32
-     // exeFile = "\"" + directoryPath + filename + "-pretest.exe" + "\"";
-     // compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
-     int i;
-     for (i = 1; i <= 100; i++)
-     {
-          int temp = i;
-          std::string s = std::to_string(temp);
-          exeFile = "\"" + directoryPath + filename + "-" + s + "-pretest.exe" + "\"";
-          compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
-          std::string compileOutput = CodeRunner::executeCommand(compileCmd);
-     }
+     exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
+     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+    
 #else
      exeFile = "\"" + directoryPath + "./" + filename + "\"";
      compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
@@ -266,7 +259,6 @@ void Judge::runCppOrCFile(int checker, int timeLimit, int numOfTestCases, string
           int caseNo = i;
           string inputFile = testCasesPath + to_string(caseNo) + ".in";
           string outputFile = testCasesPath + to_string(caseNo) + ".output";
-          string output_file = "\"" + testCasesPath + to_string(caseNo) + ".output\"";
           string expectedFile = testCasesPath + to_string(caseNo) + ".out";
 
           int status = runWithTimeout(exeFile, inputFile, outputFile, timeLimit);
