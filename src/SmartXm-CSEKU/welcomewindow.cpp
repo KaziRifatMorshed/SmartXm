@@ -121,13 +121,21 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
 }
 
 void WelcomeWindow::updateStatusLabels() {
-  QtConcurrent::run([this]() {
+    QtConcurrent::run([this]() {
     bool xamppRunning = isXamppServiceRunning("127.0.0.1", 3306);
     bool internetConnected =
 #ifdef __linux__
         (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0);
 #elif _WIN32
-        (system("ping -n 1 8.8.8.8 > nul") == 0);
+        ([]() {
+            QProcess pingProcess;
+            QString program = "ping";
+            QStringList arguments;
+            arguments << "-n" << "1" << "8.8.8.8";
+            pingProcess.start(program, arguments);
+            bool finished = pingProcess.waitForFinished(2000);
+            return finished && (pingProcess.exitCode() == 0);
+        })();
 #endif
 
     // Use Qt's signal/slot to update UI in main thread
