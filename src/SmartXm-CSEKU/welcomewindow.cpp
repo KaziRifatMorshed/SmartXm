@@ -217,7 +217,7 @@ void WelcomeWindow::on_pushButton_clicked() {
   QString inputtedEmail = ui->email_lineEdit->text().trimmed();
   QString inputtedPass = ui->pass_lineEdit_2->text().trimmed();
 
-// #define LOGIN_DEBUG
+#define LOGIN_DEBUG
 #ifdef LOGIN_DEBUG
   bool temp = true; // if login info are true
   // bool isTeacher = (inputtedEmail == "t") ? true : false;
