@@ -1,0 +1,2 @@
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite/QSQLiteDriverPlugin_autogen/include/moc_qsql_sqlite_p.cpp.json
+/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite/QSQLiteDriverPlugin_autogen/include/smain.moc.json

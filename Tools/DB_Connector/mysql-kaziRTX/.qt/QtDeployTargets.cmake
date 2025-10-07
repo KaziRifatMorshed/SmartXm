@@ -1,0 +1,6 @@
+set(__QT_DEPLOY_TARGET_QPSQLDriverPlugin_FILE /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/plugins/sqldrivers/libqsqlpsql.so)
+set(__QT_DEPLOY_TARGET_QPSQLDriverPlugin_TYPE MODULE_LIBRARY)
+set(__QT_DEPLOY_TARGET_QMYSQLDriverPlugin_FILE /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/plugins/sqldrivers/libqsqlmysql.so)
+set(__QT_DEPLOY_TARGET_QMYSQLDriverPlugin_TYPE MODULE_LIBRARY)
+set(__QT_DEPLOY_TARGET_QSQLiteDriverPlugin_FILE /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/plugins/sqldrivers/libqsqlite.so)
+set(__QT_DEPLOY_TARGET_QSQLiteDriverPlugin_TYPE MODULE_LIBRARY)

@@ -2,7 +2,7 @@ QT       += core gui sql network concurrent pdfwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++20
+CONFIG += c++23
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -12,7 +12,9 @@ win32:LIBS += -lws2_32 \
     -lShell32
 
 SOURCES += \
+    Users.cpp \
     codeRunner.cpp \
+    db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
@@ -33,6 +35,7 @@ HEADERS += \
     Message.h \
     Student.h \
     TerminalExecuter.h \
+    Users.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -66,3 +69,4 @@ DISTFILES += \
 
 RESOURCES += \
     qt_resources.qrc
+

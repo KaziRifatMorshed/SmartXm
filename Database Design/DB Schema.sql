@@ -1,17 +1,29 @@
-CREATE TABLE Teacher (
-    teacher_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    designation VARCHAR(50),
-    email VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+-- CREATE TABLE Teacher (
+--     teacher_id INT AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(50) NOT NULL,
+--     designation VARCHAR(50),
+--     email VARCHAR(50) NOT NULL UNIQUE,
+--     password VARCHAR(255) NOT NULL,
+-- 	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
+--
+-- CREATE TABLE Student (
+--     student_id VARCHAR(50) PRIMARY KEY,
+--     name VARCHAR(50) NOT NULL,
+--     email VARCHAR(50) NOT NULL UNIQUE,
+--     password VARCHAR(255) NOT NULL,
+--     last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
 
-CREATE TABLE Student (
-    student_id VARCHAR(50) PRIMARY KEY,
+CREATE TABLE Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    identity ENUM('teacher', 'student'),
+    id VARCHAR(50) UNIQUE,
+    creation_time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE Course (
@@ -24,7 +36,8 @@ CREATE TABLE CourseTeacher(
     assigned_teacher INT NOT NULL,
     PRIMARY KEY(course_code, assigned_teacher),
     FOREIGN KEY (assigned_teacher) REFERENCES Teacher(teacher_id),
-    FOREIGN KEY (course_code) REFERENCES Course(course_code)
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Exam (
@@ -44,7 +57,8 @@ CREATE TABLE Exam (
     exam_no INT,
     course_code VARCHAR(50) NOT NULL,
     show_marks BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (course_code) REFERENCES Course(course_code)
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Participates (
@@ -55,7 +69,8 @@ CREATE TABLE Participates (
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE PreviousCode (
@@ -66,7 +81,8 @@ CREATE TABLE PreviousCode (
     submission_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (submitted_by) REFERENCES Student(student_id)
-        ON DELETE SET NULL ON UPDATE CASCADE
+        ON DELETE SET NULL ON UPDATE CASCADE,
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE UsePreviousCode (
@@ -76,7 +92,8 @@ CREATE TABLE UsePreviousCode (
     FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (code_id) REFERENCES PreviousCode(code_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Submission (
@@ -89,7 +106,8 @@ CREATE TABLE Submission (
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(exam_id) REFERENCES Exam(exam_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE TeacherEvaluatesSubmission (
@@ -103,5 +121,6 @@ CREATE TABLE TeacherEvaluatesSubmission (
     FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (submission_id) REFERENCES Submission(submission_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+	last_updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
