@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QTextStream>
 #include <QVBoxLayout>
 #include <QWheelEvent>
@@ -25,7 +26,8 @@
 #include <QString>
 #include <iostream>
 #include <string>
-#include "codeRunner.h"
+#include "CodeRunnerWorker.h"
+#include <QThread>
 
 IDE* IDE::ideInstance = nullptr;
 
@@ -198,36 +200,52 @@ void IDE::save() {
 
     ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
-
 void IDE::run() {
-    save();
-
-    QFile file(QString("input.txt"));
-
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+    save(); // save editor content to current file
+    QFile file("input.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-
         return;
     }
-
     QTextStream out(&file);
-    QString text = ui->input_textEdit->toPlainText();
-    out << text;
+    out << ui->input_textEdit->toPlainText();
     file.close();
 
-    CodeRunner runner;
-    runner.setCurrentFile(currentFile.toStdString());
-    runner.run();
+    CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
+    QThread *thread = new QThread();
+    worker->moveToThread(thread);
 
-    QString outputText = getFileContent(QString("output.txt"));
+    connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
 
-    ui->output_textEdit->setPlainText(outputText);
+    // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main thread
+    connect(worker, &CodeRunnerWorker::finished, this,
+            [this, thread, worker](QString outputText, QString debugText){
+                // All UI updates now safely happen in the main thread
+                ui->output_textEdit->setUpdatesEnabled(false);
+                ui->CompilerDebudOutput_textEdit->setUpdatesEnabled(false);
 
-    QString debugText = getFileContent(QString("error.txt"));
+                ui->output_textEdit->document()->setMaximumBlockCount(0);
+                ui->CompilerDebudOutput_textEdit->document()->setMaximumBlockCount(0);
 
-    ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
+                ui->output_textEdit->clear();
+                ui->CompilerDebudOutput_textEdit->clear();
+
+                ui->output_textEdit->setPlainText(outputText);
+                ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
+
+                ui->output_textEdit->setUpdatesEnabled(true);
+                ui->CompilerDebudOutput_textEdit->setUpdatesEnabled(true);
+
+                ToastManager::showMessage(this, "Execution complete.");
+                thread->quit();
+            }, Qt::QueuedConnection); // <- Important: Forces main thread execution
+
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    ToastManager::showMessage(this, "Running in background...");
+    thread->start();
 }
-
 void IDE::openFile(QString path) {
     QString fileName;
 
