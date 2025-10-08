@@ -38,6 +38,7 @@ HEADERS += \
     Student.h \
     TerminalExecuter.h \
     Users.h \
+    codeRunner.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \

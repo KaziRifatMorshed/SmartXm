@@ -26,7 +26,7 @@
 #include <QString>
 #include <iostream>
 #include <string>
-#include "CodeRunnerWorker.h"
+
 #include <QThread>
 
 IDE* IDE::ideInstance = nullptr;
@@ -39,6 +39,7 @@ IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
 IDE::~IDE() { delete ui; }
 
 void IDE::initialize() {
+    executionThreadFlag=false;
     ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
     ui->Editor->setFont(QFont("Monospace"));
@@ -56,11 +57,13 @@ void IDE::initialize() {
     QAction* newAction = new QAction("New", this);
     QAction* saveAction = new QAction("Save", this);
     QAction* runAction = new QAction("Run", this);
+    QAction* terminateAction = new QAction("Terminate Execution", this);
     QAction* loadAction = new QAction("Load Problem", this);
 
     connect(newAction, &QAction::triggered, this, &IDE::newFile);
     connect(saveAction, &QAction::triggered, this, &IDE::save);
     connect(runAction, &QAction::triggered, this, &IDE::run);
+    connect(terminateAction, &QAction::triggered, this, &IDE::terminateExecution);
     connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
             [=](const QModelIndex& index)
             {
@@ -75,6 +78,7 @@ void IDE::initialize() {
     ui->menuFile->addAction(newAction);
     ui->menuFile->addAction(saveAction);
     ui->menuFile->addAction(runAction);
+    ui->menuFile->addAction(terminateAction);
     ui->menuFile->addAction(loadAction);
 }
 
@@ -211,11 +215,14 @@ void IDE::run() {
     out << ui->input_textEdit->toPlainText();
     file.close();
     ui->CompilerDebudOutput_textEdit->clear();
-     ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
+    ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
     ui->output_textEdit->clear();
 
     CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
     QThread *thread = new QThread();
+    threadExecution=thread;
+    executionThreadFlag=true;
+    workerExecution=worker;
     worker->moveToThread(thread);
 
     connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
@@ -240,6 +247,7 @@ void IDE::run() {
 
 
                 ToastManager::showMessage(this, "Execution complete.");
+                executionThreadFlag=false;
                 thread->quit();
             }, Qt::QueuedConnection); // <- Important: Forces main thread execution
 
@@ -249,6 +257,17 @@ void IDE::run() {
     ToastManager::showMessage(this, "Running in background...");
     thread->start();
 }
+void IDE::terminateExecution()
+{
+    if(executionThreadFlag&&threadExecution && threadExecution->isRunning() && workerExecution)
+    {
+        workerExecution->killExecution(); // directly call the slot
+        ui->CompilerDebudOutput_textEdit->append("\nExecution is terminated.");
+        ToastManager::showMessage(this, "Execution terminated.");
+        executionThreadFlag=false;
+    }
+}
+
 void IDE::openFile(QString path) {
     QString fileName;
 

@@ -189,158 +189,167 @@ std::string CodeRunner::executeCommand(std::string &command)
 #endif
     return result;
 }
+
+
 std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runtimeError)
 {
     runtimeError = false;
     std::string result;
+
 #ifdef _WIN32
-    const long long MAX_SIZE = 128LL * 1024 * 1024; // 512 MB
+    const long long MAX_SIZE = 128LL * 1024 * 1024; // 128 MB
     std::string fullCmd = exeCommand + " < input.txt > output.txt 2>>error.txt";
-    STARTUPINFOA si;
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&si, sizeof(si));
-    ZeroMemory(&pi, sizeof(pi));
+
+    STARTUPINFOA si{};
+    PROCESS_INFORMATION pi{};
     si.cb = sizeof(si);
     si.dwFlags = STARTF_USESHOWWINDOW;
     si.wShowWindow = SW_HIDE;
 
-    // Create Job Object BEFORE creating process
-    HANDLE hJob = CreateJobObject(NULL, NULL);
-    if (hJob)
-    {
+           // Create job
+    hJobHandle = CreateJobObject(NULL, NULL);
+    if (hJobHandle) {
         JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobLimit = {};
         jobLimit.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-        SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobLimit, sizeof(jobLimit));
+        SetInformationJobObject(hJobHandle, JobObjectExtendedLimitInformation, &jobLimit, sizeof(jobLimit));
     }
 
     if (!CreateProcessA(NULL, (LPSTR)("cmd.exe /C " + fullCmd).c_str(),
-                        NULL, NULL, FALSE, CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB,
+                        NULL, NULL, FALSE,
+                        CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB,
                         NULL, NULL, &si, &pi))
     {
-        if (hJob) CloseHandle(hJob);
+        if (hJobHandle) CloseHandle(hJobHandle);
         return "Error: Failed to execute command.";
     }
 
-    // Assign process to job immediately after creation
-    if (hJob)
-    {
-        AssignProcessToJobObject(hJob, pi.hProcess);
-    }
+           // Save handle for external termination
+    hProcessHandle = pi.hProcess;
 
-    // Monitor output.txt
+    if (hJobHandle)
+        AssignProcessToJobObject(hJobHandle, pi.hProcess);
+
     bool terminated = false;
+
     while (WaitForSingleObject(pi.hProcess, 100) == WAIT_TIMEOUT)
     {
-        try
-        {
+        try {
             auto size = std::filesystem::file_size("output.txt");
-            if (size > MAX_SIZE)
-            {
-                // Terminate job (process + all children)
-                if (hJob)
-                    TerminateJobObject(hJob, 1);
-                else
-                    TerminateProcess(pi.hProcess, 1);
+            if (size > MAX_SIZE) {
+                std::cout<<"okay\n";
 
-                WaitForSingleObject(pi.hProcess, 1000); // Wait for termination
-
-                std::ofstream("error.txt", std::ios::app)
-                    << "Error: Output exceeded 128 MB. Process terminated.\n";
+                std::ofstream errorFile("error.txt", std::ios::app);
+                errorFile << "Error: Output exceeded 128 MB. Process terminated.\n";
+                errorFile.flush(); // make sure it's written immediately
+                errorFile.close();
+                std::cout<<"okay2\n";
+                stopExecution(); // <-- USE new method
                 terminated = true;
                 runtimeError = true;
+
                 break;
             }
+        } catch (...) {
+            std::cout<<"catch\n";
         }
-        catch (...) {} // ignore if file doesn't exist yet
     }
 
     DWORD exitCode = 0;
     GetExitCodeProcess(pi.hProcess, &exitCode);
 
-    // Read output if not terminated
-    if (!terminated)
-    {
+    if (!terminated) {
         std::ifstream outFile("output.txt");
-        if (outFile)
-        {
+        if (outFile) {
             std::stringstream buffer;
             buffer << outFile.rdbuf();
             result = buffer.str();
         }
     }
 
-    CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
-    if (hJob) CloseHandle(hJob);
+    CloseHandle(pi.hProcess);
+    if (hJobHandle) CloseHandle(hJobHandle);
+
+    hProcessHandle = NULL;
+    hJobHandle = NULL;
 
     if (exitCode != 0 && !terminated)
         runtimeError = true;
 
 #else
-    // Linux/Unix
+    // ---------------- Linux / Unix ----------------
     const long long MAX_SIZE = 128LL * 1024 * 1024;
-
-    // Use process group to kill all child processes
     std::string fullCmd = "setsid " + exeCommand + " < input.txt > output.txt 2>>error.txt & echo $! > pid.tmp";
     system(fullCmd.c_str());
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait for pid file
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     std::ifstream pidFile("pid.tmp");
-    pid_t pid = -1;
-    if (pidFile >> pid)
-    {
-        pidFile.close();
-    }
-    else
-    {
+    if (!(pidFile >> childPid)) {
         return "Error: Failed to get process ID.";
     }
 
     bool terminated = false;
-    while (true)
-    {
-        try
-        {
+    while (true) {
+        try {
             auto size = std::filesystem::file_size("output.txt");
-            if (size > MAX_SIZE)
-            {
-                // Kill entire process group (negative PID kills process group)
-                kill(-pid, SIGKILL);
-
+            if (size > MAX_SIZE) {
+                stopExecution(); // <-- USE new method
                 std::ofstream("error.txt", std::ios::app)
                     << "Error: Output exceeded 128 MB. Process terminated.\n";
                 terminated = true;
                 runtimeError = true;
                 break;
             }
-        }
-        catch (...) {}
+        } catch (...) {}
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Check if process still exists
-        if (kill(pid, 0) != 0)
-            break; // process finished
+        if (kill(childPid, 0) != 0)
+            break; // finished
     }
 
-    // Read output if not terminated
-    if (!terminated)
-    {
+    if (!terminated) {
         std::ifstream outFile("output.txt");
-        if (outFile)
-        {
+        if (outFile) {
             std::stringstream buffer;
             buffer << outFile.rdbuf();
             result = buffer.str();
         }
     }
 
-    // Cleanup
     std::remove("pid.tmp");
+    childPid = -1;
 #endif
+
     return result;
 }
+
+void CodeRunner::stopExecution()
+{
+#ifdef _WIN32
+
+
+    if (hJobHandle)
+    {
+        TerminateJobObject(hJobHandle, 1);
+        CloseHandle(hJobHandle);
+        hJobHandle = NULL;
+    }
+    else if (hProcessHandle)
+    {
+        TerminateProcess(hProcessHandle, 1);
+        CloseHandle(hProcessHandle);
+        hProcessHandle = NULL;
+    }
+#else
+    if (childPid > 0)
+    {
+        kill(-childPid, SIGKILL); // kill entire process group
+        childPid = -1;
+    }
+#endif
+}
+
 
 
 void CodeRunner::setCurrentFile(const std::string &file)
