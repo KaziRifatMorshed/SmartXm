@@ -17,6 +17,7 @@ SOURCES += \
     networking/client/client_linux.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
+    runtestcases.cpp \
     studentmodule.cpp \
     teachermodule.cpp \
     toast.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
+    runtestcases.h \
     studentmodule.h \
     teachermodule.h \
     toast.h \
@@ -44,6 +46,7 @@ HEADERS += \
 
 FORMS += \
     ide.ui \
+    runtestcases.ui \
     studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui

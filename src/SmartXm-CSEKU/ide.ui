@@ -180,6 +180,7 @@
    <addaction name="actionLoad_Questions"/>
    <addaction name="separator"/>
    <addaction name="actionRun"/>
+   <addaction name="actionTerminate"/>
    <addaction name="actionTestcases"/>
    <addaction name="actionRun_Testcases"/>
   </widget>
@@ -277,6 +278,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionTerminate">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::MediaPlaybackStop"/>
+   </property>
+   <property name="text">
+    <string>Terminate</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>

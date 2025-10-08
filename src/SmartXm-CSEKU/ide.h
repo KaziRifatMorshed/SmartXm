@@ -42,6 +42,8 @@ private slots:
     void run();
     void loadProblem();
 
+    void on_actionTestcases_triggered();
+
 private:
     Ui::IDE* ui;
     QFileSystemModel *model;
