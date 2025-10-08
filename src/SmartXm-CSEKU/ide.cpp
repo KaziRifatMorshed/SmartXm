@@ -210,6 +210,9 @@ void IDE::run() {
     QTextStream out(&file);
     out << ui->input_textEdit->toPlainText();
     file.close();
+    ui->CompilerDebudOutput_textEdit->clear();
+     ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
+    ui->output_textEdit->clear();
 
     CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
     QThread *thread = new QThread();
@@ -219,22 +222,22 @@ void IDE::run() {
 
     // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main thread
     connect(worker, &CodeRunnerWorker::finished, this,
-            [this, thread, worker](QString outputText, QString debugText){
+            [this, thread]{
                 // All UI updates now safely happen in the main thread
-                ui->output_textEdit->setUpdatesEnabled(false);
-                ui->CompilerDebudOutput_textEdit->setUpdatesEnabled(false);
 
-                ui->output_textEdit->document()->setMaximumBlockCount(0);
-                ui->CompilerDebudOutput_textEdit->document()->setMaximumBlockCount(0);
+                QString debugText = getFileContent(QString("error.txt"));
 
-                ui->output_textEdit->clear();
-                ui->CompilerDebudOutput_textEdit->clear();
+                ui->CompilerDebudOutput_textEdit->setPlainText(debugText+"\nOutput is Displayed.");
 
-                ui->output_textEdit->setPlainText(outputText);
-                ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
 
-                ui->output_textEdit->setUpdatesEnabled(true);
-                ui->CompilerDebudOutput_textEdit->setUpdatesEnabled(true);
+                    QString outputText = getFileContent(QString("output.txt"));
+
+                    ui->output_textEdit->setPlainText(outputText);
+
+                //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
+
+
+
 
                 ToastManager::showMessage(this, "Execution complete.");
                 thread->quit();

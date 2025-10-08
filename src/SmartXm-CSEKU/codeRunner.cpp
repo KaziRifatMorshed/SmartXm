@@ -194,7 +194,7 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
     runtimeError = false;
     std::string result;
 #ifdef _WIN32
-    const long long MAX_SIZE = 512LL * 1024 * 1024; // 512 MB
+    const long long MAX_SIZE = 128LL * 1024 * 1024; // 512 MB
     std::string fullCmd = exeCommand + " < input.txt > output.txt 2>>error.txt";
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
@@ -245,7 +245,7 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
                 WaitForSingleObject(pi.hProcess, 1000); // Wait for termination
 
                 std::ofstream("error.txt", std::ios::app)
-                    << "Error: Output exceeded 512MB. Process terminated.\n";
+                    << "Error: Output exceeded 128 MB. Process terminated.\n";
                 terminated = true;
                 runtimeError = true;
                 break;
@@ -278,7 +278,7 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
 
 #else
     // Linux/Unix
-    const long long MAX_SIZE = 512LL * 1024 * 1024;
+    const long long MAX_SIZE = 128LL * 1024 * 1024;
 
     // Use process group to kill all child processes
     std::string fullCmd = "setsid " + exeCommand + " < input.txt > output.txt 2>>error.txt & echo $! > pid.tmp";
@@ -309,7 +309,7 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
                 kill(-pid, SIGKILL);
 
                 std::ofstream("error.txt", std::ios::app)
-                    << "Error: Output exceeded 512MB. Process terminated.\n";
+                    << "Error: Output exceeded 128 MB. Process terminated.\n";
                 terminated = true;
                 runtimeError = true;
                 break;

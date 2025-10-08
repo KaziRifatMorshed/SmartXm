@@ -14,7 +14,7 @@ public slots:
     void run();  // will be called in a separate thread
 
 signals:
-    void finished(QString outputText, QString debugText);
+    void finished();
 
 private:
     std::string currentFile;
