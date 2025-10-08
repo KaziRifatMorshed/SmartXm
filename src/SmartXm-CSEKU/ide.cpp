@@ -227,7 +227,7 @@ void IDE::run() {
 
                 QString debugText = getFileContent(QString("error.txt"));
 
-                ui->CompilerDebudOutput_textEdit->setPlainText(debugText+"\nOutput is Displayed.");
+                ui->CompilerDebudOutput_textEdit->setPlainText(debugText+"\nExecution is finished.");
 
 
                     QString outputText = getFileContent(QString("output.txt"));
