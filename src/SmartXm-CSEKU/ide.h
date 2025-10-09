@@ -46,6 +46,8 @@ private slots:
 
     void on_actionTestcases_triggered();
 
+    void on_actionRun_Testcases_triggered();
+
 private:
     Ui::IDE* ui;
     QFileSystemModel *model;

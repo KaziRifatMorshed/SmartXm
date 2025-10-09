@@ -10,10 +10,10 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QProcess>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QPlainTextEdit>
 #include <QTextStream>
 #include <QVBoxLayout>
 #include <QWheelEvent>
@@ -43,47 +43,46 @@ IDE::IDE(QWidget *parent) : QMainWindow(parent), ui(new Ui::IDE) {
 IDE::~IDE() { delete ui; }
 
 void IDE::initialize() {
-    executionThreadFlag=false;
-    ui->CompilerDebudOutput_textEdit->setReadOnly(true);
+  executionThreadFlag = false;
+  ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
-    ui->Editor->setFont(QFont("Monospace"));
-    ui->input_textEdit->setFont(QFont("Monospace"));
-    ui->output_textEdit->setFont(QFont("Monospace"));
-    ui->CompilerDebudOutput_textEdit->setFont(QFont("Monospace"));
+  ui->Editor->setFont(QFont("Monospace"));
+  ui->input_textEdit->setFont(QFont("Monospace"));
+  ui->output_textEdit->setFont(QFont("Monospace"));
+  ui->CompilerDebudOutput_textEdit->setFont(QFont("Monospace"));
 
-    model = new QFileSystemModel(this);
-    model->setRootPath(dirPath);
-    model->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
+  model = new QFileSystemModel(this);
+  model->setRootPath(dirPath);
+  model->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
 
-    ui->treeViewFiles->setModel(model);
-    ui->treeViewFiles->setRootIndex(model->index(dirPath));
+  ui->treeViewFiles->setModel(model);
+  ui->treeViewFiles->setRootIndex(model->index(dirPath));
 
-    QAction* newAction = new QAction("New", this);
-    QAction* saveAction = new QAction("Save", this);
-    QAction* runAction = new QAction("Run", this);
-    QAction* terminateAction = new QAction("Terminate Execution", this);
-    QAction* loadAction = new QAction("Load Problem", this);
+  QAction *newAction = new QAction("New", this);
+  QAction *saveAction = new QAction("Save", this);
+  QAction *runAction = new QAction("Run", this);
+  QAction *terminateAction = new QAction("Terminate Execution", this);
+  QAction *loadAction = new QAction("Load Problem", this);
 
-    connect(newAction, &QAction::triggered, this, &IDE::newFile);
-    connect(saveAction, &QAction::triggered, this, &IDE::save);
-    connect(runAction, &QAction::triggered, this, &IDE::run);
-    connect(terminateAction, &QAction::triggered, this, &IDE::terminateExecution);
-    connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
-            [=](const QModelIndex& index)
-            {
-                QString path = model->filePath(index);
+  connect(newAction, &QAction::triggered, this, &IDE::newFile);
+  connect(saveAction, &QAction::triggered, this, &IDE::save);
+  connect(runAction, &QAction::triggered, this, &IDE::run);
+  connect(terminateAction, &QAction::triggered, this, &IDE::terminateExecution);
+  connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
+          [=](const QModelIndex &index) {
+            QString path = model->filePath(index);
 
-                if (QFileInfo(path).isFile()) {
-                    openFile(path);
-                }
-            });
-    connect(loadAction, &QAction::triggered, this, &IDE::loadProblem);
+            if (QFileInfo(path).isFile()) {
+              openFile(path);
+            }
+          });
+  connect(loadAction, &QAction::triggered, this, &IDE::loadProblem);
 
-    ui->menuFile->addAction(newAction);
-    ui->menuFile->addAction(saveAction);
-    ui->menuFile->addAction(runAction);
-    ui->menuFile->addAction(terminateAction);
-    ui->menuFile->addAction(loadAction);
+  ui->menuFile->addAction(newAction);
+  ui->menuFile->addAction(saveAction);
+  ui->menuFile->addAction(runAction);
+  ui->menuFile->addAction(terminateAction);
+  ui->menuFile->addAction(loadAction);
 }
 
 void IDE::loadPdfInQuesTab(QWidget *ques_tab, std::string pdfFilePath) {
@@ -208,67 +207,67 @@ void IDE::save() {
   ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
 void IDE::run() {
-    save(); // save editor content to current file
-    QFile file("input.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-        return;
-    }
-    QTextStream out(&file);
-    out << ui->input_textEdit->toPlainText();
-    file.close();
-    ui->CompilerDebudOutput_textEdit->clear();
-    ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
-    ui->output_textEdit->clear();
+  save(); // save editor content to current file
+  QFile file("input.txt");
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot save file: " + file.errorString());
+    return;
+  }
+  QTextStream out(&file);
+  out << ui->input_textEdit->toPlainText();
+  file.close();
+  ui->CompilerDebudOutput_textEdit->clear();
+  ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
+  ui->output_textEdit->clear();
 
-    CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
-    QThread *thread = new QThread();
-    threadExecution=thread;
-    executionThreadFlag=true;
-    workerExecution=worker;
-    worker->moveToThread(thread);
+  CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
+  QThread *thread = new QThread();
+  threadExecution = thread;
+  executionThreadFlag = true;
+  workerExecution = worker;
+  worker->moveToThread(thread);
 
-    connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
+  connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
 
-    // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main thread
-    connect(worker, &CodeRunnerWorker::finished, this,
-            [this, thread]{
-                // All UI updates now safely happen in the main thread
+  // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main
+  // thread
+  connect(
+      worker, &CodeRunnerWorker::finished, this,
+      [this, thread] {
+        // All UI updates now safely happen in the main thread
 
-                QString debugText = getFileContent(QString("error.txt"));
+        QString debugText = getFileContent(QString("error.txt"));
 
-                ui->CompilerDebudOutput_textEdit->setPlainText(debugText+"\nExecution is finished.");
+        ui->CompilerDebudOutput_textEdit->setPlainText(
+            debugText + "\nExecution is finished.");
 
+        QString outputText = getFileContent(QString("output.txt"));
 
-                    QString outputText = getFileContent(QString("output.txt"));
+        ui->output_textEdit->setPlainText(outputText);
 
-                    ui->output_textEdit->setPlainText(outputText);
+        // ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
 
-                //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
+        ToastManager::showMessage(this, "Execution complete.");
+        executionThreadFlag = false;
+        thread->quit();
+      },
+      Qt::QueuedConnection); // <- Important: Forces main thread execution
 
+  connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+  connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
-
-
-                ToastManager::showMessage(this, "Execution complete.");
-                executionThreadFlag=false;
-                thread->quit();
-            }, Qt::QueuedConnection); // <- Important: Forces main thread execution
-
-    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-
-    ToastManager::showMessage(this, "Running in background...");
-    thread->start();
+  ToastManager::showMessage(this, "Running in background...");
+  thread->start();
 }
-void IDE::terminateExecution()
-{
-    if(executionThreadFlag&&threadExecution && threadExecution->isRunning() && workerExecution)
-    {
-        workerExecution->killExecution(); // directly call the slot
-        ui->CompilerDebudOutput_textEdit->append("\nExecution is terminated.");
-        ToastManager::showMessage(this, "Execution terminated.");
-        executionThreadFlag=false;
-    }
+void IDE::terminateExecution() {
+  if (executionThreadFlag && threadExecution && threadExecution->isRunning() &&
+      workerExecution) {
+    workerExecution->killExecution(); // directly call the slot
+    ui->CompilerDebudOutput_textEdit->append("\nExecution is terminated.");
+    ToastManager::showMessage(this, "Execution terminated.");
+    executionThreadFlag = false;
+  }
 }
 
 void IDE::openFile(QString path) {
@@ -362,5 +361,8 @@ void IDE::loadProblem() {
 
 void IDE::on_actionTestcases_triggered() {
   // QMessageBox::information(this, "run test case", "test");
-
+  testcasesWindow = new runTestcases();
+  testcasesWindow->show();
 }
+
+void IDE::on_actionRun_Testcases_triggered() {}

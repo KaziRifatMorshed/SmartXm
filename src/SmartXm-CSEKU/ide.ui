@@ -32,7 +32,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QTreeView" name="treeViewFiles"/>
+       <widget class="QTreeView" name="treeViewFiles">
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -85,7 +89,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="input_textEdit"/>
+           <widget class="QTextEdit" name="input_textEdit">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -99,7 +110,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="output_textEdit"/>
+           <widget class="QTextEdit" name="output_textEdit">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -115,7 +133,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="CompilerDebudOutput_textEdit"/>
+         <widget class="QTextEdit" name="CompilerDebudOutput_textEdit">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -179,6 +204,7 @@
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionLoad_Questions"/>
+   <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionRun"/>
    <addaction name="actionTerminate"/>
