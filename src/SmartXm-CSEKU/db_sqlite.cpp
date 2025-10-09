@@ -1,3 +1,3 @@
-#include "db_sqlite.h";
+#include "db_sqlite.h"
 
-SQliteDB* SQliteDB::localCache = nullptr;
+SQliteDB *SQliteDB::cacheDbInstance = nullptr;
