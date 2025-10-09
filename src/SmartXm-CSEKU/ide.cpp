@@ -44,6 +44,7 @@ IDE::~IDE() { delete ui; }
 
 void IDE::initialize() {
   executionThreadFlag = false;
+  forciblyKillExecutionFlag=false;
   ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
   ui->Editor->setFont(QFont("Monospace"));
@@ -207,67 +208,75 @@ void IDE::save() {
   ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
 void IDE::run() {
-  save(); // save editor content to current file
-  QFile file("input.txt");
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    QMessageBox::warning(this, "Warning",
-                         "Cannot save file: " + file.errorString());
-    return;
-  }
-  QTextStream out(&file);
-  out << ui->input_textEdit->toPlainText();
-  file.close();
-  ui->CompilerDebudOutput_textEdit->clear();
-  ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
-  ui->output_textEdit->clear();
+    save(); // save editor content to current file
+    QFile file("input.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+        return;
+    }
+    QTextStream out(&file);
+    out << ui->input_textEdit->toPlainText();
+    file.close();
+    ui->CompilerDebudOutput_textEdit->clear();
+    ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
+    ui->output_textEdit->clear();
 
-  CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
-  QThread *thread = new QThread();
-  threadExecution = thread;
-  executionThreadFlag = true;
-  workerExecution = worker;
-  worker->moveToThread(thread);
+    CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
+    QThread *thread = new QThread();
+    threadExecution=thread;
+    executionThreadFlag=true;
+    workerExecution=worker;
+    worker->moveToThread(thread);
 
-  connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
+    connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
 
-  // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main
-  // thread
-  connect(
-      worker, &CodeRunnerWorker::finished, this,
-      [this, thread] {
-        // All UI updates now safely happen in the main thread
+           // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main thread
+    connect(worker, &CodeRunnerWorker::finished, this,
+            [this, thread]{
+                // All UI updates now safely happen in the main thread
 
-        QString debugText = getFileContent(QString("error.txt"));
+                QString debugText = getFileContent(QString("error.txt"));
 
-        ui->CompilerDebudOutput_textEdit->setPlainText(
-            debugText + "\nExecution is finished.");
+                ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
 
-        QString outputText = getFileContent(QString("output.txt"));
 
-        ui->output_textEdit->setPlainText(outputText);
+                QString outputText = getFileContent(QString("output.txt"));
 
-        // ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
+                ui->output_textEdit->setPlainText(outputText);
 
-        ToastManager::showMessage(this, "Execution complete.");
-        executionThreadFlag = false;
-        thread->quit();
-      },
-      Qt::QueuedConnection); // <- Important: Forces main thread execution
+                       //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
 
-  connect(thread, &QThread::finished, worker, &QObject::deleteLater);
-  connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
-  ToastManager::showMessage(this, "Running in background...");
-  thread->start();
+                if(forciblyKillExecutionFlag)
+                {
+                    ui->CompilerDebudOutput_textEdit->append("\nExecution is forcibly terminated.");
+                    ToastManager::showMessage(this, "Execution terminated.");
+                    forciblyKillExecutionFlag=false;
+                }
+                else
+                {
+                    ui->CompilerDebudOutput_textEdit->append("\nExecution is finished.");
+                    ToastManager::showMessage(this, "Execution complete.");
+                }
+
+                executionThreadFlag=false;
+                thread->quit();
+            }, Qt::QueuedConnection); // <- Important: Forces main thread execution
+
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    ToastManager::showMessage(this, "Running in background...");
+    thread->start();
 }
-void IDE::terminateExecution() {
-  if (executionThreadFlag && threadExecution && threadExecution->isRunning() &&
-      workerExecution) {
-    workerExecution->killExecution(); // directly call the slot
-    ui->CompilerDebudOutput_textEdit->append("\nExecution is terminated.");
-    ToastManager::showMessage(this, "Execution terminated.");
-    executionThreadFlag = false;
-  }
+void IDE::terminateExecution()
+{
+    if(executionThreadFlag&&threadExecution && threadExecution->isRunning() && workerExecution)
+    {
+        forciblyKillExecutionFlag=true;
+        workerExecution->killExecution(); // directly call the slot
+        executionThreadFlag=false;
+    }
 }
 
 void IDE::openFile(QString path) {

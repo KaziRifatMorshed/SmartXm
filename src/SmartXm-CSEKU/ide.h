@@ -57,6 +57,7 @@ private:
     QThread *threadExecution;
     CodeRunnerWorker *workerExecution;
     bool executionThreadFlag;
+    bool forciblyKillExecutionFlag;
     void initialize();
     void loadInput(std::string path);
     void loadOutput(std::string path);
