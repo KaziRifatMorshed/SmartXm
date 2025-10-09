@@ -154,7 +154,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -321,7 +321,7 @@
     <string>Terminate</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+C</string>
+    <string>F6</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

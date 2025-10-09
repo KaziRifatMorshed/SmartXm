@@ -278,50 +278,58 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
 #else
     // ---------------- Linux / Unix ----------------
     const long long MAX_SIZE = 128LL * 1024 * 1024;
-    std::string fullCmd = "setsid " + exeCommand + " < input.txt > output.txt 2>>error.txt & echo $! > pid.tmp";
-    system(fullCmd.c_str());
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    std::ifstream pidFile("pid.tmp");
-    if (!(pidFile >> childPid)) {
-        pidFile.close();
-        return "Error: Failed to get process ID.";
-    }
-    pidFile.close();
+    int stdoutFd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int stderrFd = open("error.txt", O_WRONLY | O_CREAT | O_APPEND, 0644);
+    int stdinFd = open("input.txt", O_RDONLY);
 
-    bool terminated = false;
-    while (true) {
-        try {
-            auto size = std::filesystem::file_size("output.txt");
-            if (size > MAX_SIZE) {
-                stopExecution(); // <-- USE new method
-                std::ofstream fout("error.txt", std::ios::app);
-                    fout<< "Error: Output exceeded 128 MB. Process terminated.\n";
-                fout.close();
-                terminated = true;
-                runtimeError = true;
-                break;
-            }
-        } catch (...) {}
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Child process
+        setsid(); // create new session
+        if (stdoutFd >= 0) dup2(stdoutFd, STDOUT_FILENO);
+        if (stderrFd >= 0) dup2(stderrFd, STDERR_FILENO);
+        if (stdinFd >= 0) dup2(stdinFd, STDIN_FILENO);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        execl("/bin/sh", "sh", "-c", exeCommand.c_str(), (char*) nullptr);
+        _exit(127); // if exec fails
+    } else if (pid > 0) {
+        // Parent process
+        childPid = pid;
 
-        if (kill(childPid, 0) != 0)
-            break; // finished
-    }
+        if (stdoutFd >= 0) close(stdoutFd);
+        if (stderrFd >= 0) close(stderrFd);
+        if (stdinFd >= 0) close(stdinFd);
 
-    if (!terminated) {
-        std::ifstream outFile("output.txt");
-        if (outFile) {
-            std::stringstream buffer;
-            buffer << outFile.rdbuf();
-            result = buffer.str();
+        bool terminated = false;
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            try {
+                auto size = std::filesystem::file_size("output.txt");
+                if (size > MAX_SIZE) {
+                    stopExecution();
+                    std::ofstream fout("error.txt", std::ios::app);
+                    fout << "Error: Output exceeded 128 MB. Process terminated.\n";
+                    fout.close();
+                    runtimeError = true;
+                    terminated = true;
+                    break;
+                }
+            } catch (...) {}
+
+                   // Check if process finished
+            int status;
+            pid_t ret = waitpid(childPid, &status, WNOHANG);
+            if (ret > 0) break;
         }
-        outFile.close();
-    }
 
-    std::remove("pid.tmp");
-    childPid = -1;
+
+
+        childPid = -1;
+    } else {
+        return "Error: fork() failed.";
+    }
 #endif
 
     return result;
@@ -346,11 +354,13 @@ void CodeRunner::stopExecution()
     }
 
 #else
+    std::cout<<"i am here\n";
     if (childPid > 0)
     {
         kill(-childPid, SIGKILL); // kill entire process group
         childPid = -1;
     }
+
 #endif
 
 
@@ -462,9 +472,7 @@ void CodeRunner::runCppOrCFile()
         return;
     }
 
-    std::ofstream fout("error.txt", std::ios::app);
-    fout << "Compilation and execution are successful.\n";
-    fout.close();
+
 }
 
 void CodeRunner::runPythonFile()
@@ -480,13 +488,7 @@ void CodeRunner::runPythonFile()
     std::ofstream fout("error.txt", std::ios::app);
     fout <<error<<std::endl;
     fout.close();
-    if (!exitCode)
-    {
-        std::ofstream fout("error.txt", std::ios::app);
-        fout << "Compilation and execution are successful.\n";
-        fout.close();
-    }
-    else
+    if (exitCode)
     {
         std::ofstream fout("error.txt", std::ios::app);
         fout<<"Runtime error occurred with exit code: "<<exitCode<<std::endl;

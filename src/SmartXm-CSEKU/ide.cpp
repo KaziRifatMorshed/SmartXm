@@ -239,12 +239,15 @@ void IDE::run() {
             [this, thread]{
                 // All UI updates now safely happen in the main thread
 
+
                 QString debugText = getFileContent(QString("error.txt"));
 
                 ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
 
 
-                QString outputText = getFileContent(QString("output.txt"));
+                QString outputText;
+                if(!forciblyKillExecutionFlag)
+                outputText= getFileContent(QString("output.txt"));
 
                 ui->output_textEdit->setPlainText(outputText);
 
