@@ -40,6 +40,7 @@ IDE::~IDE() { delete ui; }
 
 void IDE::initialize() {
     executionThreadFlag=false;
+    forciblyKillExecutionFlag=false;
     ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
     ui->Editor->setFont(QFont("Monospace"));
@@ -232,21 +233,30 @@ void IDE::run() {
             [this, thread]{
                 // All UI updates now safely happen in the main thread
 
-                QString debugText = getFileContent(QString("error.txt"));
+                    QString debugText = getFileContent(QString("error.txt"));
 
-                ui->CompilerDebudOutput_textEdit->setPlainText(debugText+"\nExecution is finished.");
+                    ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
 
 
                     QString outputText = getFileContent(QString("output.txt"));
 
                     ui->output_textEdit->setPlainText(outputText);
 
-                //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
+                    //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
 
 
+                    if(forciblyKillExecutionFlag)
+                    {
+                        ui->CompilerDebudOutput_textEdit->append("\nExecution is forcibly terminated.");
+                        ToastManager::showMessage(this, "Execution terminated.");
+                        forciblyKillExecutionFlag=false;
+                    }
+                    else
+                    {
+                        ui->CompilerDebudOutput_textEdit->append("\nExecution is finished.");
+                        ToastManager::showMessage(this, "Execution complete.");
+                    }
 
-
-                ToastManager::showMessage(this, "Execution complete.");
                 executionThreadFlag=false;
                 thread->quit();
             }, Qt::QueuedConnection); // <- Important: Forces main thread execution
@@ -261,9 +271,8 @@ void IDE::terminateExecution()
 {
     if(executionThreadFlag&&threadExecution && threadExecution->isRunning() && workerExecution)
     {
+        forciblyKillExecutionFlag=true;
         workerExecution->killExecution(); // directly call the slot
-        ui->CompilerDebudOutput_textEdit->append("\nExecution is terminated.");
-        ToastManager::showMessage(this, "Execution terminated.");
         executionThreadFlag=false;
     }
 }

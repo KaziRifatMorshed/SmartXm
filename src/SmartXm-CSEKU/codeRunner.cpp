@@ -236,16 +236,18 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
         try {
             auto size = std::filesystem::file_size("output.txt");
             if (size > MAX_SIZE) {
-                std::cout<<"okay\n";
+                stopExecution(); // <-- USE new method
 
+                terminated = true;
+                runtimeError = true;
+                WaitForSingleObject(pi.hProcess, 2000);
                 std::ofstream errorFile("error.txt", std::ios::app);
                 errorFile << "Error: Output exceeded 128 MB. Process terminated.\n";
                 errorFile.flush(); // make sure it's written immediately
                 errorFile.close();
-                std::cout<<"okay2\n";
-                stopExecution(); // <-- USE new method
-                terminated = true;
-                runtimeError = true;
+
+
+
 
                 break;
             }
@@ -257,15 +259,6 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
     DWORD exitCode = 0;
     GetExitCodeProcess(pi.hProcess, &exitCode);
 
-    if (!terminated) {
-        std::ifstream outFile("output.txt");
-        if (outFile) {
-            std::stringstream buffer;
-            buffer << outFile.rdbuf();
-            result = buffer.str();
-        }
-    }
-
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
     if (hJobHandle) CloseHandle(hJobHandle);
@@ -273,8 +266,16 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
     hProcessHandle = NULL;
     hJobHandle = NULL;
 
-    if (exitCode != 0 && !terminated)
+    if (exitCode != 0 && !terminated) {
         runtimeError = true;
+
+        std::ofstream err("error.txt", std::ios::app);
+        if (exitCode == 0xC0000094)
+            err << "Error: Division by zero occurred.\n";
+        else
+            err << "Error: Process exited abnormally. Code: " << std::hex << exitCode << "\n";
+        err.close();
+    }
 
 #else
     // ---------------- Linux / Unix ----------------
@@ -285,8 +286,10 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
 
     std::ifstream pidFile("pid.tmp");
     if (!(pidFile >> childPid)) {
+        pidFile.close();
         return "Error: Failed to get process ID.";
     }
+    pidFile.close();
 
     bool terminated = false;
     while (true) {
@@ -294,8 +297,9 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
             auto size = std::filesystem::file_size("output.txt");
             if (size > MAX_SIZE) {
                 stopExecution(); // <-- USE new method
-                std::ofstream("error.txt", std::ios::app)
-                    << "Error: Output exceeded 128 MB. Process terminated.\n";
+                std::ofstream fout("error.txt", std::ios::app);
+                    fout<< "Error: Output exceeded 128 MB. Process terminated.\n";
+                fout.close();
                 terminated = true;
                 runtimeError = true;
                 break;
@@ -315,6 +319,7 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
             buffer << outFile.rdbuf();
             result = buffer.str();
         }
+        outFile.close();
     }
 
     std::remove("pid.tmp");
@@ -341,6 +346,7 @@ void CodeRunner::stopExecution()
         CloseHandle(hProcessHandle);
         hProcessHandle = NULL;
     }
+
 #else
     if (childPid > 0)
     {
@@ -348,6 +354,8 @@ void CodeRunner::stopExecution()
         childPid = -1;
     }
 #endif
+
+
 }
 
 
@@ -364,26 +372,34 @@ void CodeRunner::run()
 
     if (currentFile.empty())
     {
-        std::ofstream("error.txt", std::ios::app) << "Error: No file specified.\n";
+        std::ofstream fout("error.txt", std::ios::app);
+        fout << "Error: No file specified.\n";
+        fout.close();
         return;
     }
 
     if (!std::filesystem::exists(currentFile))
     {
-        std::ofstream("error.txt", std::ios::app) << "Error: File '" << currentFile << "' does not exist.\n";
+        std::ofstream fout("error.txt", std::ios::app);
+        fout<< "Error: File '" << currentFile << "' does not exist.\n";
+        fout.close();
         return;
     }
 
     if (!std::filesystem::exists("input.txt"))
     {
-        std::ofstream("error.txt", std::ios::app) << "Error: File 'input.txt' does not exist.\n";
+        std::ofstream fout("error.txt", std::ios::app);
+        fout<< "Error: File 'input.txt' does not exist.\n";
+        fout.close();
         return;
     }
 
     std::string ext = getFileExtension(currentFile);
     if (ext != "c" && ext != "cpp" && ext != "c++" && ext != "py")
     {
-        std::ofstream("error.txt", std::ios::app) << "Error: Unsupported file type " << ext << ".\n";
+        std::ofstream fout("error.txt", std::ios::app);
+        fout<< "Error: Unsupported file type " << ext << ".\n";
+        fout.close();
         return;
     }
 
@@ -423,7 +439,7 @@ void CodeRunner::runCppOrCFile()
     if (!compileOutput.empty())
     {
         std::ofstream fout("error.txt", std::ios::app);
-        fout << "Compilation Output:\n\n" << compileOutput << std::endl;
+        fout  << compileOutput << std::endl;
         fout.close();
         if (compileOutput.find("error") != std::string::npos)
             return;
@@ -431,21 +447,26 @@ void CodeRunner::runCppOrCFile()
 
     if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
     {
-        std::ofstream("error.txt", std::ios::app) << "Compilation Failed!\n";
+        std::ofstream fout("error.txt", std::ios::app);
+        fout<< "Compilation Failed!\n";
+        fout.close();
         return;
     }
 
     int exitCode;
     std::string error = executeExeFile(exeFile, exitCode);
+
     if (exitCode)
     {
         std::ofstream fout("error.txt", std::ios::app);
-        fout << "Runtime error occurred. Exit code: " << exitCode << "\n";
+        fout << "Runtime error occurred with exit code: " << exitCode << "\n";
         fout.close();
         return;
     }
 
-    std::ofstream("error.txt", std::ios::app) << "Compilation and execution are successful.\n";
+    std::ofstream fout("error.txt", std::ios::app);
+    fout << "Compilation and execution are successful.\n";
+    fout.close();
 }
 
 void CodeRunner::runPythonFile()
@@ -455,9 +476,22 @@ void CodeRunner::runPythonFile()
 #else
     std::string pythonCmd = "python3";
 #endif
-    std::string runCmd = pythonCmd + " -u \"" + currentFile + "\"";
+    std::string runCmd = pythonCmd + " \"" + currentFile + "\"";
     int exitCode;
     std::string error = executeExeFile(runCmd, exitCode);
+    std::ofstream fout("error.txt", std::ios::app);
+    fout <<error<<std::endl;
+    fout.close();
     if (!exitCode)
-        std::ofstream("error.txt", std::ios::app) << "Compilation and execution are successful.\n";
+    {
+        std::ofstream fout("error.txt", std::ios::app);
+        fout << "Compilation and execution are successful.\n";
+        fout.close();
+    }
+    else
+    {
+        std::ofstream fout("error.txt", std::ios::app);
+        fout<<"Runtime error occurred with exit code: "<<exitCode<<std::endl;
+        fout.close();
+    }
 }

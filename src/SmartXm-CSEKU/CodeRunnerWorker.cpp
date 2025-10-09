@@ -15,7 +15,7 @@ void CodeRunnerWorker::run()
     runner.setCurrentFile(currentFile);
     runner.run(); // blocking, safe in this thread
 
-           // Read output and error files
+
 
 
 
@@ -29,7 +29,5 @@ void CodeRunnerWorker::killExecution()
 
     runner.stopExecution();
 
-           // Read output and error files
 
-    emit finished();
 }
