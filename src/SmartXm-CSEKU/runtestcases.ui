@@ -43,35 +43,35 @@
       <item row="1" column="1">
        <widget class="QComboBox" name="SelectTestcase_comboBox"/>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QPushButton" name="runThisTestcase_pushButton">
         <property name="text">
          <string>Run this testcase</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QPushButton" name="runAllTestcases_pushButton_2">
         <property name="text">
          <string>Run all testcases</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>Testcase Input:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Expected Output:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="6" column="1">
        <widget class="QTextEdit" name="testcaseExpectedOutput_textEdit">
         <property name="maximumSize">
          <size>
@@ -84,7 +84,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="5" column="1">
        <widget class="QTextEdit" name="testcaseInput_textEdit_2">
         <property name="maximumSize">
          <size>
@@ -97,14 +97,14 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Your Output:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="1">
        <widget class="QTextEdit" name="studentOutput_textEdit_3">
         <property name="maximumSize">
          <size>
@@ -116,6 +116,16 @@
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Select Solution File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="SelectSolutionFile_comboBox"/>
       </item>
      </layout>
     </widget>
@@ -134,12 +144,14 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="ProblemTitle_label_7">
+        <property name="text">
+         <string>Problem Title</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QTableWidget" name="tableWidget">
-        <column>
-         <property name="text">
-          <string>Ques no</string>
-         </property>
-        </column>
         <column>
          <property name="text">
           <string>Testcase</string>

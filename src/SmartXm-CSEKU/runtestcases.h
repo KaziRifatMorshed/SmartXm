@@ -16,6 +16,9 @@ public:
     explicit runTestcases(QWidget* parent = nullptr);
     ~runTestcases();
 
+private slots:
+    void on_runThisTestcase_pushButton_clicked();
+
 private:
     Ui::runTestcases* ui;
 };

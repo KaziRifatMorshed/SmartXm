@@ -47,6 +47,8 @@ void IDE::initialize() {
   forciblyKillExecutionFlag=false;
   ui->actionRun->setVisible(true);
   ui->actionTerminate->setVisible(false);
+
+
   ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
   ui->Editor->setFont(QFont("Monospace"));
@@ -142,7 +144,7 @@ void IDE::newFile() {
     currentFile = fileName;
 
     QFileInfo fileInfo(fileName);
-    QFileInfo dirInfo(dirPath);
+    QFileInfo dirInfo();
 
     QString selectedDir = fileInfo.absolutePath();
     QString projectDir = dirInfo.absolutePath();
@@ -246,10 +248,11 @@ void IDE::run() {
 
 
                 QString outputText;
+
                 if(!forciblyKillExecutionFlag)
                 outputText= getFileContent(QString("output.txt"));
 
-                ui->output_textEdit->setPlainText(outputText);
+                ui->output_textEdit->setPlainText((outputText.left(4000000)));
 
                        //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
 
