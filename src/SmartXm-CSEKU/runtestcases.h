@@ -2,6 +2,7 @@
 #define RUNTESTCASES_H
 
 #include <QWidget>
+#include <filesystem>
 
 namespace Ui
 {
@@ -19,8 +20,31 @@ public:
 private slots:
     void on_runThisTestcase_pushButton_clicked();
 
+    void on_SelectProblem_comboBox_activated(int index);
+
+    void on_SelectProblem_comboBox_currentIndexChanged(int index);
+
+    void on_SelectTestcase_comboBox_currentIndexChanged(int index);
+
+    void on_runAllTestcases_pushButton_2_clicked();
+
+    void on_pushButton_clicked();
+
 private:
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXM/230201/Editor/";
+    QString systemDirPath = "C:/SmartXM/230201/System/";
+#else
+    QString dirPath = "/SmartXM/230201/Editor/";
+    QString systemDirPath = "C:/SmartXM/230201/System/";
+#endif
+
+    std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
+    QString getFileContent(QString path);
+    std::vector <std::string> splitStringByChar(std::string s, char delimiter);
+    std::vector <std::string> getTestcaseData();
     Ui::runTestcases* ui;
+    bool judging;
 };
 
 #endif // RUNTESTCASES_H

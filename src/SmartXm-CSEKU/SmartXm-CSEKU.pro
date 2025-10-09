@@ -54,6 +54,7 @@ HEADERS += \
     runtestcases.h \
     teachermodule.h \
     toast.h \
+    verdict.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
