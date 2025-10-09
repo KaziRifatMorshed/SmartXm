@@ -53,7 +53,13 @@ private slots:
 private:
     Ui::IDE* ui;
     QFileSystemModel *model;
-    QString dirPath = QDir::homePath() + "/Desktop/Test-Notepad";
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXM/230201/Editor/";
+    QString systemDirPath = "C:/SmartXM/230201/System/";
+#else
+    QString dirPath = "/SmartXM/230201/Editor";
+    QString systemDirPath = "C:/SmartXM/230201/System/";
+#endif
     QString currentFile;
     QString getFileContent(QString path);
     QThread *threadExecution;

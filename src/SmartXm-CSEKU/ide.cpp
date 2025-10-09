@@ -144,7 +144,7 @@ void IDE::newFile() {
     currentFile = fileName;
 
     QFileInfo fileInfo(fileName);
-    QFileInfo dirInfo();
+    QFileInfo dirInfo(dirPath);
 
     QString selectedDir = fileInfo.absolutePath();
     QString projectDir = dirInfo.absolutePath();
