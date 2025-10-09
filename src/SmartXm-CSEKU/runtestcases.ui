@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>698</height>
+    <width>580</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="windowIcon">
    <iconset theme="QIcon::ThemeIcon::MediaSkipForward"/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,1,1,1">
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
@@ -60,7 +60,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Input:</string>
+         <string>Testcase Input:</string>
         </property>
        </widget>
       </item>
@@ -73,6 +73,12 @@
       </item>
       <item row="5" column="1">
        <widget class="QTextEdit" name="testcaseExpectedOutput_textEdit">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
@@ -80,6 +86,12 @@
       </item>
       <item row="4" column="1">
        <widget class="QTextEdit" name="testcaseInput_textEdit_2">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
@@ -94,6 +106,12 @@
       </item>
       <item row="6" column="1">
        <widget class="QTextEdit" name="studentOutput_textEdit_3">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
@@ -117,6 +135,11 @@
       </item>
       <item>
        <widget class="QTableWidget" name="tableWidget">
+        <column>
+         <property name="text">
+          <string>Ques no</string>
+         </property>
+        </column>
         <column>
          <property name="text">
           <string>Testcase</string>
