@@ -40,6 +40,7 @@ public:
     std::string getDirectoryPath(const std::string& filepath);
     bool checkCompiler(const std::string& ext);
     std::string executeCommand(std::string& command);
+    std::string runHiddenCommand(const std::string &cmd);
     void run();
     void stopExecution(); // <-- NEW
 

@@ -106,7 +106,7 @@ bool CodeRunner::checkCompiler(const std::string &ext)
 
 #ifdef _WIN32
 // Helper: run command silently without showing any console window
-std::string runHiddenCommand(const std::string &cmd)
+std::string CodeRunner::runHiddenCommand(const std::string &cmd)
 {
     std::string result;
     SECURITY_ATTRIBUTES sa;

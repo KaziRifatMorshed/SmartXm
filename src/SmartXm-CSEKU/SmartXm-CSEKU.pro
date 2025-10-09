@@ -13,6 +13,7 @@ win32:LIBS += -lws2_32 \
 
 SOURCES += \
     CodeRunnerWorker.cpp \
+    Judge.cpp \
     Users.cpp \
     codeRunner.cpp \
     db_xampp.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 HEADERS += \
     ClientInfo.h \
     CodeRunnerWorker.h \
+    Judge.h \
     Message.h \
     Student.h \
     TerminalExecuter.h \
