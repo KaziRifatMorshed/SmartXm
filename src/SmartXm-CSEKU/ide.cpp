@@ -374,4 +374,13 @@ void IDE::on_actionTestcases_triggered() {
   testcasesWindow->show();
 }
 
+void IDE::on_actionRun_triggered() {
+    IDE::run();
+
+}
+
+void IDE::on_actionTerminate_triggered() {
+    IDE::terminateExecution();
+
+}
 void IDE::on_actionRun_Testcases_triggered() {}

@@ -45,6 +45,8 @@ private slots:
     void loadProblem();
 
     void on_actionTestcases_triggered();
+    void on_actionRun_triggered();
+    void on_actionTerminate_triggered();
 
     void on_actionRun_Testcases_triggered();
 
