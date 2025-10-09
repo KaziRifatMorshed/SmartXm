@@ -267,13 +267,11 @@ std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runti
     hJobHandle = NULL;
 
     if (exitCode != 0 && !terminated) {
-        runtimeError = true;
+        runtimeError = exitCode;
 
         std::ofstream err("error.txt", std::ios::app);
         if (exitCode == 0xC0000094)
             err << "Error: Division by zero occurred.\n";
-        else
-            err << "Error: Process exited abnormally. Code: " << std::hex << exitCode << "\n";
         err.close();
     }
 

@@ -45,6 +45,8 @@ IDE::~IDE() { delete ui; }
 void IDE::initialize() {
   executionThreadFlag = false;
   forciblyKillExecutionFlag=false;
+  ui->actionRun->setVisible(true);
+  ui->actionTerminate->setVisible(false);
   ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
   ui->Editor->setFont(QFont("Monospace"));
@@ -225,6 +227,8 @@ void IDE::run() {
     QThread *thread = new QThread();
     threadExecution=thread;
     executionThreadFlag=true;
+    ui->actionRun->setVisible(false);
+    ui->actionTerminate->setVisible(true);
     workerExecution=worker;
     worker->moveToThread(thread);
 
@@ -258,7 +262,8 @@ void IDE::run() {
                     ui->CompilerDebudOutput_textEdit->append("\nExecution is finished.");
                     ToastManager::showMessage(this, "Execution complete.");
                 }
-
+                ui->actionRun->setVisible(true);
+                ui->actionTerminate->setVisible(false);
                 executionThreadFlag=false;
                 thread->quit();
             }, Qt::QueuedConnection); // <- Important: Forces main thread execution

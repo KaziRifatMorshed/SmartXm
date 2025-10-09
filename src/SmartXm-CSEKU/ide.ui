@@ -164,6 +164,8 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionRun"/>
+    <addaction name="actionTerminate"/>
     <addaction name="actionLoad_Questions"/>
     <addaction name="actionExit"/>
    </widget>
@@ -172,6 +174,7 @@
      <string>Build &amp; Run</string>
     </property>
     <addaction name="actionRun"/>
+    <addaction name="actionTerminate"/>
     <addaction name="actionTestcases"/>
     <addaction name="actionRun_Testcases"/>
    </widget>
