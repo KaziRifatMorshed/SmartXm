@@ -154,7 +154,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -287,6 +287,9 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
   </action>
   <action name="actionTestcases">
    <property name="icon">
@@ -313,6 +316,9 @@
    </property>
    <property name="text">
     <string>Terminate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
