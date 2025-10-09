@@ -1,0 +1,7 @@
+CREATE TABLE login_cache (
+    user_id INTEGER,
+    identity VARCHAR(10),
+    id VARCHAR(50),
+    user_email VARCHAR(50),
+    last_login_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
