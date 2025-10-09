@@ -5,11 +5,14 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <db_xampp.h>
+#include <Users.h>
 
 Server *server;
 QString instructionFileName = "";
+Users &currentUser = Users::getInstance();
 
 TeacherModule::TeacherModule(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::TeacherModule) {
@@ -20,8 +23,13 @@ TeacherModule::TeacherModule(QWidget *parent)
   ui->serverIP_label_3->setText(
       "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
       "NOT STARTED</span></p></body></html>");
+  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Welcome, " + QString::fromStdString(currentUser.getName()) + " Sir</span></p></body></html>");
+  ui->dashboard_teacherName->setText(QString::fromStdString(currentUser.getName()));
+  ui->dashboard_teacherEmail->setText(QString::fromStdString(currentUser.getEmail()));
+  ui->dashboard_TeacherDesignation->setText(QString::fromStdString(currentUser.getId()));
+  ui->tabWidget->setCurrentIndex(1);
 
-// ServerConnectedPC_Table:
+  // ServerConnectedPC_Table:
   ui->connectedPCwithServer_tableWidget->setRowCount(100);
   for (int var = 0; var < 20; ++var) {
     ui->connectedPCwithServer_tableWidget->setItem(
@@ -51,12 +59,14 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
   } else {
     std::cout << "One server instance should be running already." << std::endl;
   }
+  ui->StartServer_toolButton->setEnabled(false);
+  ui->StopServer_toolButton_2->setEnabled(true);
 }
 
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
   std::cout << "Stop Server button clicked" << std::endl;
   if (server != nullptr && Server::isRunning()) {
-  // if (server != nullptr) {
+    // if (server != nullptr) {
     std::cout << "trying to stop server..." << std::endl;
     server->stop();
     server = nullptr;
@@ -69,6 +79,8 @@ void TeacherModule::on_StopServer_toolButton_2_clicked() {
   } else {
     std::cout << "No server instance should be running..." << std::endl;
   }
+  ui->StartServer_toolButton->setEnabled(true);
+  ui->StopServer_toolButton_2->setEnabled(false);
 }
 
 /*
@@ -115,44 +127,11 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
   if (instructionFileName.length() <= 0) {
     QMessageBox::warning(this, "No File Selected!", "No File Selected!!!");
   } else {
-      // Prepare file
-      std::ifstream file(instructionFileName.toStdString(), std::ios::binary);
-      if (!file.is_open()) {
-          QMessageBox::warning(this, "failed!", "Rulebook File Open Failed!!!");
-          return;
-      }
-      file.seekg(0, std::ios::end);
-      size_t sz = file.tellg();
-      file.seekg(0, std::ios::beg);
-      std::vector<char> filedata(sz);
-      file.read(filedata.data(), sz);
-
-      std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
-      std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
-      std::string msg = "rulebook"; // or "question", etc.
-
-      FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
-      bool t = server->sendFileToAllClients(meta);
-      if (t) {
-          QMessageBox::information(this, "Success", "Rulebook sent to all clients.");
-      } else {
-          QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
-      }
-  }
-}
-
-void TeacherModule::on_testExam_pushButton_3_clicked()
-{
-    QString filter = "Tar (*.tar)";
-
-    QString quesFilePath = QFileDialog::getOpenFileName(this,
-                                                        "Select a tar file containing question to "
-                                                        "sent it to all connected clients",
-                                                        QDir::homePath(), filter);
-    std::ifstream file(quesFilePath.toStdString(), std::ios::binary);
+    // Prepare file
+    std::ifstream file(instructionFileName.toStdString(), std::ios::binary);
     if (!file.is_open()) {
-        QMessageBox::warning(this, "failed!", "Questions File Open Failed!!!");
-        return;
+      QMessageBox::warning(this, "failed!", "Rulebook File Open Failed!!!");
+      return;
     }
     file.seekg(0, std::ios::end);
     size_t sz = file.tellg();
@@ -160,16 +139,51 @@ void TeacherModule::on_testExam_pushButton_3_clicked()
     std::vector<char> filedata(sz);
     file.read(filedata.data(), sz);
 
-    std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
-    std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
-    std::string msg = "questions.tar"; // or "question", etc.
+    std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
+    std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
+    std::string msg = "rulebook"; // or "question", etc.
 
     FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
     bool t = server->sendFileToAllClients(meta);
     if (t) {
-        QMessageBox::information(this, "Success", "Questions tar file sent to all clients.");
+      QMessageBox::information(this, "Success",
+                               "Rulebook sent to all clients.");
     } else {
-        QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
+      QMessageBox::warning(this, "failed!", "Rulebook File Send Failed!!!");
     }
+  }
+}
+
+void TeacherModule::on_testExam_pushButton_3_clicked() {
+  QString filter = "Tar (*.tar)";
+
+  QString quesFilePath =
+      QFileDialog::getOpenFileName(this,
+                                   "Select a tar file containing question to "
+                                   "sent it to all connected clients",
+                                   QDir::homePath(), filter);
+  std::ifstream file(quesFilePath.toStdString(), std::ios::binary);
+  if (!file.is_open()) {
+    QMessageBox::warning(this, "failed!", "Questions File Open Failed!!!");
+    return;
+  }
+  file.seekg(0, std::ios::end);
+  size_t sz = file.tellg();
+  file.seekg(0, std::ios::beg);
+  std::vector<char> filedata(sz);
+  file.read(filedata.data(), sz);
+
+  std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
+  std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
+  std::string msg = "questions.tar"; // or "question", etc.
+
+  FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+  bool t = server->sendFileToAllClients(meta);
+  if (t) {
+    QMessageBox::information(this, "Success",
+                             "Questions tar file sent to all clients.");
+  } else {
+    QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
+  }
 }
 

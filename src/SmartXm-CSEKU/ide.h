@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileSystemModel>
 #include <string>
+#include "CodeRunnerWorker.h"
 
 namespace Ui
 {
@@ -40,6 +41,7 @@ private slots:
     void openFile(QString path);
     void save();
     void run();
+    void terminateExecution();
     void loadProblem();
 
     void on_actionTestcases_triggered();
@@ -50,6 +52,9 @@ private:
     QString dirPath = QDir::homePath() + "/Desktop/Test-Notepad";
     QString currentFile;
     QString getFileContent(QString path);
+    QThread *threadExecution;
+    CodeRunnerWorker *workerExecution;
+    bool executionThreadFlag;
     void initialize();
     void loadInput(std::string path);
     void loadOutput(std::string path);

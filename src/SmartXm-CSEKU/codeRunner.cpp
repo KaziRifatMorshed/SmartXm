@@ -1,300 +1,463 @@
 #include "codeRunner.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#define popen _popen
+#define pclose _pclose
+#endif
+
 std::string CodeRunner::getFileExtension(const std::string &filename)
 {
-     size_t ind = filename.find_last_of('.');
-     if (ind != std::string::npos)
-     {
-          return filename.substr(ind + 1);
-     }
-     return "";
+    size_t ind = filename.find_last_of('.');
+    if (ind != std::string::npos)
+        return filename.substr(ind + 1);
+    return "";
 }
 
 std::string CodeRunner::getFileName(const std::string &filepath)
 {
-     size_t lastSlash = filepath.find_last_of("/\\");
-
-     std::string filename = (lastSlash == std::string::npos) ? filepath : filepath.substr(lastSlash + 1);
-
-     size_t lastDot = filename.find_last_of('.');
-
-     return (lastDot == std::string::npos) ? filename : filename.substr(0, lastDot);
+    size_t lastSlash = filepath.find_last_of("/\\");
+    std::string filename = (lastSlash == std::string::npos) ? filepath : filepath.substr(lastSlash + 1);
+    size_t lastDot = filename.find_last_of('.');
+    return (lastDot == std::string::npos) ? filename : filename.substr(0, lastDot);
 }
 
 std::string CodeRunner::getDirectoryPath(const std::string &filepath)
 {
-     size_t lastSlash = filepath.find_last_of("/\\");
-
-     return (lastSlash == std::string::npos) ? "" : filepath.substr(0, lastSlash + 1);
+    size_t lastSlash = filepath.find_last_of("/\\");
+    return (lastSlash == std::string::npos) ? "" : filepath.substr(0, lastSlash + 1);
 }
 
 bool CodeRunner::checkCompiler(const std::string &ext)
 {
-     std::string checkCmd;
-     if (ext == "c" || ext == "cpp" || ext == "c++")
-     {
+    std::string checkCmd;
+    if (ext == "c" || ext == "cpp" || ext == "c++")
+    {
 #ifdef _WIN32
-          checkCmd = "where g++ >nul 2>&1";
+        checkCmd = "where g++";
 #else
-          checkCmd = "which g++ >/dev/null 2>&1";
+        checkCmd = "which g++ >/dev/null 2>&1";
 #endif
-     }
-     else if (ext == "py")
-     {
+    }
+    else if (ext == "py")
+    {
 #ifdef _WIN32
-          checkCmd = "where python>nul 2>&1";
+        checkCmd = "where python";
 #else
-          checkCmd = "which python3 >/dev/null 2>&1";
+        checkCmd = "which python3 >/dev/null 2>&1";
 #endif
-     }
-     return system(checkCmd.c_str()) == 0;
+    }
+
+#ifdef _WIN32
+    // --- Silent check without console window ---
+    SECURITY_ATTRIBUTES sa;
+    HANDLE hRead, hWrite;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = TRUE;
+    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+        return false;
+
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    si.wShowWindow = SW_HIDE;
+    si.hStdOutput = hWrite;
+    si.hStdError = hWrite;
+
+    std::string wrappedCmd = "cmd.exe /C " + checkCmd + " >nul 2>&1";
+    BOOL success = CreateProcessA(
+        NULL,
+        (LPSTR)wrappedCmd.c_str(),
+        NULL,
+        NULL,
+        TRUE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si,
+        &pi);
+
+    CloseHandle(hWrite);
+    if (!success)
+    {
+        CloseHandle(hRead);
+        return false;
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    DWORD exitCode = 1;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    CloseHandle(hRead);
+
+    return (exitCode == 0);
+#else
+    return system(checkCmd.c_str()) == 0;
+#endif
 }
+
+
+#ifdef _WIN32
+// Helper: run command silently without showing any console window
+std::string runHiddenCommand(const std::string &cmd)
+{
+    std::string result;
+    SECURITY_ATTRIBUTES sa;
+    HANDLE hRead, hWrite;
+
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = TRUE;
+
+           // Create a pipe for capturing output
+    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+        return "Error: Pipe creation failed";
+
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    si.wShowWindow = SW_HIDE;
+    si.hStdOutput = hWrite;
+    si.hStdError = hWrite;
+
+    std::string wrappedCmd = "cmd.exe /C " + cmd;
+
+    BOOL success = CreateProcessA(
+        NULL,
+        (LPSTR)wrappedCmd.c_str(),
+        NULL,
+        NULL,
+        TRUE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si,
+        &pi);
+
+    if (!success)
+    {
+        CloseHandle(hWrite);
+        CloseHandle(hRead);
+        return "Error: Failed to execute command.";
+    }
+
+    CloseHandle(hWrite);
+    char buffer[512];
+    DWORD bytesRead;
+
+    while (ReadFile(hRead, buffer, sizeof(buffer) - 1, &bytesRead, NULL) && bytesRead > 0)
+    {
+        buffer[bytesRead] = '\0';
+        result += buffer;
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    CloseHandle(hRead);
+
+    return result;
+}
+#endif
 
 std::string CodeRunner::executeCommand(std::string &command)
 {
-     std::string result;
-     command += std::string(" 2>&1");
-     FILE *pipe = popen(command.c_str(), "r");
-
-     if (!pipe)
-     {
-          return "Error: Failed to execute compile command";
-     }
-
-     char buffer[512];
-     while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
-     {
-          result += buffer;
-     }
-
-     int exitCode = pclose(pipe);
-
-     if (exitCode != 0 && result.find("Command failed") == std::string::npos)
-     {
-          result += "\nCommand failed with exit code: " + std::to_string(exitCode);
-     }
-     return result;
+    std::string result;
+#ifdef _WIN32
+    result = runHiddenCommand(command + " 2>&1");
+#else
+    command += " 2>&1";
+    FILE *pipe = popen(command.c_str(), "r");
+    if (!pipe)
+        return "Error: Failed to execute compile command";
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        result += buffer;
+    int exitCode = pclose(pipe);
+    if (exitCode != 0)
+        result += "\nCommand failed with exit code: " + std::to_string(exitCode);
+#endif
+    return result;
 }
+
 
 std::string CodeRunner::executeExeFile(const std::string &exeCommand, int &runtimeError)
 {
-     std::string result;
-     runtimeError = false;
+    runtimeError = false;
+    std::string result;
 
 #ifdef _WIN32
-     std::string fullCmd = exeCommand + " < input.txt > output.txt 2>>error.txt";
+    const long long MAX_SIZE = 128LL * 1024 * 1024; // 128 MB
+    std::string fullCmd = exeCommand + " < input.txt > output.txt 2>>error.txt";
 
-     FILE *pipe = _popen(fullCmd.c_str(), "r");
-     if (!pipe)
-          return "Error: Failed to execute run command";
+    STARTUPINFOA si{};
+    PROCESS_INFORMATION pi{};
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
 
-     setvbuf(pipe, NULL, _IONBF, 0);
+           // Create job
+    hJobHandle = CreateJobObject(NULL, NULL);
+    if (hJobHandle) {
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobLimit = {};
+        jobLimit.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        SetInformationJobObject(hJobHandle, JobObjectExtendedLimitInformation, &jobLimit, sizeof(jobLimit));
+    }
 
-     char buffer[128];
-     while (fread(buffer, 1, 1, pipe) == 1)
-     {
-          result += buffer;
-     }
+    if (!CreateProcessA(NULL, (LPSTR)("cmd.exe /C " + fullCmd).c_str(),
+                        NULL, NULL, FALSE,
+                        CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB,
+                        NULL, NULL, &si, &pi))
+    {
+        if (hJobHandle) CloseHandle(hJobHandle);
+        return "Error: Failed to execute command.";
+    }
 
-     int exitCode = _pclose(pipe);
-     if (exitCode != 0)
-          runtimeError = exitCode;
+           // Save handle for external termination
+    hProcessHandle = pi.hProcess;
+
+    if (hJobHandle)
+        AssignProcessToJobObject(hJobHandle, pi.hProcess);
+
+    bool terminated = false;
+
+    while (WaitForSingleObject(pi.hProcess, 100) == WAIT_TIMEOUT)
+    {
+        try {
+            auto size = std::filesystem::file_size("output.txt");
+            if (size > MAX_SIZE) {
+                std::cout<<"okay\n";
+
+                std::ofstream errorFile("error.txt", std::ios::app);
+                errorFile << "Error: Output exceeded 128 MB. Process terminated.\n";
+                errorFile.flush(); // make sure it's written immediately
+                errorFile.close();
+                std::cout<<"okay2\n";
+                stopExecution(); // <-- USE new method
+                terminated = true;
+                runtimeError = true;
+
+                break;
+            }
+        } catch (...) {
+            std::cout<<"catch\n";
+        }
+    }
+
+    DWORD exitCode = 0;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+
+    if (!terminated) {
+        std::ifstream outFile("output.txt");
+        if (outFile) {
+            std::stringstream buffer;
+            buffer << outFile.rdbuf();
+            result = buffer.str();
+        }
+    }
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    if (hJobHandle) CloseHandle(hJobHandle);
+
+    hProcessHandle = NULL;
+    hJobHandle = NULL;
+
+    if (exitCode != 0 && !terminated)
+        runtimeError = true;
 
 #else
-     std::string fullCmd = exeCommand + " < input.txt >output.txt 2>>error.txt";
+    // ---------------- Linux / Unix ----------------
+    const long long MAX_SIZE = 128LL * 1024 * 1024;
+    std::string fullCmd = "setsid " + exeCommand + " < input.txt > output.txt 2>>error.txt & echo $! > pid.tmp";
+    system(fullCmd.c_str());
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-     FILE *pipe = popen(fullCmd.c_str(), "r");
-     if (!pipe)
-          return "Error: Failed to execute command";
+    std::ifstream pidFile("pid.tmp");
+    if (!(pidFile >> childPid)) {
+        return "Error: Failed to get process ID.";
+    }
 
-     char buffer[128];
-     while (fread(buffer, 1, 1, pipe) == 1)
-     {
-          result += buffer;
-     }
+    bool terminated = false;
+    while (true) {
+        try {
+            auto size = std::filesystem::file_size("output.txt");
+            if (size > MAX_SIZE) {
+                stopExecution(); // <-- USE new method
+                std::ofstream("error.txt", std::ios::app)
+                    << "Error: Output exceeded 128 MB. Process terminated.\n";
+                terminated = true;
+                runtimeError = true;
+                break;
+            }
+        } catch (...) {}
 
-     int status = pclose(pipe);
-     if (status == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0)
-          runtimeError = true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if (kill(childPid, 0) != 0)
+            break; // finished
+    }
+
+    if (!terminated) {
+        std::ifstream outFile("output.txt");
+        if (outFile) {
+            std::stringstream buffer;
+            buffer << outFile.rdbuf();
+            result = buffer.str();
+        }
+    }
+
+    std::remove("pid.tmp");
+    childPid = -1;
 #endif
 
-     return result;
+    return result;
 }
+
+void CodeRunner::stopExecution()
+{
+#ifdef _WIN32
+
+
+    if (hJobHandle)
+    {
+        TerminateJobObject(hJobHandle, 1);
+        CloseHandle(hJobHandle);
+        hJobHandle = NULL;
+    }
+    else if (hProcessHandle)
+    {
+        TerminateProcess(hProcessHandle, 1);
+        CloseHandle(hProcessHandle);
+        hProcessHandle = NULL;
+    }
+#else
+    if (childPid > 0)
+    {
+        kill(-childPid, SIGKILL); // kill entire process group
+        childPid = -1;
+    }
+#endif
+}
+
+
 
 void CodeRunner::setCurrentFile(const std::string &file)
 {
-     currentFile = file;
+    currentFile = file;
 }
 
 void CodeRunner::run()
 {
-     std::ofstream fout("error.txt", std::ios::trunc);
-     fout.close();
+    std::ofstream("error.txt", std::ios::trunc).close();
+    std::ofstream("output.txt", std::ios::trunc).close();
 
-     std::ofstream("output.txt", std::ios::trunc);
-     fout.close();
-     if (currentFile.empty())
-     {
+    if (currentFile.empty())
+    {
+        std::ofstream("error.txt", std::ios::app) << "Error: No file specified.\n";
+        return;
+    }
 
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Error: No file specified.\n"
-               << std::endl;
+    if (!std::filesystem::exists(currentFile))
+    {
+        std::ofstream("error.txt", std::ios::app) << "Error: File '" << currentFile << "' does not exist.\n";
+        return;
+    }
 
-          fout.close();
-          return;
-     }
+    if (!std::filesystem::exists("input.txt"))
+    {
+        std::ofstream("error.txt", std::ios::app) << "Error: File 'input.txt' does not exist.\n";
+        return;
+    }
 
-     if (!std::filesystem::exists(currentFile))
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Error : File '" << currentFile << "' does not exist.\n";
-          fout.close();
+    std::string ext = getFileExtension(currentFile);
+    if (ext != "c" && ext != "cpp" && ext != "c++" && ext != "py")
+    {
+        std::ofstream("error.txt", std::ios::app) << "Error: Unsupported file type " << ext << ".\n";
+        return;
+    }
 
-          return;
-     }
-     if (!std::filesystem::exists("input.txt"))
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Error : File '" << "input.txt" << "' does not exist.\n";
-          fout.close();
-          return;
-     }
+    if (!checkCompiler(ext))
+    {
+        std::ofstream fout("error.txt", std::ios::app);
+        fout << "Error: Required compiler/interpreter not found for ." << ext << " files\n";
+        if (ext == "c" || ext == "cpp" || ext == "c++")
+            fout << "Please install GNU g++ compiler\n";
+        else if (ext == "py")
+            fout << "Please install Python\n";
+        fout.close();
+        return;
+    }
 
-     std::string ext = getFileExtension(currentFile);
-
-     if (ext != "c" && ext != "cpp" && ext != "c++" && ext != "py")
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Error: Unsupported file type " << ext << ".\n";
-          fout.close();
-          return;
-     }
-
-     if (!checkCompiler(ext))
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Error: Required compiler/interpreter not found for ." << ext << " files\n";
-
-          if (ext == "c" || ext == "cpp" || ext == "c++")
-          {
-               fout << "Please install GNU g++ compiler\n";
-          }
-          else if (ext == "py")
-          {
-               fout << "Please install Python\n";
-          }
-          fout.close();
-          return;
-     }
-     if (ext == "c" || ext == "cpp" || ext == "c++")
-     {
-          runCppOrCFile();
-     }
-     else if (ext == "py")
-     {
-          runPythonFile();
-     }
+    if (ext == "c" || ext == "cpp" || ext == "c++")
+        runCppOrCFile();
+    else if (ext == "py")
+        runPythonFile();
 }
 
 void CodeRunner::runCppOrCFile()
 {
-     std::string filename = getFileName(currentFile);
-
-     std::string exeFile, compileCmd;
-
-     std::string directoryPath = getDirectoryPath(currentFile);
+    std::string filename = getFileName(currentFile);
+    std::string directoryPath = getDirectoryPath(currentFile);
+    std::string exeFile, compileCmd;
 
 #ifdef _WIN32
-     exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
-     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
-
+    exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
+    compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #else
-     exeFile = "\"" + directoryPath + "./" + filename + "\"";
-     compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
-
+    exeFile = "\"" + directoryPath + "./" + filename + "\"";
+    compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #endif
 
-     std::string compileOutput = executeCommand(compileCmd);
+    std::string compileOutput = executeCommand(compileCmd);
+    if (!compileOutput.empty())
+    {
+        std::ofstream fout("error.txt", std::ios::app);
+        fout << "Compilation Output:\n\n" << compileOutput << std::endl;
+        fout.close();
+        if (compileOutput.find("error") != std::string::npos)
+            return;
+    }
 
-     if (!compileOutput.empty())
-     {
-          std::string compilationOutput = "Compilation Output:\n\n";
-          compilationOutput += compileOutput;
+    if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
+    {
+        std::ofstream("error.txt", std::ios::app) << "Compilation Failed!\n";
+        return;
+    }
 
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << compilationOutput << std::endl;
-          fout.close();
+    int exitCode;
+    std::string error = executeExeFile(exeFile, exitCode);
+    if (exitCode)
+    {
+        std::ofstream fout("error.txt", std::ios::app);
+        fout << "Runtime error occurred. Exit code: " << exitCode << "\n";
+        fout.close();
+        return;
+    }
 
-          if (compilationOutput.find("error") != std::string::npos)
-          {
-               return;
-          }
-     }
-
-     if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Compilation Failed!" << std::endl;
-          fout.close();
-          return;
-     }
-
-     int exitCode;
-     std ::string error = executeExeFile(exeFile, exitCode);
-     if (exitCode)
-     {
-#ifdef _WIN32
-          if (exitCode == 1)
-          {
-               std::ofstream fout("error.txt", std::ios::app);
-               fout << "Execution command error.\n";
-               fout << error;
-               fout << std::endl;
-               fout.close();
-          }
-          else
-          {
-               std::ofstream fout("error.txt", std::ios::app);
-               fout << "Runtime error: \n\n";
-               fout << "Runtime error occured with exit code: " << exitCode;
-               fout << std::endl;
-               fout.close();
-          }
-#endif
-          return;
-     }
-     else
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Compilation and execution are successful.\n"
-               << std::endl;
-          fout.close();
-     }
+    std::ofstream("error.txt", std::ios::app) << "Compilation and execution are successful.\n";
 }
 
 void CodeRunner::runPythonFile()
 {
 #ifdef _WIN32
-     std::string pythonCmd = "python";
+    std::string pythonCmd = "python";
 #else
-     std::string pythonCmd = "python3";
-
+    std::string pythonCmd = "python3";
 #endif
-
-     std::string runCmd = pythonCmd + " -u \"" + currentFile + "\"";
-
-     int exitCode;
-     std ::string error = executeExeFile(runCmd, exitCode);
-     if (exitCode)
-     {
-          return;
-     }
-     else
-     {
-          std::ofstream fout("error.txt", std::ios::app);
-          fout << "Compilation and execution are successful.\n"
-               << std::endl;
-          fout.close();
-     }
+    std::string runCmd = pythonCmd + " -u \"" + currentFile + "\"";
+    int exitCode;
+    std::string error = executeExeFile(runCmd, exitCode);
+    if (!exitCode)
+        std::ofstream("error.txt", std::ios::app) << "Compilation and execution are successful.\n";
 }
-

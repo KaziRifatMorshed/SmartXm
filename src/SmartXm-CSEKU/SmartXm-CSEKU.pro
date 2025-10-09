@@ -8,17 +8,25 @@ CONFIG += c++23
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+win32:LIBS += -lws2_32 \
+    -lShell32
+
 SOURCES += \
+    CodeRunnerWorker.cpp \
+    Users.cpp \
     codeRunner.cpp \
+    db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
     networking/client/client.cpp \
     networking/client/client_linux.cpp \
+    networking/client/client_windows.cpp \
     networking/server/server.cpp \
     networking/server/server_linux.cpp \
+    networking/server/server_windows.cpp \
+    studentmodulev2.cpp \
     runtestcases.cpp \
-    studentmodule.cpp \
     teachermodule.cpp \
     toast.cpp \
     welcomewindow.cpp \
@@ -26,9 +34,12 @@ SOURCES += \
 
 HEADERS += \
     ClientInfo.h \
-    Msg.h \
+    CodeRunnerWorker.h \
+    Message.h \
     Student.h \
     TerminalExecuter.h \
+    Users.h \
+    codeRunner.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -37,8 +48,8 @@ HEADERS += \
     networking/FileMeta.h \
     networking/client/Client.h \
     networking/server/Server.h \
+    studentmodulev2.h \
     runtestcases.h \
-    studentmodule.h \
     teachermodule.h \
     toast.h \
     welcomewindow.h \
@@ -46,8 +57,8 @@ HEADERS += \
 
 FORMS += \
     ide.ui \
+    studentmodulev2.ui \
     runtestcases.ui \
-    studentmodule.ui \
     teachermodule.ui \
     welcomewindow.ui
 
@@ -64,3 +75,4 @@ DISTFILES += \
 
 RESOURCES += \
     qt_resources.qrc
+

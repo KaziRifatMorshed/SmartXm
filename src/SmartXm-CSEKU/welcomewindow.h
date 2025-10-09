@@ -5,8 +5,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <teachermodule.h>
-#include <studentmodule.h>
+// #include <studentmodule.h>
+#include <studentmodulev2.h>
 // #include <ide.h>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -39,13 +41,17 @@ private slots:
 
     void on_connect_to_local_server_pushButton_3_clicked();
 
+    void updateStatusLabels();
+
 private:
     Ui::WelcomeWindow *ui;
     QNetworkAccessManager *m_networkManager;
     void checkConnection();
+    QTimer *statusUpdateTimer;
 
     TeacherModule *teacherModuleWindow;
-    StudentModule *studentModuleWindow;
+    // StudentModule *studentModuleWindow;
+    StudentModuleV2 *studentModuleV2Window;
     // IDE *ideEditor;
 };
 #endif // WELCOMEWINDOW_H

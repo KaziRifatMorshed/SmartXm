@@ -14,7 +14,8 @@
    <string>SmartXm IDE</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="accessories-text-editor"/>
+   <iconset resource="qt_resources.qrc">
+    <normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</normaloff>:/logo/resources/logo/SmartXm-logo-mini.png</iconset>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -292,6 +293,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="qt_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

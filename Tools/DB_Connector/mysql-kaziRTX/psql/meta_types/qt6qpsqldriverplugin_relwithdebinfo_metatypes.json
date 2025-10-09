@@ -1,0 +1,46 @@
+[
+    {
+        "classes": [
+            {
+                "className": "QPSQLDriverPlugin",
+                "lineNumber": 12,
+                "object": true,
+                "qualifiedClassName": "QPSQLDriverPlugin",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QSqlDriverPlugin"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "main.cpp",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "QPSQLDriver",
+                "lineNumber": 33,
+                "object": true,
+                "qualifiedClassName": "QPSQLDriver",
+                "slots": [
+                    {
+                        "access": "private",
+                        "index": 0,
+                        "name": "_q_handleNotification",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QSqlDriver"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "qsql_psql_p.h",
+        "outputRevision": 69
+    }
+]
