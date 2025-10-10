@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Linux")
 set(CMAKE_HOST_SYSTEM_VERSION "6.12.48-1-MANJARO")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
-include("/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/qt.toolchain.cmake")
+include("/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/qt.toolchain.cmake")
 
 set(CMAKE_SYSTEM "Linux-6.12.48-1-MANJARO")
 set(CMAKE_SYSTEM_NAME "Linux")

@@ -288,11 +288,11 @@ void WelcomeWindow::on_pushButton_clicked() {
 #ifdef TEACHER_CACHE_ENABLE
       qDebug() << "call inserting Login Cache ";
       cacheDbInstance_ = SQliteDB::instance();
-      // cacheDbInstance_->insertLoginCache(loginDataValidationFromDB.value("user_id").toInt(),
-      //                                   loginDataValidationFromDB.value("identity").toString().toStdString(),
-      //                                   loginDataValidationFromDB.value("id").toString().toStdString(),
-      //                                   loginDataValidationFromDB.value("email").toString().toStdString(),
-      //                                   QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
+      cacheDbInstance_->insertLoginCache(loginDataValidationFromDB.value("user_id").toInt(),
+                                        loginDataValidationFromDB.value("identity").toString().toStdString(),
+                                        loginDataValidationFromDB.value("id").toString().toStdString(),
+                                        loginDataValidationFromDB.value("email").toString().toStdString(),
+                                        QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
 #endif
 
     } else {

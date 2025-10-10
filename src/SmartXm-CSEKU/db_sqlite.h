@@ -28,8 +28,9 @@ public:
 
   // Open the database (encrypted with SQLCipher)
   bool openDB(
-      const QString &dbPath = "./cache.sqlite",
-      const QString &passphrase = "S3Jc>P(f*$.&E$!j+.c") {
+      const QString &dbPath = "./db/cache.sqlite"
+      // ,const QString &passphrase = "S3Jc>P(f*$.&E$!j+.c"
+      ) {
     if (db.isOpen())
       return true;
 
@@ -38,14 +39,20 @@ public:
     QList listOfDrivers = QSqlDatabase::drivers();
     qDebug() << listOfDrivers;
 
-    db = QSqlDatabase::addDatabase("QSQLCIPHER", "cache_connection");
-    db.setDatabaseName(dbPath);
+    const QString connectionName = "cache_connection";
+    if (QSqlDatabase::contains(connectionName)) {
+        db = QSqlDatabase::database(connectionName);
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+        db.setDatabaseName(dbPath);
+    }
 
     if (!db.open()) {
       qCritical() << "Failed to open SQLite DB:" << db.lastError().text();
       return false;
     }
 
+    /*
     // Set SQLCipher key
     QSqlQuery pragmaQuery(db);
     if (!pragmaQuery.exec(QString("PRAGMA key = '%1';").arg(passphrase))) {
@@ -57,6 +64,7 @@ public:
 
     // Optionally set SQLCipher4 defaults for compatibility
     pragmaQuery.exec("PRAGMA cipher_compatibility = 4;");
+    */
 
     printAllData();
 

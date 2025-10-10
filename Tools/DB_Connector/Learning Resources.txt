@@ -50,8 +50,15 @@ youtube video : https://youtu.be/prMux00gZyE?si=_kFVO5nSCRSHfOGW
 -- Configuring done (2.3s)
 -- Generating done (0.0s)
 -- Build files have been written to: /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX
-⏎                                                                         cmake --build .
+⏎
+
+
+
+
+noobcod3r-rtx@noobcod3r-rtx ~/D/G/S/T/D/mysql-kaziRTX (XAMPP-connection)> cmake --build .
 [26/26] Linking CXX shared module plugins/sqldrivers/libqsqlite.so
+
+
 noobcod3r-rtx@noobcod3r-rtx ~/D/G/S/T/D/mysql-kaziRTX (XAMPP-connection)> cmake --install .
 -- Install configuration: "RelWithDebInfo"
 -- Installing: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6Sql/Qt6QPSQLDriverPluginConfig.cmake
