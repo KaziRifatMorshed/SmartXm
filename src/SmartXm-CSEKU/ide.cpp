@@ -63,16 +63,7 @@ void IDE::initialize() {
   ui->treeViewFiles->setModel(model);
   ui->treeViewFiles->setRootIndex(model->index(dirPath));
 
-  QAction *newAction = new QAction("New", this);
-  QAction *saveAction = new QAction("Save", this);
-  QAction *runAction = new QAction("Run", this);
-  QAction *terminateAction = new QAction("Terminate Execution", this);
-  QAction *loadAction = new QAction("Load Problem", this);
 
-  connect(newAction, &QAction::triggered, this, &IDE::newFile);
-  connect(saveAction, &QAction::triggered, this, &IDE::save);
-  connect(runAction, &QAction::triggered, this, &IDE::run);
-  connect(terminateAction, &QAction::triggered, this, &IDE::terminateExecution);
   connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
           [=](const QModelIndex &index) {
             QString path = model->filePath(index);
@@ -81,13 +72,7 @@ void IDE::initialize() {
               openFile(path);
             }
           });
-  connect(loadAction, &QAction::triggered, this, &IDE::loadProblem);
 
-  ui->menuFile->addAction(newAction);
-  ui->menuFile->addAction(saveAction);
-  ui->menuFile->addAction(runAction);
-  ui->menuFile->addAction(terminateAction);
-  ui->menuFile->addAction(loadAction);
 }
 
 void IDE::loadPdfInQuesTab(QWidget *ques_tab, std::string pdfFilePath) {
@@ -395,3 +380,27 @@ void IDE::on_actionTerminate_triggered() {
 
 }
 void IDE::on_actionRun_Testcases_triggered() {}
+
+void IDE::on_actionNew_triggered()
+{
+    newFile();
+}
+
+
+void IDE::on_actionSave_triggered()
+{
+    save();
+}
+
+
+void IDE::on_actionLoad_Questions_triggered()
+{
+    loadProblem();
+}
+
+
+void IDE::on_actionExit_triggered()
+{
+
+}
+

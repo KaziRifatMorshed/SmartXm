@@ -51,6 +51,14 @@ private slots:
 
     void on_actionRun_Testcases_triggered();
 
+    void on_actionNew_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionLoad_Questions_triggered();
+
+    void on_actionExit_triggered();
+
 private:
     Ui::IDE* ui;
     QFileSystemModel *model;

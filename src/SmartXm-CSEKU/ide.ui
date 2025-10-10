@@ -154,7 +154,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -162,7 +162,6 @@
      <string>File</string>
     </property>
     <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionRun"/>
     <addaction name="actionTerminate"/>
@@ -176,7 +175,6 @@
     <addaction name="actionRun"/>
     <addaction name="actionTerminate"/>
     <addaction name="actionTestcases"/>
-    <addaction name="actionRun_Testcases"/>
    </widget>
    <widget class="QMenu" name="menuEditor">
     <property name="title">
@@ -203,7 +201,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionNew"/>
-   <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionLoad_Questions"/>
@@ -212,7 +209,6 @@
    <addaction name="actionRun"/>
    <addaction name="actionTerminate"/>
    <addaction name="actionTestcases"/>
-   <addaction name="actionRun_Testcases"/>
   </widget>
   <action name="actionNew">
    <property name="icon">
@@ -223,17 +219,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
-   </property>
-   <property name="text">
-    <string>Open</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionRun">
@@ -248,17 +233,6 @@
    </property>
    <property name="shortcut">
     <string>F6</string>
-   </property>
-  </action>
-  <action name="actionRun_Testcases">
-   <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::MediaSkipForward"/>
-   </property>
-   <property name="text">
-    <string>Run Testcases</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionSave">
@@ -296,7 +270,7 @@
   </action>
   <action name="actionTestcases">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::MediaPlaylistShuffle"/>
+    <iconset theme="QIcon::ThemeIcon::MediaSkipForward"/>
    </property>
    <property name="text">
     <string>Testcases</string>
