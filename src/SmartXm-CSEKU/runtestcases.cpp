@@ -1,9 +1,10 @@
 #include "runtestcases.h"
 #include "ui_runtestcases.h"
 #include <QFile>
+#include <fstream>
 #include <QMessageBox>
 #include <filesystem>
-#include <verdict.h>
+
 
 runTestcases::runTestcases(QWidget* parent) : QWidget(parent), ui(new Ui::runTestcases) {
     ui->setupUi(this);
@@ -96,9 +97,12 @@ QString runTestcases::getFileContent(QString path) {
     return text;
 }
 
+
+
 void runTestcases::on_runThisTestcase_pushButton_clicked()
 {
     std::vector <std::string> testcaseData = getTestcaseData();
+
 
     if (testcaseData[1] == "No sample testcases") {
         QMessageBox::warning(this, "Warning",
@@ -124,24 +128,56 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
 
     // code run
 
+    std::vector<double> judgeInformation;
+    std::string judgeInfoPath = systemDirPath.toStdString() + "Judge/" + testcaseData[0][0] + ".txt";
+
+    std::ifstream judgeInfoIn(judgeInfoPath);
+    for(int i = 0; i < 14; i++)
+    {
+        double d;
+        judgeInfoIn >> d;
+        judgeInformation.push_back(d);
+    }
+
+    // JudgeWorkerOnSingleTestCase *worker = new JudgeWorkerOnSingleTestCase(testcaseData, judgeInformation);
+    // QThread *thread = new QThread();
+    // worker->moveToThread(thread);
+
+    // worker->moveToThread(thread);
+
+    // QObject::connect(thread, &QThread::started, worker, &JudgeWorkerOnSingleTestCase::judge);
+
+    // QObject::connect(worker, &JudgeWorkerOnSingleTestCase::finished, this,
+    //                  [this, worker, thread,&testcaseData](Verdict verdict){
+
+    //                      QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
+    //                      ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
+
+    //                      QString userOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
+    //                      ui->studentOutput_textEdit_3->setPlainText(userOutput);
+
+
+
+    //                      ui->verdictTable->clear();
+    //                      ui->verdictTable->setRowCount(0);
+
+    //                      ui->verdictTable->setRowCount(ui->verdictTable->rowCount() + 1);
+    //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 0, new QTableWidgetItem(("Sample Testcase #" + testcaseData[1]).c_str()));
+    //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
+    //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
+    //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
+
+    //                      thread->quit();
+    //                  });
+
+    // QObject::connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    // QObject::connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    // thread->start();
+
     // end code run
 
-    QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
-    ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
 
-    QString userOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
-    ui->studentOutput_textEdit_3->setPlainText(userOutput);
-
-    Verdict verdict = {"Memory Limit Exceeded", 200, 512};
-
-    ui->verdictTable->clear();
-    ui->verdictTable->setRowCount(0);
-
-    ui->verdictTable->setRowCount(ui->verdictTable->rowCount() + 1);
-    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 0, new QTableWidgetItem(("Sample Testcase #" + testcaseData[1]).c_str()));
-    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
-    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
-    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
 }
 
 

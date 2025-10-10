@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <filesystem>
+#include<iostream>
+#include "verdict.h"
+#include<JudgeWorkerOnSingleTestCase.h>
 
 namespace Ui
 {
@@ -18,6 +21,7 @@ public:
     ~runTestcases();
 
 private slots:
+
     void on_runThisTestcase_pushButton_clicked();
 
     void on_SelectProblem_comboBox_activated(int index);
@@ -29,6 +33,10 @@ private slots:
     void on_runAllTestcases_pushButton_2_clicked();
 
     void on_pushButton_clicked();
+private:
+
+    QThread *threadJudgeSingle;
+    JudgeWorkerOnSingleTestCase *judgeWorker;
 
 private:
 #ifdef _WIN32
@@ -36,7 +44,7 @@ private:
     QString systemDirPath = "C:/SmartXM/230201/System/";
 #else
     QString dirPath = "/SmartXM/230201/Editor/";
-    QString systemDirPath = "C:/SmartXM/230201/System/";
+    QString systemDirPath = "/SmartXM/230201/System/";
 #endif
 
     std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
@@ -44,7 +52,7 @@ private:
     std::vector <std::string> splitStringByChar(std::string s, char delimiter);
     std::vector <std::string> getTestcaseData();
     Ui::runTestcases* ui;
-    bool judging;
+    bool judging=false;
 };
 
 #endif // RUNTESTCASES_H

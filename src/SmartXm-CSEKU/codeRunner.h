@@ -26,6 +26,8 @@
 class CodeRunner
 {
 
+public:
+    CodeRunner();
 private:
     std::string currentFile;
 

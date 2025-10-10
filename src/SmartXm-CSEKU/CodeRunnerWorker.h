@@ -21,5 +21,5 @@ signals:
 
 private:
     std::string currentFile;
-    CodeRunner runner;
+    CodeRunner *runner=new CodeRunner();
 };

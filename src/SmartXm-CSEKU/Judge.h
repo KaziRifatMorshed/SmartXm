@@ -4,15 +4,18 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include<QThread>
+#include <QString>
 #include <cstdlib>
 #include <vector>
 #include <filesystem>
 
-#include <QObject>
-#include <QWidget>
+
+#include "verdict.h"
 
 #ifdef _WIN32
 #include <windows.h>
+#include <psapi.h>
 #else
 #include <unistd.h>
 #include <sys/types.h>
@@ -21,18 +24,26 @@
 #include <fcntl.h>
 #endif
 
-using namespace std;
 
 class Judge
 {
 public:
     Judge();
+private:
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXM/230201/Editor/";
+    QString systemDirPath = "C:/SmartXM/230201/System/";
+#else
+    QString dirPath = "/SmartXM/230201/Editor/";
+    QString systemDirPath = "/SmartXM/230201/System/";
+#endif
 
 private:
-    string currentFile;
-    string currentProblem;
-    string pretestCasesPath;
-    string judgeInfoPath;
+    std::string currentFile;
+    std::string currentProblem;
+    std::string pretestCasesPath;
+
+
 
     std::string getFileExtension(const std::string& filename);
     std::string getFileName(const std::string& filepath);
@@ -41,21 +52,32 @@ private:
     std::string executeCommand(std::string& command);
     std::string runHiddenCommand(const std::string &cmd);
 
-    int runWithTimeout(const string &cmd, const string &inputFile,
-                       const string &outputFile, int timeLimitMS);
-    void runCppOrCFile(int checker,int timeLimit,int numOfTestCases,string testCasesPath);
+    int runWithTimeout(const std::string &cmd, const std::string &inputFile,
+                              const std::string &outputFile, int timeLimitMS,
+                       int memoryLimitKB, long long &usedTimeMS, long long &usedMemoryKB);
+    void runCppOrCFile(int checker,int timeLimit,int numOfTestCases,std::string testCasesPath);
     void runPythonFile();
-    string normalize(const string &s);
+    std::string normalize(const std::string &s);
 
 
 public:
     void runOnTestCases();
-    void runOnTestCase();
+    Verdict runOnSingleTestCase(std::vector <std::string> &testcaseData,std::vector<double>&judgeInfo);
     void runOnAllStudentsSolution();
-    void setCurrentFile(const string &cFile);
-    void setCurrentProblem(const string &cProblem);
-    void setPretestCasesPath(const string &path);
-    void setJudgeInfoPath(const string &path);
+    void setCurrentFile(const std::string &cFile);
+    void setCurrentProblem(const std::string &cProblem);
+    void setPretestCasesPath(const std::string &path);
+    void stopJudge(); // 🚀 new function to terminate current process
+
+
+
+#ifdef _WIN32
+    HANDLE currentProcessHandle = NULL;
+    HANDLE currentThreadHandle = NULL;
+#else
+    pid_t currentPid = -1;
+#endif
+
 };
 
 #endif // JUDGE_H
