@@ -15,8 +15,8 @@ public:
 
   // Get the singleton instance
   static SQliteDB *instance() {
-    if (cacheDbInstance) {
-          qDebug() << "new instance sqlite db created";
+    if (!cacheDbInstance) {
+      qDebug() << "[CACHE] local cache db started";
       cacheDbInstance = new SQliteDB();
     }
     return cacheDbInstance;
@@ -27,14 +27,18 @@ public:
   SQliteDB &operator=(const SQliteDB &) = delete;
 
   // Open the database (encrypted with SQLCipher)
-  bool openDB(const QString &dbPath = "./cache.sqlite",
-              const QString &passphrase = "S3Jc>P(f*$.&E$!j+.c") {
+  bool openDB(
+      const QString &dbPath = "./cache.sqlite",
+      const QString &passphrase = "S3Jc>P(f*$.&E$!j+.c") {
     if (db.isOpen())
       return true;
 
     qDebug() << "opening db sqlite...";
 
-    db = QSqlDatabase::addDatabase("QSQLITE", "cache_connection");
+    QList listOfDrivers = QSqlDatabase::drivers();
+    qDebug() << listOfDrivers;
+
+    db = QSqlDatabase::addDatabase("QSQLCIPHER", "cache_connection");
     db.setDatabaseName(dbPath);
 
     if (!db.open()) {
@@ -53,6 +57,8 @@ public:
 
     // Optionally set SQLCipher4 defaults for compatibility
     pragmaQuery.exec("PRAGMA cipher_compatibility = 4;");
+
+    printAllData();
 
     return true;
   }
@@ -130,6 +136,33 @@ public:
     qint64 secondsDiff = lastLogin.secsTo(now);
     return (secondsDiff <= (3 * 3600)); // 3 hours in seconds
   }
+
+  void printAllData() {
+      if (!db.isOpen()) {
+          qWarning() << "Database not open in printAllData()";
+          return;
+      }
+
+      QSqlQuery fetchAllData(db);
+      if (!fetchAllData.exec("SELECT * FROM login_cache;")) {
+          qCritical() << "Failed to fetch data:" << fetchAllData.lastError().text();
+          return;
+      }
+
+      bool hasRows = false;
+      while (fetchAllData.next()) {
+          hasRows = true;
+          qDebug() << "SQLITE :: Row:"
+                   << "user_id:" << fetchAllData.value("user_id").toInt()
+                   << "user_mail:" << fetchAllData.value("user_email").toString()
+                   << "last_login_time:" << fetchAllData.value("last_login_time").toString();
+      }
+
+      if (!hasRows) {
+          qDebug() << "No rows found in login_cache table.";
+      }
+  }
+
 
   // Get raw QSqlDatabase for advanced operations
   QSqlDatabase &database() { return db; }
