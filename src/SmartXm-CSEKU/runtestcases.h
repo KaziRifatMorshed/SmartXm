@@ -3,9 +3,11 @@
 
 #include <QWidget>
 #include <filesystem>
+#include<QString>
 #include<iostream>
 #include "verdict.h"
-#include<Judge.h>
+#include<JudgeWorker.h>
+#include<JudgeWorker2.h>
 
 namespace Ui
 {
@@ -32,7 +34,10 @@ private slots:
 
     void on_runAllTestcases_pushButton_2_clicked();
 
-    void on_pushButton_clicked();
+
+
+    void on_stopJudging_clicked();
+
 private:
 
     QThread *threadJudgeSingle;
@@ -55,6 +60,10 @@ private:
     Ui::runTestcases* ui;
     bool judging=false;
     Judge *judge;
+    JudgeWorker *judgeWorker;
+    JudgeWorker2 *judgeWorker2;
+    QThread *threadJudge;
+    int judgingType=0;
 
 };
 

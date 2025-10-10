@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <vector>
 #include <filesystem>
-
+#include <atomic>
 
 #include "verdict.h"
 
@@ -63,11 +63,12 @@ private:
     Verdict isReadyForJudge(int &effectiveTimeLimit,
                                    int &effectiveMemoryLimit,
                             int &effectiveSourceCodeLimit);
+    std::vector<Verdict> generateVerdicts(std::string verdict,int n);
     std::string normalize(const std::string &s);
 
 
 public:
-    void runOnTestCases();
+    std::vector<Verdict> runOnTestCases();
     Verdict runOnSingleTestCase();
     void runOnAllStudentsSolution();
     void setCurrentFile(const std::string &cFile);
@@ -111,6 +112,8 @@ private:
 public:
     // Setter for judge info
     void setJudgeInfo(const std::vector<double> &judgeInfo);
+private:
+     std::atomic<bool> stopRequested{false};
 
 };
 
