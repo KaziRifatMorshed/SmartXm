@@ -58,7 +58,8 @@ private:
                               int timeLimitMS,
                               int memoryLimitKB,
                               long long &usedTimeMS,
-                              long long &usedMemoryKB);
+                              long long &usedMemoryKB,
+                              bool inFlag);
     void runCppOrCFile(int checker,int timeLimit,int numOfTestCases,std::string testCasesPath);
     void runPythonFile();
     std::string normalize(const std::string &s);
@@ -81,6 +82,27 @@ public:
 #else
     pid_t currentPid = -1;
 #endif
+
+
+private:
+    bool checkerFlag;
+    bool inputFlag;
+    double timeLimit;
+    double cppTimeLimit;
+    double pythonTimeLimit;
+    double javaTimeLimit;
+    double memoryLimit;
+    double cppMemoryLimit;
+    double pythonMemoryLimit;
+    double javaMemoryLimit;
+    double sourceCodeLimit;
+    double cppSourceCodeLimit;
+    double pythonSourceCodeLimit;
+    double javaSourceCodeLimit;
+
+public:
+    // Setter for judge info
+    void setJudgeInfo(const std::vector<double> &judgeInfo);
 
 };
 

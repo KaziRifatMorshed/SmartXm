@@ -5,7 +5,7 @@
 #include <filesystem>
 #include<iostream>
 #include "verdict.h"
-#include<JudgeWorkerOnSingleTestCase.h>
+#include<Judge.h>
 
 namespace Ui
 {
@@ -36,7 +36,7 @@ private slots:
 private:
 
     QThread *threadJudgeSingle;
-    JudgeWorkerOnSingleTestCase *judgeWorker;
+
 
 private:
 #ifdef _WIN32

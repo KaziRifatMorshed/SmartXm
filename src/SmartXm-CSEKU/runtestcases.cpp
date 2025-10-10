@@ -104,6 +104,8 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
     if(!judging)
     {
         judging=true;
+        ui->verdictTable->clear();
+        ui->verdictTable->setRowCount(0);
         std::vector <std::string> testcaseData = getTestcaseData();
 
 
@@ -129,7 +131,7 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
 
         ui->testcaseInput_textEdit_2->setPlainText(testInput);
 
-               // code run
+
 
         std::vector<double> judgeInformation;
         std::string judgeInfoPath = systemDirPath.toStdString() + "Judge/" + testcaseData[0][0] + ".txt";
@@ -145,60 +147,26 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
         judge=new Judge();
         Verdict verdict=judge->runOnSingleTestCase(testcaseData,judgeInformation);
 
-                                    QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
-                                    ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
-
-                                    QString userOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
-                                    ui->studentOutput_textEdit_3->setPlainText(userOutput);
-
-
-
-                                    ui->verdictTable->clear();
-                                    ui->verdictTable->setRowCount(0);
-
-                                    ui->verdictTable->setRowCount(ui->verdictTable->rowCount() + 1);
-                                    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 0, new QTableWidgetItem(("Sample Testcase #" + testcaseData[1]).c_str()));
-                                    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
-                                    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
-                                    ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
-
-               // JudgeWorkerOnSingleTestCase *worker = new JudgeWorkerOnSingleTestCase(testcaseData, judgeInformation);
-               // QThread *thread = new QThread();
-               // worker->moveToThread(thread);
-
-               // worker->moveToThread(thread);
-
-               // QObject::connect(thread, &QThread::started, worker, &JudgeWorkerOnSingleTestCase::judge);
-
-               // QObject::connect(worker, &JudgeWorkerOnSingleTestCase::finished, this,
-               //                  [this, worker, thread,&testcaseData](Verdict verdict){
-
-        //                      QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
-        //                      ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
-
-               //                      QString userOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
-               //                      ui->studentOutput_textEdit_3->setPlainText(userOutput);
+        QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
+        ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
+        if(verdict.verdict=="Accepted"||verdict.verdict=="Wrong Answer")
+        {
+            QString userOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
+            ui->studentOutput_textEdit_3->setPlainText(userOutput);
+        }
 
 
 
-               //                      ui->verdictTable->clear();
-               //                      ui->verdictTable->setRowCount(0);
+        ui->verdictTable->clear();
+        ui->verdictTable->setRowCount(0);
 
-               //                      ui->verdictTable->setRowCount(ui->verdictTable->rowCount() + 1);
-               //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 0, new QTableWidgetItem(("Sample Testcase #" + testcaseData[1]).c_str()));
-               //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
-               //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
-               //                      ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
+        ui->verdictTable->setRowCount(ui->verdictTable->rowCount() + 1);
+        ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 0, new QTableWidgetItem(("Sample Testcase #" + testcaseData[1]).c_str()));
+        ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
+        ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
+        ui->verdictTable->setItem(ui->verdictTable->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
 
-               //                      thread->quit();
-               //                  });
 
-               // QObject::connect(thread, &QThread::finished, worker, &QObject::deleteLater);
-               // QObject::connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-
-               // thread->start();
-
-               // end code run
 
         judging =false;
     }

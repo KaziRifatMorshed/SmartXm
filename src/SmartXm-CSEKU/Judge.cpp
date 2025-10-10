@@ -183,29 +183,24 @@ std::string Judge::executeCommand(std::string &command)
 #endif
     return result;
 }
-
 int Judge::runWithTimeout(const std::string &exeFile,
                           const std::string &inputFile,
                           const std::string &outputFile,
                           int timeLimitMS,
                           int memoryLimitKB,
                           long long &usedTimeMS,
-                          long long &usedMemoryKB)
+                          long long &usedMemoryKB,
+                          bool inFlag)
 {
 #ifdef _WIN32
     STARTUPINFOA si = {sizeof(si)};
     si.dwFlags = STARTF_USESTDHANDLES;
 
-    HANDLE hInput = CreateFileA(
-        inputFile.c_str(),
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
+    HANDLE hInput = INVALID_HANDLE_VALUE;
+    HANDLE hOutput = INVALID_HANDLE_VALUE;
 
-    HANDLE hOutput = CreateFileA(
+           // 🟢 Handle output redirection (always redirect)
+    hOutput = CreateFileA(
         outputFile.c_str(),
         GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -214,12 +209,40 @@ int Judge::runWithTimeout(const std::string &exeFile,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
 
-    if (hInput == INVALID_HANDLE_VALUE || hOutput == INVALID_HANDLE_VALUE)
+    if (hOutput == INVALID_HANDLE_VALUE)
         return -1;
+
+           // 🟢 Handle input redirection or empty stdin
+    if (inFlag) {
+        // Use the given input file
+        hInput = CreateFileA(
+            inputFile.c_str(),
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL);
+    } else {
+        // No input expected — feed an empty stdin ("NUL" device)
+        hInput = CreateFileA(
+            "NUL",
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL);
+    }
+
+    if (hInput == INVALID_HANDLE_VALUE) {
+        CloseHandle(hOutput);
+        return -1;
+    }
 
     SetHandleInformation(hInput, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
     SetHandleInformation(hOutput, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
-    si.hStdInput  = hInput;
+    si.hStdInput = hInput;
     si.hStdOutput = si.hStdError = hOutput;
 
     PROCESS_INFORMATION pi{};
@@ -239,7 +262,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
     currentProcessHandle = pi.hProcess;
     currentThreadHandle  = pi.hThread;
 
-           // Job object for memory limit enforcement
+           // 🧠 Enforce memory limit via Job Object
     HANDLE hJob = CreateJobObject(NULL, NULL);
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo{};
     jobInfo.BasicLimitInformation.LimitFlags =
@@ -275,7 +298,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
         verdict = (exitCode == 0) ? 0 : 1; // Success or Runtime Error
     }
 
-           // Cleanup handles
+           // 🧹 Cleanup
     CloseHandle(hJob);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
@@ -285,25 +308,36 @@ int Judge::runWithTimeout(const std::string &exeFile,
     currentProcessHandle = NULL;
     currentThreadHandle  = NULL;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // ensure file unlock
+    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Ensure file unlock
     return verdict;
 
 #else
     pid_t pid = fork();
     if (pid == 0) {
-        // Child process memory limit
+        // 🧠 Limit memory
         struct rlimit memLimit;
         memLimit.rlim_cur = memLimit.rlim_max = (rlim_t)memoryLimitKB * 1024;
         setrlimit(RLIMIT_AS, &memLimit);
 
-        int in = open(inputFile.c_str(), O_RDONLY);
+               // 🟢 Output redirection
         int out = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (in < 0 || out < 0) _exit(1);
+        if (out < 0) _exit(1);
 
-        dup2(in, STDIN_FILENO);
+               // 🟢 Input redirection or empty stdin
+        if (inFlag) {
+            int in = open(inputFile.c_str(), O_RDONLY);
+            if (in < 0) _exit(1);
+            dup2(in, STDIN_FILENO);
+            close(in);
+        } else {
+            int devnull = open("/dev/null", O_RDONLY);
+            dup2(devnull, STDIN_FILENO);
+            close(devnull);
+        }
+
         dup2(out, STDOUT_FILENO);
         dup2(out, STDERR_FILENO);
-        close(in); close(out);
+        close(out);
 
         execl("/bin/sh", "sh", "-c", exeFile.c_str(), (char *)NULL);
         _exit(1);
@@ -323,7 +357,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
                                  .count();
                 usedMemoryKB = usage.ru_maxrss;
 
-                if (usedMemoryKB > memoryLimitKB) return 3; // MLE
+                if (usedMemoryKB > memoryLimitKB) return 3; // Memory Limit Exceeded
                 if (WIFEXITED(status) && WEXITSTATUS(status) == 0) return 0; // Success
                 return 1; // Runtime Error
             }
@@ -331,14 +365,16 @@ int Judge::runWithTimeout(const std::string &exeFile,
             elapsed += 10;
         }
 
+               // 🕒 Timeout
         kill(pid, SIGKILL);
         waitpid(pid, nullptr, 0);
         currentPid = -1;
         usedTimeMS = timeLimitMS;
-        return 2; // TLE
+        return 2; // Time Limit Exceeded
     }
 #endif
 }
+
 
 void Judge::stopJudge() {
 #ifdef _WIN32
@@ -377,10 +413,31 @@ void Judge::setPretestCasesPath(const std::string &path)
     pretestCasesPath = path;
 }
 
+void Judge::setJudgeInfo(const std::vector<double> &judgeInfo)
+{
+    if (judgeInfo.size() < 14)
+        return; // Not enough data; you can also throw an error or handle safely
+
+    checkerFlag = static_cast<bool>(judgeInfo[0]);
+    inputFlag = static_cast<bool>(judgeInfo[1]);
+    timeLimit = judgeInfo[2];
+    cppTimeLimit = judgeInfo[3];
+    pythonTimeLimit = judgeInfo[4];
+    javaTimeLimit = judgeInfo[5];
+    memoryLimit = judgeInfo[6];
+    cppMemoryLimit = judgeInfo[7];
+    pythonMemoryLimit = judgeInfo[8];
+    javaMemoryLimit = judgeInfo[9];
+    sourceCodeLimit = judgeInfo[10];
+    cppSourceCodeLimit = judgeInfo[11];
+    pythonSourceCodeLimit = judgeInfo[12];
+    javaSourceCodeLimit = judgeInfo[13];
+}
 
 
 Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::vector<double>&judgeInfo)
 {
+    setJudgeInfo(judgeInfo);
     setCurrentFile(dirPath.toStdString()+testcaseData[2]);
     setCurrentProblem(std::string()+testcaseData[0][0]);
     setPretestCasesPath(systemDirPath.toStdString()+"Pretest/"+currentProblem+"/");
@@ -400,131 +457,128 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
     std::string verdict="";
     long long cpuTime=0;
     long long memorySize=0;
-    bool checkerFlag=judgeInfo[0];
-    bool intputFlag=judgeInfo[1];
-    double timeLimit=judgeInfo[2];
-    double cppTimeLimit=judgeInfo[3];
-    double pythonTimeLimit=judgeInfo[4];
-    double javaTimeLimit=judgeInfo[5];
-    double memoryLimit=judgeInfo[6];
-    double cppMemoryLimit=judgeInfo[7];
-    double pythonMemoryLimit=judgeInfo[8];
-    double javaMemoryLimit=judgeInfo[9];
-    double sourceCodeLimit=judgeInfo[10];
-    double cppSourceCodeLimit=judgeInfo[11];
-    double pythonSourceCodeLimit=judgeInfo[12];
-    double javaSourceCodeLimit=judgeInfo[13];
 
 
-        if (currentFile.empty())
-        {
 
-            return Verdict("Solution File Not Found",0,0);
-        }
+    if (currentFile.empty())
+    {
 
-        if (!std::filesystem::exists(currentFile))
-        {
-            return Verdict("Solution File Not Exist",0,0);
-        }
+        return Verdict("Solution File Not Found",0,0);
+    }
 
-        if (currentProblem.empty())
-        {
-            return Verdict("Problem Not Specified",0,0);
-        }
-        std::string ext = getFileExtension(currentFile);
+    if (!std::filesystem::exists(currentFile))
+    {
+        return Verdict("Solution File Not Exist",0,0);
+    }
 
-        int effectiveTimeLimit;
-        int effectiveMemoryLimit;
-        int effectiveSourceCodeLimit;
-
-        if (ext == "c")
-        {
-            effectiveTimeLimit       = timeLimit * cppTimeLimit;
-            effectiveMemoryLimit     = memoryLimit * cppMemoryLimit;
-            effectiveSourceCodeLimit = sourceCodeLimit * cppSourceCodeLimit;
-        }
-        else if (ext == "py")
-        {
-            effectiveTimeLimit       = timeLimit * pythonTimeLimit;
-            effectiveMemoryLimit     = memoryLimit * pythonMemoryLimit;
-            effectiveSourceCodeLimit = sourceCodeLimit * pythonSourceCodeLimit;
-        }
-        else // assume java
-        {
-            effectiveTimeLimit       = timeLimit * javaTimeLimit;
-            effectiveMemoryLimit     = memoryLimit * javaMemoryLimit;
-            effectiveSourceCodeLimit = sourceCodeLimit * javaSourceCodeLimit;
-        }
-        std::cout<<effectiveTimeLimit<<std::endl;
-
-        try {
-            auto size = std::filesystem::file_size(currentFile);
-            if((int)(size)>effectiveSourceCodeLimit)
-            {
-                return Verdict("Source Code Limit Exceeded",0,0);
-            }
-        } catch (std::filesystem::filesystem_error &e) {
-            return Verdict("Source Code Error",0,0);
-        }
-
+    if (currentProblem.empty())
+    {
+        return Verdict("Problem Not Specified",0,0);
+    }
+    std::string ext = getFileExtension(currentFile);
+    if(ext=="c"||ext=="cpp"||ext=="c++"||ext=="py"||ext=="java")
+    {
         if(!checkCompiler(ext))
         {
             return Verdict("Compilation Failed",0,0);
         }
+    }
+    else
+    {
+        return Verdict("Invalid Solutin File",0,0);
+    }
 
-        if(ext=="c"||ext=="cpp"||ext=="c++")
+    int effectiveTimeLimit;
+    int effectiveMemoryLimit;
+    int effectiveSourceCodeLimit;
+
+    if (ext == "c")
+    {
+        effectiveTimeLimit       = timeLimit * cppTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * cppMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * cppSourceCodeLimit;
+    }
+    else if (ext == "py")
+    {
+        effectiveTimeLimit       = timeLimit * pythonTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * pythonMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * pythonSourceCodeLimit;
+    }
+    else // assume java
+    {
+        effectiveTimeLimit       = timeLimit * javaTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * javaMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * javaSourceCodeLimit;
+    }
+    std::cout<<effectiveTimeLimit<<std::endl;
+
+    try {
+        auto size = std::filesystem::file_size(currentFile);
+        if((int)(size)>effectiveSourceCodeLimit)
         {
-            std::string exeFile, compileCmd;
+            return Verdict("Source Code Limit Exceeded",0,0);
+        }
+    } catch (std::filesystem::filesystem_error &e) {
+        return Verdict("Source Code Error",0,0);
+    }
+
+
+
+    if(ext=="c"||ext=="cpp"||ext=="c++")
+    {
+        std::string exeFile, compileCmd;
 #ifdef _WIN32
-            exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
-            compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+        exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
+        compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #else
-            exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
-            compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+        exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
+        compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
-            std::string compileOutput = executeCommand(compileCmd);
+        std::string compileOutput = executeCommand(compileCmd);
 
-            if (!compileOutput.empty())
-            {
-                if (compileOutput.find("error") != std::string::npos)
-                {
-
-                    return Verdict("Compilation Error",0,0);
-                }
-            }
-            if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
-            {
-                return Verdict("Compilation Failed",0,0);
-            }
-
-            int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
-                                        cpuTime,memorySize);
-            if(status==0)
+        if (!compileOutput.empty())
+        {
+            if (compileOutput.find("error") != std::string::npos)
             {
 
+                return Verdict("Compilation Error",0,0);
             }
-            else if(status==1)
-            {
-                verdict="Runtime Error";
-                return Verdict(verdict,cpuTime,memorySize);
-            }
-            else if(status==2)
-            {
-                verdict="Time Limit Exceeded";
-                return Verdict(verdict,cpuTime,memorySize);
-            }
-            else if(status==3)
-            {
-                verdict="Memory Limit Exceeded";
-                return Verdict(verdict,cpuTime,memorySize);
-            }
-            else
-            {
-                verdict="I/O Error";
-                return Verdict(verdict,cpuTime,memorySize);
-            }
-            if(!checkerFlag)
+        }
+        if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
+        {
+            return Verdict("Compilation Failed",0,0);
+        }
+
+        int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
+                                    cpuTime,memorySize,inputFlag);
+        if(status==0)
+        {
+          //Succeess Execution
+        }
+        else if(status==1)
+        {
+            verdict="Runtime Error";
+            return Verdict(verdict,cpuTime,memorySize);
+        }
+        else if(status==2)
+        {
+            verdict="Time Limit Exceeded";
+            return Verdict(verdict,cpuTime,memorySize);
+        }
+        else if(status==3)
+        {
+            verdict="Memory Limit Exceeded";
+            return Verdict(verdict,cpuTime,memorySize);
+        }
+        else
+        {
+            verdict="I/O Error";
+            return Verdict(verdict,cpuTime,memorySize);
+        }
+        if(!checkerFlag)
+        {
+            if(inputFlag)
             {
                 std::ifstream out(outputFile), exp(expectedFile);
                 if (!out || !exp)
@@ -542,10 +596,11 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
                 {
                     return Verdict("Wrong Answer",cpuTime,memorySize);
                 }
-
             }
 
         }
+
+    }
 
 }
 
