@@ -52,9 +52,13 @@ private:
     std::string executeCommand(std::string& command);
     std::string runHiddenCommand(const std::string &cmd);
 
-    int runWithTimeout(const std::string &cmd, const std::string &inputFile,
-                              const std::string &outputFile, int timeLimitMS,
-                       int memoryLimitKB, long long &usedTimeMS, long long &usedMemoryKB);
+    int runWithTimeout(const std::string &exeFile,
+                              const std::string &inputFile,
+                              const std::string &outputFile,
+                              int timeLimitMS,
+                              int memoryLimitKB,
+                              long long &usedTimeMS,
+                              long long &usedMemoryKB);
     void runCppOrCFile(int checker,int timeLimit,int numOfTestCases,std::string testCasesPath);
     void runPythonFile();
     std::string normalize(const std::string &s);

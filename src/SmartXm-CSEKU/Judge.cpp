@@ -184,72 +184,98 @@ std::string Judge::executeCommand(std::string &command)
     return result;
 }
 
-int Judge::runWithTimeout(const std::string &cmd, const std::string &inputFile,
-                          const std::string &outputFile, int timeLimitMS,
-                          int memoryLimitKB, long long &usedTimeMS, long long &usedMemoryKB)
+int Judge::runWithTimeout(const std::string &exeFile,
+                          const std::string &inputFile,
+                          const std::string &outputFile,
+                          int timeLimitMS,
+                          int memoryLimitKB,
+                          long long &usedTimeMS,
+                          long long &usedMemoryKB)
 {
 #ifdef _WIN32
     STARTUPINFOA si = {sizeof(si)};
     si.dwFlags = STARTF_USESTDHANDLES;
 
-    HANDLE hInput = CreateFileA(inputFile.c_str(), GENERIC_READ, FILE_SHARE_READ,
-                                NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    HANDLE hOutput = CreateFileA(outputFile.c_str(), GENERIC_WRITE, 0,
-                                 NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hInput = CreateFileA(
+        inputFile.c_str(),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+
+    HANDLE hOutput = CreateFileA(
+        outputFile.c_str(),
+        GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+
     if (hInput == INVALID_HANDLE_VALUE || hOutput == INVALID_HANDLE_VALUE)
         return -1;
 
     SetHandleInformation(hInput, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
     SetHandleInformation(hOutput, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
-    si.hStdInput = hInput;
+    si.hStdInput  = hInput;
     si.hStdOutput = si.hStdError = hOutput;
 
     PROCESS_INFORMATION pi{};
-    std::vector<char> cmdBuf(cmd.begin(), cmd.end());
+    std::string fullCmd = exeFile;
+    std::vector<char> cmdBuf(fullCmd.begin(), fullCmd.end());
     cmdBuf.push_back('\0');
 
-    if (!CreateProcessA(NULL, cmdBuf.data(), NULL, NULL, TRUE,
-                        CREATE_SUSPENDED, NULL, NULL, &si, &pi))
+    if (!CreateProcessA(
+            NULL, cmdBuf.data(), NULL, NULL, TRUE,
+            CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
     {
         CloseHandle(hInput);
         CloseHandle(hOutput);
         return -1;
     }
-    currentProcessHandle = pi.hProcess;
-    currentThreadHandle = pi.hThread;
 
-           // Create Job Object to set memory limit
+    currentProcessHandle = pi.hProcess;
+    currentThreadHandle  = pi.hThread;
+
+           // Job object for memory limit enforcement
     HANDLE hJob = CreateJobObject(NULL, NULL);
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo{};
-    jobInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+    jobInfo.BasicLimitInformation.LimitFlags =
+        JOB_OBJECT_LIMIT_PROCESS_MEMORY | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
     jobInfo.ProcessMemoryLimit = (SIZE_T)memoryLimitKB * 1024;
     SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobInfo, sizeof(jobInfo));
     AssignProcessToJobObject(hJob, pi.hProcess);
 
-           // Start timing
     auto start = std::chrono::steady_clock::now();
-    ResumeThread(pi.hThread);
-
-    DWORD res = WaitForSingleObject(pi.hProcess, timeLimitMS);
+    DWORD waitResult = WaitForSingleObject(pi.hProcess, timeLimitMS);
     auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration<double, std::milli>(end - start).count();
+    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    DWORD exitCode = 1;
     PROCESS_MEMORY_COUNTERS pmc{};
     GetProcessMemoryInfo(pi.hProcess, &pmc, sizeof(pmc));
     usedMemoryKB = pmc.PeakWorkingSetSize / 1024;
 
-    if (res == WAIT_TIMEOUT)
-    {
+    int verdict = 0;
+    DWORD exitCode = 1;
+
+    if (usedMemoryKB > memoryLimitKB) {
+        verdict = 3; // Memory Limit Exceeded
         TerminateProcess(pi.hProcess, 1);
-        exitCode = 2;
+        WaitForSingleObject(pi.hProcess, 500);
     }
-    else
-    {
+    else if (waitResult == WAIT_TIMEOUT) {
+        TerminateProcess(pi.hProcess, 1);
+        WaitForSingleObject(pi.hProcess, 500);
+        verdict = 2; // Time Limit Exceeded
+    }
+    else {
         GetExitCodeProcess(pi.hProcess, &exitCode);
-        exitCode = (exitCode == 0) ? 0 : 1;
+        verdict = (exitCode == 0) ? 0 : 1; // Success or Runtime Error
     }
 
+           // Cleanup handles
     CloseHandle(hJob);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
@@ -257,85 +283,83 @@ int Judge::runWithTimeout(const std::string &cmd, const std::string &inputFile,
     CloseHandle(hOutput);
 
     currentProcessHandle = NULL;
-    currentThreadHandle = NULL;
-    return exitCode;
+    currentThreadHandle  = NULL;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // ensure file unlock
+    return verdict;
 
 #else
     pid_t pid = fork();
-    if (pid == 0)
-    {
-        // Apply memory limit
+    if (pid == 0) {
+        // Child process memory limit
         struct rlimit memLimit;
         memLimit.rlim_cur = memLimit.rlim_max = (rlim_t)memoryLimitKB * 1024;
         setrlimit(RLIMIT_AS, &memLimit);
 
         int in = open(inputFile.c_str(), O_RDONLY);
         int out = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (in < 0 || out < 0)
-            _exit(1);
+        if (in < 0 || out < 0) _exit(1);
+
         dup2(in, STDIN_FILENO);
         dup2(out, STDOUT_FILENO);
         dup2(out, STDERR_FILENO);
-        close(in);
-        close(out);
-        execl("/bin/sh", "sh", "-c", cmd.c_str(), (char *)NULL);
+        close(in); close(out);
+
+        execl("/bin/sh", "sh", "-c", exeFile.c_str(), (char *)NULL);
         _exit(1);
-    }
-    else
-    {
+    } else {
         currentPid = pid;
         auto start = std::chrono::steady_clock::now();
         int status = 0, elapsed = 0;
         usedMemoryKB = 0;
 
-        while (elapsed < timeLimitMS)
-        {
+        while (elapsed < timeLimitMS) {
             pid_t r = waitpid(pid, &status, WNOHANG);
-            if (r == pid)
-            {
+            if (r == pid) {
                 struct rusage usage;
                 getrusage(RUSAGE_CHILDREN, &usage);
-                usedTimeMS = std::chrono::duration<double, std::milli>(
+                usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(
                                  std::chrono::steady_clock::now() - start)
                                  .count();
-                usedMemoryKB = usage.ru_maxrss; // KB on Linux
+                usedMemoryKB = usage.ru_maxrss;
 
-                if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-                    return 0;
-                return 1;
+                if (usedMemoryKB > memoryLimitKB) return 3; // MLE
+                if (WIFEXITED(status) && WEXITSTATUS(status) == 0) return 0; // Success
+                return 1; // Runtime Error
             }
-
-                   // Check memory usage periodically
-            std::string statmPath = "/proc/" + std::to_string(pid) + "/status";
-            std::ifstream statusFile(statmPath);
-            std::string line;
-            while (std::getline(statusFile, line))
-            {
-                if (line.rfind("VmPeak:", 0) == 0)
-                {
-                    long memKB = 0;
-                    sscanf(line.c_str(), "VmPeak: %ld kB", &memKB);
-                    usedMemoryKB = std::max(usedMemoryKB, (long long)memKB);
-                    if (memKB > memoryLimitKB)
-                    {
-                        kill(pid, SIGKILL);
-                        return 3; // Memory limit exceeded
-                    }
-                    break;
-                }
-            }
-
-            usleep(1000 * 10);
+            usleep(10000);
             elapsed += 10;
         }
 
         kill(pid, SIGKILL);
+        waitpid(pid, nullptr, 0);
         currentPid = -1;
         usedTimeMS = timeLimitMS;
-        return 2; // Timeout
+        return 2; // TLE
     }
 #endif
 }
+
+void Judge::stopJudge() {
+#ifdef _WIN32
+    if (currentProcessHandle) {
+        TerminateProcess(currentProcessHandle, 1);
+        WaitForSingleObject(currentProcessHandle, 500);
+        if (currentThreadHandle) CloseHandle(currentThreadHandle);
+        CloseHandle(currentProcessHandle);
+        currentProcessHandle = NULL;
+        currentThreadHandle  = NULL;
+    }
+#else
+    if (currentPid > 0) {
+        kill(currentPid, SIGKILL);
+        waitpid(currentPid, nullptr, 0);
+        currentPid = -1;
+    }
+#endif
+}
+
+
 
 
 void Judge::setCurrentFile(const std::string &cFile)
@@ -358,33 +382,24 @@ void Judge::setPretestCasesPath(const std::string &path)
 Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::vector<double>&judgeInfo)
 {
     setCurrentFile(dirPath.toStdString()+testcaseData[2]);
-    setCurrentProblem(std::to_string(testcaseData[0][0]));
+    setCurrentProblem(std::string()+testcaseData[0][0]);
     setPretestCasesPath(systemDirPath.toStdString()+"Pretest/"+currentProblem+"/");
     std::string testCaseNo=testcaseData[1];
 
     std::string filename = getFileName(currentFile);
     std::string directoryPath = getDirectoryPath(currentFile);
 
-    while(testCaseNo.size()>0)
-    {
-        if(*testCaseNo.begin()=='#')
-        {
-            testCaseNo.erase(testCaseNo.begin());
-            break;
-        }
-        else
-        {
-            testCaseNo.erase(testCaseNo.begin());
-        }
-    }
+
+
     std::string inputFile = pretestCasesPath + testCaseNo + ".in";
     std::string outputFile = pretestCasesPath + testCaseNo + ".output";
     std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
+
     std::ofstream output(outputFile);
     output.close();
-    std::string verdict;
-    long long cpuTime;
-    long long memorySize;
+    std::string verdict="";
+    long long cpuTime=0;
+    long long memorySize=0;
     bool checkerFlag=judgeInfo[0];
     bool intputFlag=judgeInfo[1];
     double timeLimit=judgeInfo[2];
@@ -440,10 +455,11 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
             effectiveMemoryLimit     = memoryLimit * javaMemoryLimit;
             effectiveSourceCodeLimit = sourceCodeLimit * javaSourceCodeLimit;
         }
+        std::cout<<effectiveTimeLimit<<std::endl;
 
         try {
             auto size = std::filesystem::file_size(currentFile);
-            if(size>effectiveSourceCodeLimit)
+            if((int)(size)>effectiveSourceCodeLimit)
             {
                 return Verdict("Source Code Limit Exceeded",0,0);
             }
@@ -531,27 +547,6 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
 
         }
 
-}
-void Judge::stopJudge()
-{
-#ifdef _WIN32
-    if (currentProcessHandle)
-    {
-        TerminateProcess(currentProcessHandle, 1);
-        CloseHandle(currentProcessHandle);
-        if (currentThreadHandle)
-            CloseHandle(currentThreadHandle);
-        currentProcessHandle = NULL;
-        currentThreadHandle = NULL;
-    }
-#else
-    if (currentPid > 0)
-    {
-        kill(currentPid, SIGKILL);
-        waitpid(currentPid, nullptr, 0);
-        currentPid = -1;
-    }
-#endif
 }
 
 

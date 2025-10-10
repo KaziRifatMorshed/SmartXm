@@ -53,6 +53,8 @@ private:
     std::vector <std::string> getTestcaseData();
     Ui::runTestcases* ui;
     bool judging=false;
+    Judge *judge;
+
 };
 
 #endif // RUNTESTCASES_H
