@@ -96,6 +96,30 @@ QString runTestcases::getFileContent(QString path) {
 
     return text;
 }
+bool runTestcases::readJudgeInfo(const std::string &judgeInfoFile, std::vector<double> &judgeInformation)
+{
+    std::ifstream judgeInfoIn(judgeInfoFile);
+    if (!judgeInfoIn.is_open())
+    {
+
+        return false;
+    }
+
+    judgeInformation.clear();
+    for (int i = 0; i < 14; i++)
+    {
+        double d;
+        if (!(judgeInfoIn >> d))
+        {
+
+            return false;
+        }
+        judgeInformation.push_back(d);
+    }
+
+
+    return true;
+}
 
 
 
@@ -106,20 +130,32 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
         judging=true;
         ui->verdictTable->clear();
         ui->verdictTable->setRowCount(0);
+        ui->testcaseInput_textEdit_2->clear();
+        ui->testcaseExpectedOutput_textEdit->clear();
+        ui->studentOutput_textEdit_3->clear();
         std::vector <std::string> testcaseData = getTestcaseData();
+        std::vector<double> judgeInformation;
+        std::string judgeInfoFile = systemDirPath.toStdString() + "Judge/" + testcaseData[0][0] + ".txt";
 
+        if(!readJudgeInfo(judgeInfoFile,judgeInformation))
+        {
+            QMessageBox::warning(this, "Warning",
+                                 "Judge information not found for this problem.");
+            judging=false;
+            return;
+        }
 
         if (testcaseData[1] == "No sample testcases") {
             QMessageBox::warning(this, "Warning",
                                  "No sample testcases for this problem exists.");
-
+            judging=false;
             return;
         }
 
         if (testcaseData[2] == "No solutions") {
             QMessageBox::warning(this, "Warning",
                                  "No solution file selected.");
-
+            judging=false;
             return;
         }
 
@@ -127,25 +163,27 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
 
         ui->ProblemTitle_label_7->setText(("Problem: " + testcaseData[0]).c_str());
 
-        QString testInput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".in").c_str());
+        QString testInput;
+        if(judgeInformation[1])
+        testInput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".in").c_str());
+        else testInput="Input is not required for this problem.";
 
         ui->testcaseInput_textEdit_2->setPlainText(testInput);
 
 
 
-        std::vector<double> judgeInformation;
-        std::string judgeInfoPath = systemDirPath.toStdString() + "Judge/" + testcaseData[0][0] + ".txt";
+        Verdict verdict;
 
-        std::ifstream judgeInfoIn(judgeInfoPath);
-        for(int i = 0; i < 14; i++)
-        {
-            double d;
-            judgeInfoIn >> d;
-            judgeInformation.push_back(d);
-        }
 
         judge=new Judge();
-        Verdict verdict=judge->runOnSingleTestCase(testcaseData,judgeInformation);
+        judge->setJudgeInfo(judgeInformation);
+        judge->setCurrentFile(dirPath.toStdString()+testcaseData[2]);
+        judge->setCurrentProblem(std::string()+testcaseData[0][0]);
+        judge->setPretestCasesPath(systemDirPath.toStdString()+"Pretest/"+testcaseData[0][0]+"/");
+        std::string testCaseNo=testcaseData[1];
+        judge->setCurrentTestCaseNo(testCaseNo);
+
+        verdict=judge->runOnSingleTestCase();
 
         QString expectedOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".out").c_str());
         ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);

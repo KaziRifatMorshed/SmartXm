@@ -1,6 +1,118 @@
 #include "Judge.h"
 
 Judge::Judge() {}
+void Judge::setCurrentFile(const std::string &cFile)
+{
+    currentFile = cFile;
+}
+
+void Judge::setCurrentProblem(const std::string &cProblem)
+{
+    currentProblem = cProblem;
+}
+
+void Judge::setPretestCasesPath(const std::string &path)
+{
+    pretestCasesPath = path;
+}
+
+void Judge::setJudgeInfo(const std::vector<double> &judgeInfo)
+{
+    if (judgeInfo.size() < 14)
+        return; // Not enough data; you can also throw an error or handle safely
+
+    checkerFlag = static_cast<bool>(judgeInfo[0]);
+    inputFlag = static_cast<bool>(judgeInfo[1]);
+    timeLimit = judgeInfo[2];
+    cppTimeLimit = judgeInfo[3];
+    pythonTimeLimit = judgeInfo[4];
+    javaTimeLimit = judgeInfo[5];
+    memoryLimit = judgeInfo[6];
+    cppMemoryLimit = judgeInfo[7];
+    pythonMemoryLimit = judgeInfo[8];
+    javaMemoryLimit = judgeInfo[9];
+    sourceCodeLimit = judgeInfo[10];
+    cppSourceCodeLimit = judgeInfo[11];
+    pythonSourceCodeLimit = judgeInfo[12];
+    javaSourceCodeLimit = judgeInfo[13];
+}
+void Judge::setCurrentTestCaseNo(const std::string & testCase)
+{
+    currentTestCaseNo=testCase;
+}
+void Judge::setNumberOfTotalTestCase(int totalTestCase)
+{
+    numberOfTotalTestCase=totalTestCase;
+}
+Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
+                               int &effectiveMemoryLimit,
+                               int &effectiveSourceCodeLimit)
+{
+
+    std::string filename = getFileName(currentFile);
+    std::string directoryPath = getDirectoryPath(currentFile);
+
+    if (currentFile.empty())
+    {
+
+        return Verdict("Solution File Not Found",0,0);
+    }
+
+    if (!std::filesystem::exists(currentFile))
+    {
+        return Verdict("Solution File Not Exist",0,0);
+    }
+
+    if (currentProblem.empty())
+    {
+        return Verdict("Problem Not Specified",0,0);
+    }
+    std::string ext = getFileExtension(currentFile);
+    if(ext=="c"||ext=="cpp"||ext=="c++"||ext=="py"||ext=="java")
+    {
+        if(!checkCompiler(ext))
+        {
+            return Verdict("Compilation Failed",0,0);
+        }
+    }
+    else
+    {
+        return Verdict("Invalid Solutin File",0,0);
+    }
+
+
+
+    if (ext == "c")
+    {
+        effectiveTimeLimit       = timeLimit * cppTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * cppMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * cppSourceCodeLimit;
+    }
+    else if (ext == "py")
+    {
+        effectiveTimeLimit       = timeLimit * pythonTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * pythonMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * pythonSourceCodeLimit;
+    }
+    else // assume java
+    {
+        effectiveTimeLimit       = timeLimit * javaTimeLimit;
+        effectiveMemoryLimit     = memoryLimit * javaMemoryLimit;
+        effectiveSourceCodeLimit = sourceCodeLimit * javaSourceCodeLimit;
+    }
+
+
+    try {
+        auto size = std::filesystem::file_size(currentFile);
+        if((int)(size)>effectiveSourceCodeLimit)
+        {
+            return Verdict("Source Code Limit Exceeded",0,0);
+        }
+    } catch (std::filesystem::filesystem_error &e) {
+        return Verdict("Source Code Error",0,0);
+    }
+    return Verdict("Ready",0,0);
+}
 
 std::string Judge::getFileExtension(const std::string &filename)
 {
@@ -401,135 +513,34 @@ void Judge::stopJudge() {
 
 
 
-void Judge::setCurrentFile(const std::string &cFile)
+
+
+
+Verdict Judge::runOnSingleTestCase()
 {
-    currentFile = cFile;
-}
 
-void Judge::setCurrentProblem(const std::string &cProblem)
-{
-    currentProblem = cProblem;
-}
-
-void Judge::setPretestCasesPath(const std::string &path)
-{
-    pretestCasesPath = path;
-}
-
-void Judge::setJudgeInfo(const std::vector<double> &judgeInfo)
-{
-    if (judgeInfo.size() < 14)
-        return; // Not enough data; you can also throw an error or handle safely
-
-    checkerFlag = static_cast<bool>(judgeInfo[0]);
-    inputFlag = static_cast<bool>(judgeInfo[1]);
-    timeLimit = judgeInfo[2];
-    cppTimeLimit = judgeInfo[3];
-    pythonTimeLimit = judgeInfo[4];
-    javaTimeLimit = judgeInfo[5];
-    memoryLimit = judgeInfo[6];
-    cppMemoryLimit = judgeInfo[7];
-    pythonMemoryLimit = judgeInfo[8];
-    javaMemoryLimit = judgeInfo[9];
-    sourceCodeLimit = judgeInfo[10];
-    cppSourceCodeLimit = judgeInfo[11];
-    pythonSourceCodeLimit = judgeInfo[12];
-    javaSourceCodeLimit = judgeInfo[13];
-}
-
-
-Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::vector<double>&judgeInfo)
-{
-    setJudgeInfo(judgeInfo);
-    setCurrentFile(dirPath.toStdString()+testcaseData[2]);
-    setCurrentProblem(std::string()+testcaseData[0][0]);
-    setPretestCasesPath(systemDirPath.toStdString()+"Pretest/"+currentProblem+"/");
-    std::string testCaseNo=testcaseData[1];
-
-    std::string filename = getFileName(currentFile);
-    std::string directoryPath = getDirectoryPath(currentFile);
-
-
-
-    std::string inputFile = pretestCasesPath + testCaseNo + ".in";
-    std::string outputFile = pretestCasesPath + testCaseNo + ".output";
-    std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
+    std::string outputFile = pretestCasesPath + currentTestCaseNo + ".output";
 
     std::ofstream output(outputFile);
     output.close();
-    std::string verdict="";
-    long long cpuTime=0;
-    long long memorySize=0;
-
-
-
-    if (currentFile.empty())
-    {
-
-        return Verdict("Solution File Not Found",0,0);
-    }
-
-    if (!std::filesystem::exists(currentFile))
-    {
-        return Verdict("Solution File Not Exist",0,0);
-    }
-
-    if (currentProblem.empty())
-    {
-        return Verdict("Problem Not Specified",0,0);
-    }
-    std::string ext = getFileExtension(currentFile);
-    if(ext=="c"||ext=="cpp"||ext=="c++"||ext=="py"||ext=="java")
-    {
-        if(!checkCompiler(ext))
-        {
-            return Verdict("Compilation Failed",0,0);
-        }
-    }
-    else
-    {
-        return Verdict("Invalid Solutin File",0,0);
-    }
-
     int effectiveTimeLimit;
     int effectiveMemoryLimit;
     int effectiveSourceCodeLimit;
+    Verdict verdict =isReadyForJudge(effectiveTimeLimit,effectiveMemoryLimit,effectiveSourceCodeLimit);
 
-    if (ext == "c")
-    {
-        effectiveTimeLimit       = timeLimit * cppTimeLimit;
-        effectiveMemoryLimit     = memoryLimit * cppMemoryLimit;
-        effectiveSourceCodeLimit = sourceCodeLimit * cppSourceCodeLimit;
-    }
-    else if (ext == "py")
-    {
-        effectiveTimeLimit       = timeLimit * pythonTimeLimit;
-        effectiveMemoryLimit     = memoryLimit * pythonMemoryLimit;
-        effectiveSourceCodeLimit = sourceCodeLimit * pythonSourceCodeLimit;
-    }
-    else // assume java
-    {
-        effectiveTimeLimit       = timeLimit * javaTimeLimit;
-        effectiveMemoryLimit     = memoryLimit * javaMemoryLimit;
-        effectiveSourceCodeLimit = sourceCodeLimit * javaSourceCodeLimit;
-    }
-    std::cout<<effectiveTimeLimit<<std::endl;
-
-    try {
-        auto size = std::filesystem::file_size(currentFile);
-        if((int)(size)>effectiveSourceCodeLimit)
-        {
-            return Verdict("Source Code Limit Exceeded",0,0);
-        }
-    } catch (std::filesystem::filesystem_error &e) {
-        return Verdict("Source Code Error",0,0);
-    }
-
-
+    std::string ext=getFileExtension(currentFile);
+    std::string directoryPath=getDirectoryPath(currentFile);
+    std::string filename=getFileName(currentFile);
 
     if(ext=="c"||ext=="cpp"||ext=="c++")
     {
         std::string exeFile, compileCmd;
+        std::string verdict="";
+        long long cpuTime=0;
+        long long memorySize=0;
+        std::string inputFile = pretestCasesPath + currentTestCaseNo + ".in";
+        std::string expectedFile = pretestCasesPath + currentTestCaseNo + ".out";
+
 #ifdef _WIN32
         exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
         compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
@@ -581,8 +592,7 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
         }
         if(!checkerFlag)
         {
-            if(inputFlag)
-            {
+
                 std::ifstream out(outputFile), exp(expectedFile);
                 if (!out || !exp)
                 {
@@ -599,7 +609,7 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
                 {
                     return Verdict("Wrong Answer",cpuTime,memorySize);
                 }
-            }
+
 
         }
 
@@ -787,10 +797,7 @@ Verdict Judge::runOnSingleTestCase(std::vector <std::string> &testcaseData,std::
 //     }
 // }
 
-void Judge::runPythonFile()
-{
-  // Implementation left empty
-}
+
 
 std::string Judge::normalize(const std::string &s)
 {

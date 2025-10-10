@@ -51,6 +51,7 @@ private:
     QString getFileContent(QString path);
     std::vector <std::string> splitStringByChar(std::string s, char delimiter);
     std::vector <std::string> getTestcaseData();
+    bool readJudgeInfo(const std::string &judgeInfoFile, std::vector<double> &judgeInformation);
     Ui::runTestcases* ui;
     bool judging=false;
     Judge *judge;

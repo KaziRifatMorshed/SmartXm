@@ -60,14 +60,15 @@ private:
                               long long &usedTimeMS,
                               long long &usedMemoryKB,
                               bool inFlag);
-    void runCppOrCFile(int checker,int timeLimit,int numOfTestCases,std::string testCasesPath);
-    void runPythonFile();
+    Verdict isReadyForJudge(int &effectiveTimeLimit,
+                                   int &effectiveMemoryLimit,
+                            int &effectiveSourceCodeLimit);
     std::string normalize(const std::string &s);
 
 
 public:
     void runOnTestCases();
-    Verdict runOnSingleTestCase(std::vector <std::string> &testcaseData,std::vector<double>&judgeInfo);
+    Verdict runOnSingleTestCase();
     void runOnAllStudentsSolution();
     void setCurrentFile(const std::string &cFile);
     void setCurrentProblem(const std::string &cProblem);
@@ -83,7 +84,14 @@ public:
     pid_t currentPid = -1;
 #endif
 
-
+//test case information
+private:
+    std::string currentTestCaseNo;
+    int numberOfTotalTestCase;
+public:
+    void setCurrentTestCaseNo(const std::string & testCase);
+    void setNumberOfTotalTestCase(int totalTestCase);
+//judge information
 private:
     bool checkerFlag;
     bool inputFlag;
