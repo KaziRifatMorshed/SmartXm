@@ -96,6 +96,23 @@ QString runTestcases::getFileContent(QString path) {
 
     return text;
 }
+QString runTestcases::getFileContent(QString path, long long readSizeByte) {
+    QFile file(path);
+
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning",
+                             "Cannot read file: " + file.errorString());
+        return QString();
+    }
+
+           // Read limited data
+    QByteArray data = file.read(readSizeByte);
+
+    file.close();
+
+    return QString::fromUtf8(data);
+}
+
 bool runTestcases::readJudgeInfo(const std::string &judgeInfoFile, std::vector<double> &judgeInformation)
 {
     std::ifstream judgeInfoIn(judgeInfoFile);
@@ -186,7 +203,7 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
 
                     if(verdict.verdict=="Accepted"||verdict.verdict=="Wrong Answer")
                     {
-                        QString studentOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str());
+                        QString studentOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str(),1024*1024);
                         ui->studentOutput_textEdit_3->setPlainText(studentOutput);
                     }
                     ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);

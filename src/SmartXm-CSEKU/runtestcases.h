@@ -54,6 +54,7 @@ private:
 
     std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
     QString getFileContent(QString path);
+    QString getFileContent(QString path, long long readSizeByte);
     std::vector <std::string> splitStringByChar(std::string s, char delimiter);
     std::vector <std::string> getTestcaseData();
     bool readJudgeInfo(const std::string &judgeInfoFile, std::vector<double> &judgeInformation);

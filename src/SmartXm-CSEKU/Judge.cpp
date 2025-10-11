@@ -68,7 +68,7 @@ Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
         return Verdict("Problem Not Specified",0,0);
     }
     std::string ext = getFileExtension(currentFile);
-    if(ext=="c"||ext=="cpp"||ext=="c++"||ext=="py"||ext=="java")
+    if(ext=="c"||ext=="cpp"||ext=="c++"||ext=="py")
     {
         if(!checkCompiler(ext))
         {
@@ -77,7 +77,7 @@ Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
     }
     else
     {
-        return Verdict("Invalid Solutin File",0,0);
+        return Verdict("Unsupported File Type",0,0);
     }
 
 
@@ -295,6 +295,7 @@ std::string Judge::executeCommand(std::string &command)
 #endif
     return result;
 }
+
 int Judge::runWithTimeout(const std::string &exeFile,
                           const std::string &inputFile,
                           const std::string &outputFile,
@@ -312,6 +313,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
     int verdict = -1;
     DWORD waitResult = WAIT_TIMEOUT;
     bool processExited = false;
+    bool jobKilledProcess = false;
 
            // Output redirection
     hOutput = CreateFileA(outputFile.c_str(), GENERIC_WRITE,
@@ -339,7 +341,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
     cmdBuf.push_back('\0');
 
     if (!CreateProcessA(NULL, cmdBuf.data(), NULL, NULL, TRUE,
-                        CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+                        CREATE_NO_WINDOW | CREATE_SUSPENDED, NULL, NULL, &si, &pi)) {
         CloseHandle(hInput); CloseHandle(hOutput);
         return -1;
     }
@@ -347,26 +349,66 @@ int Judge::runWithTimeout(const std::string &exeFile,
     currentProcessHandle = pi.hProcess;
     currentThreadHandle  = pi.hThread;
 
-           // Memory limit via Job
+           // Create Job Object with I/O Completion Port for notifications
     HANDLE hJob = CreateJobObject(NULL, NULL);
+    HANDLE hIOCP = NULL;
+
     if (hJob) {
+        // Create I/O Completion Port for job notifications
+        hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 1);
+        if (hIOCP) {
+            JOBOBJECT_ASSOCIATE_COMPLETION_PORT port;
+            port.CompletionKey = hJob;
+            port.CompletionPort = hIOCP;
+            SetInformationJobObject(hJob, JobObjectAssociateCompletionPortInformation,
+                                    &port, sizeof(port));
+        }
+
+               // Set memory limit
         JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo{};
         jobInfo.BasicLimitInformation.LimitFlags =
             JOB_OBJECT_LIMIT_PROCESS_MEMORY | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
         jobInfo.ProcessMemoryLimit = (SIZE_T)memoryLimitKB * 1024;
         SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobInfo, sizeof(jobInfo));
+
         AssignProcessToJobObject(hJob, pi.hProcess);
     }
 
+           // Resume the process
+    ResumeThread(pi.hThread);
+
     auto start = std::chrono::steady_clock::now();
 
-    // Poll loop with precise timing
+           // Poll loop with precise timing
     while (true) {
-        // Check stop request first - highest priority
+        // Check for job notifications (memory limit exceeded)
+        if (hIOCP) {
+            DWORD numberOfBytes;
+            ULONG_PTR completionKey;
+            LPOVERLAPPED overlapped;
+
+            while (GetQueuedCompletionStatus(hIOCP, &numberOfBytes, &completionKey,
+                                             &overlapped, 0)) {
+                if (numberOfBytes == JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT) {
+                    jobKilledProcess = true;
+                    verdict = 3; // MLE
+                    break;
+                }
+            }
+        }
+
+               // Check stop request first - highest priority
         if (stopRequested.load()) {
             TerminateProcess(pi.hProcess, 1);
             WaitForSingleObject(pi.hProcess, 500);
             verdict = 5;
+            processExited = true;
+            break;
+        }
+
+               // If job killed the process for memory, break
+        if (jobKilledProcess) {
+            WaitForSingleObject(pi.hProcess, 500);
             processExited = true;
             break;
         }
@@ -398,10 +440,12 @@ int Judge::runWithTimeout(const std::string &exeFile,
     auto end = std::chrono::steady_clock::now();
     usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-           // Get memory usage
-    PROCESS_MEMORY_COUNTERS pmc{};
-    if (GetProcessMemoryInfo(pi.hProcess, &pmc, sizeof(pmc))) {
-        usedMemoryKB = pmc.PeakWorkingSetSize / 1024;
+           // Get memory usage - use PrivateUsage for most accurate virtual memory
+    PROCESS_MEMORY_COUNTERS_EX pmcEx{};
+    pmcEx.cb = sizeof(pmcEx);
+    if (GetProcessMemoryInfo(pi.hProcess, (PROCESS_MEMORY_COUNTERS*)&pmcEx, sizeof(pmcEx))) {
+        // PrivateUsage is the commit charge (best indicator of actual memory usage)
+        usedMemoryKB = pmcEx.PrivateUsage / 1024;
     } else {
         usedMemoryKB = 0;
     }
@@ -412,14 +456,22 @@ int Judge::runWithTimeout(const std::string &exeFile,
     }
     // Determine verdict if not already set
     else if (verdict == -1) {
-        // Process exited naturally, check exit code
+        // Check memory limit first
         if (usedMemoryKB > memoryLimitKB) {
             verdict = 3; // MLE
         }
         else {
             DWORD exitCode = STILL_ACTIVE;
             if (GetExitCodeProcess(pi.hProcess, &exitCode)) {
-                verdict = (exitCode == 0) ? 0 : 1;
+                // Check for memory-related error codes
+                if (exitCode == STATUS_NO_MEMORY ||
+                    exitCode == 0xC0000017 || // STATUS_NO_MEMORY
+                    exitCode == 0xC000012D || // STATUS_COMMITMENT_LIMIT
+                    exitCode == 0xC00000FD) { // STATUS_STACK_OVERFLOW
+                    verdict = 3; // MLE
+                } else {
+                    verdict = (exitCode == 0) ? 0 : 1;
+                }
             } else {
                 verdict = 1;
             }
@@ -427,6 +479,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
     }
 
            // Cleanup
+    if (hIOCP) CloseHandle(hIOCP);
     if (hJob) CloseHandle(hJob);
     if (pi.hProcess) CloseHandle(pi.hProcess);
     if (pi.hThread)  CloseHandle(pi.hThread);
@@ -442,42 +495,49 @@ int Judge::runWithTimeout(const std::string &exeFile,
     return verdict;
 
 #else
-  // POSIX branch
+  // POSIX branch (Linux/Unix)
     pid_t pid = fork();
     if (pid == 0) {
-        // child
+        // child process
+
+        // Set memory limit (virtual memory)
         struct rlimit memLimit;
         memLimit.rlim_cur = memLimit.rlim_max = (rlim_t)memoryLimitKB * 1024;
         setrlimit(RLIMIT_AS, &memLimit);
 
+               // Output redirection
         int out = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
         if (out < 0) _exit(1);
 
+               // Input redirection
         if (inFlag) {
             int in = open(inputFile.c_str(), O_RDONLY);
             if (in < 0) _exit(1);
-            dup2(in, STDIN_FILENO); close(in);
+            dup2(in, STDIN_FILENO);
+            close(in);
         } else {
             int devnull = open("/dev/null", O_RDONLY);
-            dup2(devnull, STDIN_FILENO); close(devnull);
+            if (devnull < 0) _exit(1);
+            dup2(devnull, STDIN_FILENO);
+            close(devnull);
         }
 
         dup2(out, STDOUT_FILENO);
         dup2(out, STDERR_FILENO);
         close(out);
 
+               // Execute the program
         execl("/bin/sh", "sh", "-c", exeFile.c_str(), (char *)NULL);
-        _exit(1);
+        _exit(1); // Only reached if execl fails
     }
 
     if (pid < 0) return -1; // fork failed
 
-           // parent
+           // parent process
     currentPid = pid;
     auto start = std::chrono::steady_clock::now();
     int status = 0;
     long long localUsedMemoryKB = 0;
-    int verdict = -1;
 
     while (true) {
         // Check stop request first - highest priority
@@ -489,6 +549,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
 
             auto end = std::chrono::steady_clock::now();
             usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            usedMemoryKB = 0;
             return 5;
         }
 
@@ -502,18 +563,30 @@ int Judge::runWithTimeout(const std::string &exeFile,
             waitpid(pid, nullptr, 0);
             currentPid = -1;
             usedTimeMS = elapsed;
+            usedMemoryKB = 0;
             return 2; // TLE
         }
 
+               // Check if child process has exited
         struct rusage usage;
         pid_t r = wait4(pid, &status, WNOHANG, &usage);
+
         if (r == 0) {
-            // still running
-        } else if (r == pid) {
-            // child exited - break to check stop request one more time
-            usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             std::chrono::steady_clock::now() - start).count();
+            // Still running, continue polling
+            usleep(10000); // 10ms
+        }
+        else if (r == pid) {
+            // Child exited
+            auto end = std::chrono::steady_clock::now();
+            usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+// Get memory usage (ru_maxrss is in KB on Linux, bytes on macOS)
+#ifdef __APPLE__
+            localUsedMemoryKB = usage.ru_maxrss / 1024;
+#else
             localUsedMemoryKB = usage.ru_maxrss;
+#endif
+
             usedMemoryKB = localUsedMemoryKB;
             currentPid = -1;
 
@@ -523,23 +596,46 @@ int Judge::runWithTimeout(const std::string &exeFile,
                 return 5;
             }
 
-            if (localUsedMemoryKB > memoryLimitKB) return 3;
-            if (WIFEXITED(status) && WEXITSTATUS(status) == 0) return 0;
-            return 1;
-        } else {
+                   // Check if killed by signal (usually SIGKILL/SIGSEGV for memory limit)
+            if (WIFSIGNALED(status)) {
+                int sig = WTERMSIG(status);
+                // SIGKILL, SIGABRT, or SIGSEGV often indicates memory issues
+                if (sig == SIGKILL || sig == SIGABRT || sig == SIGSEGV) {
+                    // Likely MLE if memory usage is high or limit was tight
+                    if (localUsedMemoryKB > memoryLimitKB * 0.8) {
+                        return 3; // MLE
+                    }
+                }
+                return 1; // Runtime error (killed by signal)
+            }
+
+                   // Check memory limit
+            if (localUsedMemoryKB > memoryLimitKB) {
+                return 3; // MLE
+            }
+
+                   // Check exit status
+            if (WIFEXITED(status)) {
+                int exitStatus = WEXITSTATUS(status);
+                return (exitStatus == 0) ? 0 : 1;
+            }
+
+            return 1; // Runtime error
+        }
+        else {
             // wait4 returned error
             break;
         }
-
-        usleep(10000); // 10ms
     }
 
-           // Error case - but check stop request first
+           // Error case - cleanup and check stop request
     kill(pid, SIGKILL);
     waitpid(pid, nullptr, 0);
     currentPid = -1;
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::steady_clock::now() - start).count();
+
+    auto end = std::chrono::steady_clock::now();
+    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    usedMemoryKB = 0;
 
     if (stopRequested.load()) {
         stopRequested.store(false);
@@ -548,7 +644,6 @@ int Judge::runWithTimeout(const std::string &exeFile,
     return 1;
 #endif
 }
-
 
 void Judge::stopJudge() {
     stopRequested.store(true);
@@ -579,27 +674,22 @@ Verdict Judge::runOnSingleTestCase()
     int effectiveTimeLimit;
     int effectiveMemoryLimit;
     int effectiveSourceCodeLimit;
-    Verdict verdict =isReadyForJudge(effectiveTimeLimit,effectiveMemoryLimit,effectiveSourceCodeLimit);
-    if(verdict.verdict!="Ready")return verdict;
+    Verdict _verdict =isReadyForJudge(effectiveTimeLimit,effectiveMemoryLimit,effectiveSourceCodeLimit);
+    if(_verdict.verdict!="Ready")return _verdict;
 
     std::string ext=getFileExtension(currentFile);
     std::string directoryPath=getDirectoryPath(currentFile);
     std::string filename=getFileName(currentFile);
 
     std::string exeFile, compileCmd;
-
+    std::string verdict;
     long long cpuTime=0;
     long long memorySize=0;
     std::string inputFile = pretestCasesPath + currentTestCaseNo + ".in";
     std::string expectedFile = pretestCasesPath + currentTestCaseNo + ".out";
     if(ext=="c"||ext=="cpp"||ext=="c++")
     {
-        std::string exeFile, compileCmd;
-        std::string verdict="";
-        long long cpuTime=0;
-        long long memorySize=0;
-        std::string inputFile = pretestCasesPath + currentTestCaseNo + ".in";
-        std::string expectedFile = pretestCasesPath + currentTestCaseNo + ".out";
+
 
 #ifdef _WIN32
         exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
@@ -623,69 +713,80 @@ Verdict Judge::runOnSingleTestCase()
         {
             return Verdict("Compilation Failed",0,0);
         }
+    }
+    else if(ext=="py")
+    {
+#ifdef _WIN32
+        std::string pythonCmd = "python";
+#else
+        std::string pythonCmd = "python3";
+#endif
+        exeFile = pythonCmd + " \"" + currentFile + "\"";
 
-        int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
-                                    cpuTime,memorySize,inputFlag);
-        if(0!=status)
+    }
+
+    int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
+                                cpuTime,memorySize,inputFlag);
+    if(0!=status)
+    {
+        std::remove(outputFile.c_str());
+    }
+    if(status==0)
+    {
+      //Succeess Execution
+    }
+    else if(status==1)
+    {
+        verdict="Runtime Error";
+        return Verdict(verdict,cpuTime,memorySize);
+    }
+    else if(status==2)
+    {
+        verdict="Time Limit Exceeded";
+        return Verdict(verdict,cpuTime,memorySize);
+    }
+    else if(status==3)
+    {
+        verdict="Memory Limit Exceeded";
+        return Verdict(verdict,cpuTime,memorySize+effectiveMemoryLimit);
+    }
+    else if(status==5)
+    {
+        verdict="Judge Terminated";
+        return Verdict(verdict,cpuTime,memorySize);
+    }
+    else
+    {
+        verdict="I/O Error";
+        return Verdict(verdict,cpuTime,memorySize);
+    }
+    if(!checkerFlag)
+    {
+
+        std::ifstream out(outputFile), exp(expectedFile);
+        if (!out || !exp)
         {
-            std::remove(outputFile.c_str());
+
+            return Verdict("Error",cpuTime,memorySize);
         }
-        if(status==0)
+        std::string s1((std::istreambuf_iterator<char>(out)), {});
+        std::string s2((std::istreambuf_iterator<char>(exp)), {});
+
+        std::remove(outputFile.c_str());
+        if (normalize(s1) == normalize(s2))
         {
-          //Succeess Execution
-        }
-        else if(status==1)
-        {
-            verdict="Runtime Error";
-            return Verdict(verdict,cpuTime,memorySize);
-        }
-        else if(status==2)
-        {
-            verdict="Time Limit Exceeded";
-            return Verdict(verdict,cpuTime,memorySize);
-        }
-        else if(status==3)
-        {
-            verdict="Memory Limit Exceeded";
-            return Verdict(verdict,cpuTime,memorySize);
-        }
-        else if(status==5)
-        {
-            verdict="Judge Terminated";
-            return Verdict(verdict,cpuTime,memorySize);
+            return Verdict("Accepted",cpuTime,memorySize);
         }
         else
         {
-            verdict="I/O Error";
-            return Verdict(verdict,cpuTime,memorySize);
-        }
-        if(!checkerFlag)
-        {
-
-            std::ifstream out(outputFile), exp(expectedFile);
-            if (!out || !exp)
-            {
-
-                return Verdict("Error",cpuTime,memorySize);
-            }
-            std::string s1((std::istreambuf_iterator<char>(out)), {});
-            std::string s2((std::istreambuf_iterator<char>(exp)), {});
-
-            std::remove(outputFile.c_str());
-            if (normalize(s1) == normalize(s2))
-            {
-                return Verdict("Accepted",cpuTime,memorySize);
-            }
-            else
-            {
-                return Verdict("Wrong Answer",cpuTime,memorySize);
-            }
-
-
+            return Verdict("Wrong Answer",cpuTime,memorySize);
         }
 
 
     }
+
+
+
 
     return Verdict("",0,0);
 
@@ -713,10 +814,10 @@ std::vector<Verdict> Judge::runOnTestCases()
     std::string ext=getFileExtension(currentFile);
     std::string directoryPath=getDirectoryPath(currentFile);
     std::string filename=getFileName(currentFile);
-
+    std::string exeFile, compileCmd;
     if(ext=="c"||ext=="cpp"||ext=="c++")
     {
-        std::string exeFile, compileCmd;
+
 
 
 #ifdef _WIN32
@@ -741,92 +842,102 @@ std::vector<Verdict> Judge::runOnTestCases()
         {
             return generateVerdicts("Compilation Failed",0);
         }
+    }
+    else if(ext=="py")
+    {
+#ifdef _WIN32
+        std::string pythonCmd = "python";
+#else
+        std::string pythonCmd = "python3";
+#endif
+        exeFile = pythonCmd + " \"" + currentFile + "\"";
 
-        int terminated=0;
+    }
+    int terminated=0;
 
-        for(int i=1;i<=numberOfTotalTestCase;i++)
+    for(int i=1;i<=numberOfTotalTestCase;i++)
+    {
+        if(terminated)
         {
-            if(terminated)
-            {
-                std::string verdict="Judge Terminated";
-                verdicts.push_back(Verdict(verdict,0,0));
-                continue;
-            }
-            std::string testCaseNo=std::to_string(i);
-            std::string verdict="";
-            long long cpuTime=0;
-            long long memorySize=0;
-            std::string inputFile = pretestCasesPath + testCaseNo + ".in";
-            std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
-            std::string outputFile = pretestCasesPath + testCaseNo + ".output";
+            std::string verdict="Judge Terminated";
+            verdicts.push_back(Verdict(verdict,0,0));
+            continue;
+        }
+        std::string testCaseNo=std::to_string(i);
+        std::string verdict="";
+        long long cpuTime=0;
+        long long memorySize=0;
+        std::string inputFile = pretestCasesPath + testCaseNo + ".in";
+        std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
+        std::string outputFile = pretestCasesPath + testCaseNo + ".output";
 
 
-            int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
-                                        cpuTime,memorySize,inputFlag);
-            if(status==0)
-            {
-              //Succeess Execution
-            }
-            else if(status==1)
-            {
-                verdict="Runtime Error";
-                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                continue;
-            }
-            else if(status==2)
-            {
-                verdict="Time Limit Exceeded";
-                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                continue;
-            }
-            else if(status==3)
-            {
-                verdict="Memory Limit Exceeded";
-                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                continue;
-            }else if(status==5)
-            {
-                verdict="Judge Terminated";
-                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                terminated=1;
-                continue;
+        int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
+                                    cpuTime,memorySize,inputFlag);
+        if(status==0)
+        {
+          //Succeess Execution
+        }
+        else if(status==1)
+        {
+            verdict="Runtime Error";
+            verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+            continue;
+        }
+        else if(status==2)
+        {
+            verdict="Time Limit Exceeded";
+            verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+            continue;
+        }
+        else if(status==3)
+        {
+            verdict="Memory Limit Exceeded";
+            verdicts.push_back(Verdict(verdict,cpuTime,memorySize+effectiveMemoryLimit));
+            continue;
+        }else if(status==5)
+        {
+            verdict="Judge Terminated";
+            verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+            terminated=1;
+            continue;
 
-            }
-            else
+        }
+        else
+        {
+            verdict="I/O Error";
+            verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+            continue;
+        }
+        if(!checkerFlag)
+        {
+
+            std::ifstream out(outputFile), exp(expectedFile);
+            if (!out || !exp)
             {
+
                 verdict="I/O Error";
                 verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
                 continue;
             }
-            if(!checkerFlag)
+            std::string s1((std::istreambuf_iterator<char>(out)), {});
+            std::string s2((std::istreambuf_iterator<char>(exp)), {});
+            if (normalize(s1) == normalize(s2))
             {
-
-                std::ifstream out(outputFile), exp(expectedFile);
-                if (!out || !exp)
-                {
-
-                    verdict="Output Error";
-                    verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                    continue;
-                }
-                std::string s1((std::istreambuf_iterator<char>(out)), {});
-                std::string s2((std::istreambuf_iterator<char>(exp)), {});
-                if (normalize(s1) == normalize(s2))
-                {
-                    verdict="Accepted";
-                    verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                    continue;
-                }
-                else
-                {
-                    verdict="Wrong Answer";
-                    verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
-                    continue;
-                }
-
-
+                verdict="Accepted";
+                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+                continue;
             }
+            else
+            {
+                verdict="Wrong Answer";
+                verdicts.push_back(Verdict(verdict,cpuTime,memorySize));
+                continue;
+            }
+
+
         }
+
 
     }
     for(int i=1;i<=numberOfTotalTestCase;i++)

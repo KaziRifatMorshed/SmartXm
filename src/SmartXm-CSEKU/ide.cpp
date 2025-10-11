@@ -237,7 +237,7 @@ void IDE::run() {
                 if(!forciblyKillExecutionFlag)
                 outputText= getFileContent(QString("output.txt"));
 
-                ui->output_textEdit->setPlainText((outputText.left(4000000)));
+                ui->output_textEdit->setPlainText((outputText.left(2*1024*1024)));
 
                        //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
 
