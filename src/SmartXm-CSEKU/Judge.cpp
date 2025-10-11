@@ -495,29 +495,29 @@ int Judge::runWithTimeout(const std::string &runCommand,
     return verdict;
 
 #else
-    std::cout<<runCommand<<std::endl;
+
 
     QProcess process;
     int verdict = -1;
     bool processExited = false;
     bool memoryLimitExceeded = false;
 
-    // Set up input redirection
+           // Set up input redirection
     if (inFlag) {
         process.setStandardInputFile(QString::fromStdString(inputFile));
     } else {
         process.setStandardInputFile("/dev/null");
     }
 
-    // Set up output redirection
+           // Set up output redirection
     process.setStandardOutputFile(QString::fromStdString(outputFile));
     process.setStandardErrorFile(QString::fromStdString(outputFile), QIODevice::Append);
 
-    // Parse command for QProcess
+           // Parse command for QProcess
     QStringList args;
     QString program;
 
-    // Better parsing that handles quoted strings
+           // Better parsing that handles quoted strings
     QString cmdStr = QString::fromStdString(runCommand);
     QStringList parts;
 
@@ -556,7 +556,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
         args << parts[i];
     }
 
-    // Start the process
+           // Start the process
     process.start(program, args);
 
     if (!process.waitForStarted(1000)) {
@@ -564,35 +564,38 @@ int Judge::runWithTimeout(const std::string &runCommand,
     }
 
     pid_t pid = process.processId();
-    currentProcessPid = pid;
+
+    // Store only the PID atomically - no pointers
+    currentProcessPid.store(pid);
 
     auto start = std::chrono::steady_clock::now();
 
-    // Monitoring loop with precise timing
+           // Monitoring loop with precise timing
     while (true) {
         // Check stop request first - highest priority
         if (stopRequested.load()) {
-            process.kill();
+            // Kill only the child process, not our application
+            killProcessSafely(pid);
             process.waitForFinished(500);
             verdict = 5;
             processExited = true;
             break;
         }
 
-        // Check if process is still running
+               // Check if process is still running
         if (process.state() == QProcess::NotRunning) {
             processExited = true;
             break;
         }
 
-        // Calculate elapsed time
+               // Calculate elapsed time
         auto now = std::chrono::steady_clock::now();
         long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
 
-        // Check memory usage
+               // Check memory usage
         long long currentMemoryKB = getProcessMemoryUsage(pid);
         if (currentMemoryKB > memoryLimitKB) {
-            process.kill();
+            killProcessSafely(pid);
             process.waitForFinished(500);
             verdict = 3; // MLE
             memoryLimitExceeded = true;
@@ -600,16 +603,16 @@ int Judge::runWithTimeout(const std::string &runCommand,
             break;
         }
 
-        // Check time limit
+               // Check time limit
         if (elapsed >= timeLimitMS) {
-            process.kill();
+            killProcessSafely(pid);
             process.waitForFinished(500);
             verdict = 2; // TLE
             processExited = true;
             break;
         }
 
-        // Wait for a short period or remaining time
+               // Wait for a short period or remaining time
         int waitTime = std::min(10LL, timeLimitMS - elapsed);
         process.waitForFinished(waitTime);
     }
@@ -617,10 +620,10 @@ int Judge::runWithTimeout(const std::string &runCommand,
     auto end = std::chrono::steady_clock::now();
     usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-    // Get final memory usage
+           // Get final memory usage
     usedMemoryKB = getProcessMemoryUsage(pid);
 
-    // Check stop request one more time before determining verdict
+           // Check stop request one more time before determining verdict
     if (stopRequested.load()) {
         verdict = 5;
     }
@@ -632,9 +635,8 @@ int Judge::runWithTimeout(const std::string &runCommand,
         } else {
             int exitCode = process.exitCode();
             QProcess::ExitStatus exitStatus = process.exitStatus();
-            QProcess::ProcessError error = process.error();
 
-            // Check for abnormal termination
+                   // Check for abnormal termination
             if (exitStatus == QProcess::CrashExit) {
                 // Check if it was a memory-related crash
                 if (exitCode == 9 || exitCode == 11) { // SIGKILL or SIGSEGV
@@ -649,17 +651,16 @@ int Judge::runWithTimeout(const std::string &runCommand,
                 }
             } else {
                 // Normal exit - check exit code
-                // Python returns 0 for success, non-zero for errors
                 verdict = (exitCode == 0) ? 0 : 1;
             }
         }
     }
 
-    // Cleanup
-    currentProcessPid = 0;
+           // Cleanup - Reset PID
+    currentProcessPid.store(0);
     stopRequested.store(false);
 
-    // Ensure file flushed
+           // Ensure file flushed
     QThread::msleep(100);
 
     return verdict;
@@ -668,11 +669,53 @@ int Judge::runWithTimeout(const std::string &runCommand,
 }
 
 #ifndef _WIN32
+bool Judge::isProcessRunning(pid_t pid)
+{
+    if (pid <= 0) return false;
+
+    // Use kill with signal 0 to check if process exists
+    // Returns 0 if process exists, -1 if not
+    return (kill(pid, 0) == 0);
+}
+
+void Judge::killProcessSafely(pid_t pid)
+{
+    if (pid <= 0) {
+        return; // Invalid PID, do nothing
+    }
+
+    // Double-check this is the exact PID we stored
+    if (pid != currentProcessPid.load()) {
+        return; // Safety check - don't kill if PID doesn't match
+    }
+
+    // Verify process exists before killing
+    if (!isProcessRunning(pid)) {
+        return; // Process already dead
+    }
+
+    // Send SIGTERM for graceful shutdown
+    if (kill(pid, SIGTERM) == 0) {
+        // Wait briefly for graceful shutdown
+        for (int i = 0; i < 5; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (!isProcessRunning(pid)) {
+                return; // Process terminated gracefully
+            }
+        }
+    }
+
+    // If still running, send SIGKILL
+    if (isProcessRunning(pid)) {
+        kill(pid, SIGKILL);
+    }
+}
+
 long long Judge::getProcessMemoryUsage(pid_t pid)
 {
     if (pid <= 0) return 0;
 
-    // Read from /proc/[pid]/status for VmRSS (Resident Set Size)
+           // Read from /proc/[pid]/status for VmRSS (Resident Set Size)
     std::string statusFile = "/proc/" + std::to_string(pid) + "/status";
     std::ifstream file(statusFile);
 
@@ -693,7 +736,7 @@ long long Judge::getProcessMemoryUsage(pid_t pid)
 
             iss >> label >> value >> unit;
 
-            // Value is typically in kB
+                   // Value is typically in kB
             memoryKB = value;
             break;
         }
@@ -719,42 +762,31 @@ long long Judge::getProcessMemoryUsageFast(pid_t pid)
     file >> vmSize >> rss;
     file.close();
 
-    // rss is in pages, convert to KB (assuming 4KB page size)
+           // rss is in pages, convert to KB (assuming 4KB page size)
     long long pageSize = sysconf(_SC_PAGESIZE) / 1024;
     return rss * pageSize;
 }
 
-
-
 #endif
-
 void Judge::stopJudge() {
     stopRequested.store(true);
 #ifdef _WIN32
     if (currentProcessHandle) {
         TerminateProcess(currentProcessHandle, 1);
         WaitForSingleObject(currentProcessHandle, 500);
-        if (currentThreadHandle) { CloseHandle(currentThreadHandle); currentThreadHandle = NULL; }
+        if (currentThreadHandle) {
+            CloseHandle(currentThreadHandle);
+            currentThreadHandle = NULL;
+        }
         CloseHandle(currentProcessHandle);
         currentProcessHandle = NULL;
     }
 #else
-    // Set the stop flag to signal the monitoring loop
-    stopRequested.store(true);
+    pid_t pid = currentProcessPid.load();
 
-    // Terminate process using PID
-    if (currentProcessPid > 0) {
-        // Send SIGTERM first (graceful termination)
-        kill(currentProcessPid, SIGTERM);
-
-        // Wait briefly for graceful shutdown
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-        // Check if process still exists
-        if (kill(currentProcessPid, 0) == 0) {
-            // Process still running, send SIGKILL (force kill)
-            kill(currentProcessPid, SIGKILL);
-        }
+    // Only kill if we have a valid PID
+    if (pid > 0) {
+        killProcessSafely(pid);
     }
 #endif
 }

@@ -18,6 +18,15 @@
 #include <windows.h>
 #include <psapi.h>
 #else
+#include <thread>
+#include <QString>
+#include <QStringList>
+#include <QThread>
+#include <QIODevice>
+#include <QProcess>
+#include <string>
+#include <atomic>
+#include <mutex>
 #include <QProcess>
 #include <QThread>
 #include <unistd.h>
@@ -34,6 +43,7 @@ class Judge
 {
 public:
     Judge();
+
 private:
 #ifdef _WIN32
     QString dirPath = "C:/SmartXM/230201/Editor/";
@@ -87,7 +97,15 @@ public:
     HANDLE currentProcessHandle = NULL;
     HANDLE currentThreadHandle = NULL;
 #else
-    pid_t currentPid = -1;
+private:
+    long long getProcessMemoryUsageFast(pid_t pid);
+    long long getProcessMemoryUsage(pid_t pid);
+
+    std::mutex processControlMutex;
+    std::atomic<pid_t> currentProcessPid{0};
+private:
+    bool isProcessRunning(pid_t pid);
+    void killProcessSafely(pid_t pid);
 #endif
 
 //test case information
@@ -122,11 +140,9 @@ private:
      std::atomic<bool> stopRequested{false};
 
 
-#ifndef _WIN32
-    pid_t currentProcessPid = 0;
-    long long getProcessMemoryUsage(pid_t pid);
-    long long getProcessMemoryUsageFast(pid_t pid);
-#endif
+
+
+
 
 };
 
