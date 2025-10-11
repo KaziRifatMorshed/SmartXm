@@ -379,6 +379,9 @@ int Judge::runWithTimeout(const std::string &runCommand,
 
     auto start = std::chrono::steady_clock::now();
 
+           // Track peak memory usage during execution
+    SIZE_T peakMemoryBytes = 0;
+
            // Poll loop with precise timing
     while (true) {
         // Check for job notifications (memory limit exceeded)
@@ -394,6 +397,26 @@ int Judge::runWithTimeout(const std::string &runCommand,
                     verdict = 3; // MLE
                     break;
                 }
+            }
+        }
+
+               // Monitor memory usage WHILE process is running
+        PROCESS_MEMORY_COUNTERS_EX pmcEx{};
+        pmcEx.cb = sizeof(pmcEx);
+        if (GetProcessMemoryInfo(pi.hProcess, (PROCESS_MEMORY_COUNTERS*)&pmcEx, sizeof(pmcEx))) {
+            // Track peak memory (PrivateUsage = commit charge)
+            if (pmcEx.PrivateUsage > peakMemoryBytes) {
+                peakMemoryBytes = pmcEx.PrivateUsage;
+            }
+
+            // Check if memory limit exceeded (in case job object didn't catch it)
+            SIZE_T currentMemoryKB = pmcEx.PrivateUsage / 1024;
+            if (currentMemoryKB > memoryLimitKB) {
+                TerminateProcess(pi.hProcess, 1);
+                WaitForSingleObject(pi.hProcess, 500);
+                verdict = 3; // MLE
+                processExited = true;
+                break;
             }
         }
 
@@ -440,15 +463,8 @@ int Judge::runWithTimeout(const std::string &runCommand,
     auto end = std::chrono::steady_clock::now();
     usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-           // Get memory usage - use PrivateUsage for most accurate virtual memory
-    PROCESS_MEMORY_COUNTERS_EX pmcEx{};
-    pmcEx.cb = sizeof(pmcEx);
-    if (GetProcessMemoryInfo(pi.hProcess, (PROCESS_MEMORY_COUNTERS*)&pmcEx, sizeof(pmcEx))) {
-        // PrivateUsage is the commit charge (best indicator of actual memory usage)
-        usedMemoryKB = pmcEx.PrivateUsage / 1024;
-    } else {
-        usedMemoryKB = 0;
-    }
+           // Use the peak memory we tracked during execution
+    usedMemoryKB = peakMemoryBytes / 1024;
 
            // Check stop request one more time before determining verdict
     if (stopRequested.load()) {
@@ -456,7 +472,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
     }
     // Determine verdict if not already set
     else if (verdict == -1) {
-        // Check memory limit first
+        // Check memory limit
         if (usedMemoryKB > memoryLimitKB) {
             verdict = 3; // MLE
         }
@@ -493,7 +509,6 @@ int Judge::runWithTimeout(const std::string &runCommand,
            // Ensure file flushed/unlocked by process
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return verdict;
-
 #else
 
 
