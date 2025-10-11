@@ -296,9 +296,9 @@ std::string Judge::executeCommand(std::string &command)
     return result;
 }
 
-int Judge::runWithTimeout(const std::string &exeFile,
-                          const std::string &inputFile,
-                          const std::string &outputFile,
+int Judge::runWithTimeout(const std::string &runCommand,
+                          std::string &inputFile,
+                          std::string &outputFile,
                           int timeLimitMS,
                           int memoryLimitKB,
                           long long &usedTimeMS,
@@ -337,7 +337,7 @@ int Judge::runWithTimeout(const std::string &exeFile,
     si.hStdOutput = si.hStdError = hOutput;
 
     PROCESS_INFORMATION pi{};
-    std::vector<char> cmdBuf(exeFile.begin(), exeFile.end());
+    std::vector<char> cmdBuf(runCommand.begin(), runCommand.end());
     cmdBuf.push_back('\0');
 
     if (!CreateProcessA(NULL, cmdBuf.data(), NULL, NULL, TRUE,
@@ -495,155 +495,238 @@ int Judge::runWithTimeout(const std::string &exeFile,
     return verdict;
 
 #else
-  // POSIX branch (Linux/Unix)
-    pid_t pid = fork();
-    if (pid == 0) {
-        // child process
+    std::cout<<runCommand<<std::endl;
 
-        // Set memory limit (virtual memory)
-        struct rlimit memLimit;
-        memLimit.rlim_cur = memLimit.rlim_max = (rlim_t)memoryLimitKB * 1024;
-        setrlimit(RLIMIT_AS, &memLimit);
+    QProcess process;
+    int verdict = -1;
+    bool processExited = false;
+    bool memoryLimitExceeded = false;
 
-               // Output redirection
-        int out = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (out < 0) _exit(1);
-
-               // Input redirection
-        if (inFlag) {
-            int in = open(inputFile.c_str(), O_RDONLY);
-            if (in < 0) _exit(1);
-            dup2(in, STDIN_FILENO);
-            close(in);
-        } else {
-            int devnull = open("/dev/null", O_RDONLY);
-            if (devnull < 0) _exit(1);
-            dup2(devnull, STDIN_FILENO);
-            close(devnull);
-        }
-
-        dup2(out, STDOUT_FILENO);
-        dup2(out, STDERR_FILENO);
-        close(out);
-
-               // Execute the program
-        execl("/bin/sh", "sh", "-c", exeFile.c_str(), (char *)NULL);
-        _exit(1); // Only reached if execl fails
+    // Set up input redirection
+    if (inFlag) {
+        process.setStandardInputFile(QString::fromStdString(inputFile));
+    } else {
+        process.setStandardInputFile("/dev/null");
     }
 
-    if (pid < 0) return -1; // fork failed
+    // Set up output redirection
+    process.setStandardOutputFile(QString::fromStdString(outputFile));
+    process.setStandardErrorFile(QString::fromStdString(outputFile), QIODevice::Append);
 
-           // parent process
-    currentPid = pid;
+    // Parse command for QProcess
+    QStringList args;
+    QString program;
+
+    // Better parsing that handles quoted strings
+    QString cmdStr = QString::fromStdString(runCommand);
+    QStringList parts;
+
+    QString current;
+    bool inQuotes = false;
+    QChar quoteChar;
+
+    for (int i = 0; i < cmdStr.length(); ++i) {
+        QChar c = cmdStr[i];
+
+        if (!inQuotes && (c == '"' || c == '\'')) {
+            inQuotes = true;
+            quoteChar = c;
+        } else if (inQuotes && c == quoteChar) {
+            inQuotes = false;
+        } else if (!inQuotes && c == ' ') {
+            if (!current.isEmpty()) {
+                parts << current;
+                current.clear();
+            }
+        } else {
+            current += c;
+        }
+    }
+
+    if (!current.isEmpty()) {
+        parts << current;
+    }
+
+    if (parts.isEmpty()) {
+        return -1;
+    }
+
+    program = parts[0];
+    for (int i = 1; i < parts.size(); ++i) {
+        args << parts[i];
+    }
+
+    // Start the process
+    process.start(program, args);
+
+    if (!process.waitForStarted(1000)) {
+        return -1; // Failed to start
+    }
+
+    pid_t pid = process.processId();
+    currentProcessPid = pid;
+
     auto start = std::chrono::steady_clock::now();
-    int status = 0;
-    long long localUsedMemoryKB = 0;
 
+    // Monitoring loop with precise timing
     while (true) {
         // Check stop request first - highest priority
         if (stopRequested.load()) {
-            kill(pid, SIGKILL);
-            waitpid(pid, nullptr, 0);
-            currentPid = -1;
-            stopRequested.store(false);
-
-            auto end = std::chrono::steady_clock::now();
-            usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            usedMemoryKB = 0;
-            return 5;
+            process.kill();
+            process.waitForFinished(500);
+            verdict = 5;
+            processExited = true;
+            break;
         }
 
-               // Check time limit
+        // Check if process is still running
+        if (process.state() == QProcess::NotRunning) {
+            processExited = true;
+            break;
+        }
+
+        // Calculate elapsed time
         auto now = std::chrono::steady_clock::now();
         long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
 
+        // Check memory usage
+        long long currentMemoryKB = getProcessMemoryUsage(pid);
+        if (currentMemoryKB > memoryLimitKB) {
+            process.kill();
+            process.waitForFinished(500);
+            verdict = 3; // MLE
+            memoryLimitExceeded = true;
+            processExited = true;
+            break;
+        }
+
+        // Check time limit
         if (elapsed >= timeLimitMS) {
-            // Time limit exceeded
-            kill(pid, SIGKILL);
-            waitpid(pid, nullptr, 0);
-            currentPid = -1;
-            usedTimeMS = elapsed;
-            usedMemoryKB = 0;
-            return 2; // TLE
+            process.kill();
+            process.waitForFinished(500);
+            verdict = 2; // TLE
+            processExited = true;
+            break;
         }
 
-               // Check if child process has exited
-        struct rusage usage;
-        pid_t r = wait4(pid, &status, WNOHANG, &usage);
+        // Wait for a short period or remaining time
+        int waitTime = std::min(10LL, timeLimitMS - elapsed);
+        process.waitForFinished(waitTime);
+    }
 
-        if (r == 0) {
-            // Still running, continue polling
-            usleep(10000); // 10ms
-        }
-        else if (r == pid) {
-            // Child exited
-            auto end = std::chrono::steady_clock::now();
-            usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    auto end = std::chrono::steady_clock::now();
+    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-// Get memory usage (ru_maxrss is in KB on Linux, bytes on macOS)
-#ifdef __APPLE__
-            localUsedMemoryKB = usage.ru_maxrss / 1024;
-#else
-            localUsedMemoryKB = usage.ru_maxrss;
-#endif
+    // Get final memory usage
+    usedMemoryKB = getProcessMemoryUsage(pid);
 
-            usedMemoryKB = localUsedMemoryKB;
-            currentPid = -1;
+    // Check stop request one more time before determining verdict
+    if (stopRequested.load()) {
+        verdict = 5;
+    }
+    // Determine verdict if not already set
+    else if (verdict == -1) {
+        // Check memory limit first
+        if (usedMemoryKB > memoryLimitKB) {
+            verdict = 3; // MLE
+        } else {
+            int exitCode = process.exitCode();
+            QProcess::ExitStatus exitStatus = process.exitStatus();
+            QProcess::ProcessError error = process.error();
 
-                   // Check stop request one final time before returning verdict
-            if (stopRequested.load()) {
-                stopRequested.store(false);
-                return 5;
-            }
-
-                   // Check if killed by signal (usually SIGKILL/SIGSEGV for memory limit)
-            if (WIFSIGNALED(status)) {
-                int sig = WTERMSIG(status);
-                // SIGKILL, SIGABRT, or SIGSEGV often indicates memory issues
-                if (sig == SIGKILL || sig == SIGABRT || sig == SIGSEGV) {
-                    // Likely MLE if memory usage is high or limit was tight
-                    if (localUsedMemoryKB > memoryLimitKB * 0.8) {
-                        return 3; // MLE
+            // Check for abnormal termination
+            if (exitStatus == QProcess::CrashExit) {
+                // Check if it was a memory-related crash
+                if (exitCode == 9 || exitCode == 11) { // SIGKILL or SIGSEGV
+                    // Could be memory related, check memory usage
+                    if (usedMemoryKB > memoryLimitKB * 0.95) { // 95% threshold
+                        verdict = 3; // MLE
+                    } else {
+                        verdict = 1; // Runtime Error
                     }
+                } else {
+                    verdict = 1; // Runtime Error
                 }
-                return 1; // Runtime error (killed by signal)
+            } else {
+                // Normal exit - check exit code
+                // Python returns 0 for success, non-zero for errors
+                verdict = (exitCode == 0) ? 0 : 1;
             }
-
-                   // Check memory limit
-            if (localUsedMemoryKB > memoryLimitKB) {
-                return 3; // MLE
-            }
-
-                   // Check exit status
-            if (WIFEXITED(status)) {
-                int exitStatus = WEXITSTATUS(status);
-                return (exitStatus == 0) ? 0 : 1;
-            }
-
-            return 1; // Runtime error
         }
-        else {
-            // wait4 returned error
+    }
+
+    // Cleanup
+    currentProcessPid = 0;
+    stopRequested.store(false);
+
+    // Ensure file flushed
+    QThread::msleep(100);
+
+    return verdict;
+
+#endif
+}
+
+#ifndef _WIN32
+long long Judge::getProcessMemoryUsage(pid_t pid)
+{
+    if (pid <= 0) return 0;
+
+    // Read from /proc/[pid]/status for VmRSS (Resident Set Size)
+    std::string statusFile = "/proc/" + std::to_string(pid) + "/status";
+    std::ifstream file(statusFile);
+
+    if (!file.is_open()) {
+        return 0;
+    }
+
+    std::string line;
+    long long memoryKB = 0;
+
+    while (std::getline(file, line)) {
+        // Look for VmRSS (Resident Set Size - actual physical memory used)
+        if (line.find("VmRSS:") == 0) {
+            std::istringstream iss(line);
+            std::string label;
+            long long value;
+            std::string unit;
+
+            iss >> label >> value >> unit;
+
+            // Value is typically in kB
+            memoryKB = value;
             break;
         }
     }
 
-           // Error case - cleanup and check stop request
-    kill(pid, SIGKILL);
-    waitpid(pid, nullptr, 0);
-    currentPid = -1;
-
-    auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    usedMemoryKB = 0;
-
-    if (stopRequested.load()) {
-        stopRequested.store(false);
-        return 5;
-    }
-    return 1;
-#endif
+    file.close();
+    return memoryKB;
 }
+
+// Alternative helper function using /proc/[pid]/statm (faster but less detailed)
+long long Judge::getProcessMemoryUsageFast(pid_t pid)
+{
+    if (pid <= 0) return 0;
+
+    std::string statmFile = "/proc/" + std::to_string(pid) + "/statm";
+    std::ifstream file(statmFile);
+
+    if (!file.is_open()) {
+        return 0;
+    }
+
+    long long vmSize, rss;
+    file >> vmSize >> rss;
+    file.close();
+
+    // rss is in pages, convert to KB (assuming 4KB page size)
+    long long pageSize = sysconf(_SC_PAGESIZE) / 1024;
+    return rss * pageSize;
+}
+
+
+
+#endif
 
 void Judge::stopJudge() {
     stopRequested.store(true);
@@ -656,10 +739,22 @@ void Judge::stopJudge() {
         currentProcessHandle = NULL;
     }
 #else
-    if (currentPid > 0) {
-        kill(currentPid, SIGKILL);
-        waitpid(currentPid, nullptr, 0);
-        currentPid = -1;
+    // Set the stop flag to signal the monitoring loop
+    stopRequested.store(true);
+
+    // Terminate process using PID
+    if (currentProcessPid > 0) {
+        // Send SIGTERM first (graceful termination)
+        kill(currentProcessPid, SIGTERM);
+
+        // Wait briefly for graceful shutdown
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Check if process still exists
+        if (kill(currentProcessPid, 0) == 0) {
+            // Process still running, send SIGKILL (force kill)
+            kill(currentProcessPid, SIGKILL);
+        }
     }
 #endif
 }
@@ -695,7 +790,8 @@ Verdict Judge::runOnSingleTestCase()
         exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
         compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #else
-        exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
+
+        exeFile = "\"" + directoryPath + "./" + filename +"-judge.out"+"\"";
         compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
@@ -727,10 +823,7 @@ Verdict Judge::runOnSingleTestCase()
 
     int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
                                 cpuTime,memorySize,inputFlag);
-    if(0!=status)
-    {
-        std::remove(outputFile.c_str());
-    }
+
     if(status==0)
     {
       //Succeess Execution
@@ -772,7 +865,7 @@ Verdict Judge::runOnSingleTestCase()
         std::string s1((std::istreambuf_iterator<char>(out)), {});
         std::string s2((std::istreambuf_iterator<char>(exp)), {});
 
-        std::remove(outputFile.c_str());
+
         if (normalize(s1) == normalize(s2))
         {
             return Verdict("Accepted",cpuTime,memorySize);

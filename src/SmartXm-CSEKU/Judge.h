@@ -10,6 +10,7 @@
 #include <vector>
 #include <filesystem>
 #include <atomic>
+#include<chrono>
 
 #include "verdict.h"
 
@@ -17,9 +18,13 @@
 #include <windows.h>
 #include <psapi.h>
 #else
+#include <QProcess>
+#include <QThread>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/resource.h>
 #include <sys/wait.h>
+#include <sys/ptrace.h>
 #include <signal.h>
 #include <fcntl.h>
 #endif
@@ -53,8 +58,8 @@ private:
     std::string runHiddenCommand(const std::string &cmd);
 
     int runWithTimeout(const std::string &exeFile,
-                              const std::string &inputFile,
-                              const std::string &outputFile,
+                               std::string &inputFile,
+                               std::string &outputFile,
                               int timeLimitMS,
                               int memoryLimitKB,
                               long long &usedTimeMS,
@@ -89,6 +94,7 @@ public:
 private:
     std::string currentTestCaseNo;
     int numberOfTotalTestCase;
+    bool stop_flag;
 public:
     void setCurrentTestCaseNo(const std::string & testCase);
     void setNumberOfTotalTestCase(int totalTestCase);
@@ -114,6 +120,13 @@ public:
     void setJudgeInfo(const std::vector<double> &judgeInfo);
 private:
      std::atomic<bool> stopRequested{false};
+
+
+#ifndef _WIN32
+    pid_t currentProcessPid = 0;
+    long long getProcessMemoryUsage(pid_t pid);
+    long long getProcessMemoryUsageFast(pid_t pid);
+#endif
 
 };
 

@@ -48,8 +48,8 @@ private:
     QString dirPath = "C:/SmartXM/230201/Editor/";
     QString systemDirPath = "C:/SmartXM/230201/System/";
 #else
-    QString dirPath = "/SmartXM/230201/Editor/";
-    QString systemDirPath = "/SmartXM/230201/System/";
+    QString dirPath = "/SmartXm/230201/Editor/";
+    QString systemDirPath = "/SmartXm/230201/System/";
 #endif
 
     std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
