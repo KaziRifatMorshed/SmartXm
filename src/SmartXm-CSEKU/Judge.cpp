@@ -667,6 +667,28 @@ int Judge::runWithTimeout(const std::string &runCommand,
 
 #endif
 }
+void Judge::stopJudge() {
+    stopRequested.store(true);
+#ifdef _WIN32
+    if (currentProcessHandle) {
+        TerminateProcess(currentProcessHandle, 1);
+        WaitForSingleObject(currentProcessHandle, 500);
+        if (currentThreadHandle) {
+            CloseHandle(currentThreadHandle);
+            currentThreadHandle = NULL;
+        }
+        CloseHandle(currentProcessHandle);
+        currentProcessHandle = NULL;
+    }
+#else
+    pid_t pid = currentProcessPid.load();
+
+           // Only kill if we have a valid PID
+    if (pid > 0) {
+        killProcessSafely(pid);
+    }
+#endif
+}
 
 #ifndef _WIN32
 bool Judge::isProcessRunning(pid_t pid)
@@ -695,18 +717,11 @@ void Judge::killProcessSafely(pid_t pid)
     }
 
     // Send SIGTERM for graceful shutdown
-    if (kill(pid, SIGTERM) == 0) {
-        // Wait briefly for graceful shutdown
-        for (int i = 0; i < 5; ++i) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            if (!isProcessRunning(pid)) {
-                return; // Process terminated gracefully
-            }
-        }
-    }
+    kill(pid, SIGTERM);
 
     // If still running, send SIGKILL
     if (isProcessRunning(pid)) {
+
         kill(pid, SIGKILL);
     }
 }
@@ -768,28 +783,6 @@ long long Judge::getProcessMemoryUsageFast(pid_t pid)
 }
 
 #endif
-void Judge::stopJudge() {
-    stopRequested.store(true);
-#ifdef _WIN32
-    if (currentProcessHandle) {
-        TerminateProcess(currentProcessHandle, 1);
-        WaitForSingleObject(currentProcessHandle, 500);
-        if (currentThreadHandle) {
-            CloseHandle(currentThreadHandle);
-            currentThreadHandle = NULL;
-        }
-        CloseHandle(currentProcessHandle);
-        currentProcessHandle = NULL;
-    }
-#else
-    pid_t pid = currentProcessPid.load();
-
-    // Only kill if we have a valid PID
-    if (pid > 0) {
-        killProcessSafely(pid);
-    }
-#endif
-}
 
 Verdict Judge::runOnSingleTestCase()
 {
