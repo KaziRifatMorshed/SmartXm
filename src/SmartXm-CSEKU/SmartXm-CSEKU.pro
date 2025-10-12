@@ -14,6 +14,10 @@ win32:LIBS += -lws2_32 \
 SOURCES += \
     Users.cpp \
     codeRunner.cpp \
+    CodeRunnerWorker.cpp \
+    Judge.cpp \
+    JudgeWorker.cpp \
+    JudgeWorker2.cpp \
     db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
@@ -32,6 +36,11 @@ SOURCES += \
 
 HEADERS += \
     ClientInfo.h \
+    codeRunner.h \
+    CodeRunnerWorker.h \
+    Judge.h \
+    JudgeWorker.h \
+    JudgeWorker2.h \
     Message.h \
     Student.h \
     TerminalExecuter.h \
@@ -47,6 +56,7 @@ HEADERS += \
     studentmodulev2.h \
     teachermodule.h \
     toast.h \
+    verdict.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
