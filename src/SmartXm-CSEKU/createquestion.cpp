@@ -108,12 +108,18 @@ void CreateQuestion::on_save_pushButton_clicked()
     createFolder();
 
     // Write complete question to a HTML
-    writeQuestionToHTML();
 
-    // Convert html to pdf
-    QString questionName = ui->quesTitle_lineEdit->text();
+    if (ui->typeQuestionManually_radioButton->isChecked()) {
+        writeQuestionToHTML();
 
-    convertHtmlToPdf(path + questionName + ".html", path + questionName + ".pdf");
+        // Convert html to pdf
+        QString questionName = ui->quesTitle_lineEdit->text();
+
+        convertHtmlToPdf(path + questionName + ".html", path + questionName + ".pdf");
+    }
+    else {
+        QMessageBox::warning(this, "Warning", "Saving pdf is not implemented yet");
+    }
 
     // Save the testcases
     // Save checker
@@ -201,5 +207,40 @@ void CreateQuestion::on_saveEditorial_pushButton_2_clicked()
     convertHtmlToPdf(path + fileName, path + outFileName);
 
     ToastManager::showMessage(this, "Saved as: " + outFileName);
+}
+
+
+void CreateQuestion::on_radioButton_clicked()
+{
+    ui->UpQuesStatePDF_pushButton_2->setEnabled(false);
+    ui->groupBox_typeQuestionManually->setEnabled(true);
+}
+
+
+void CreateQuestion::on_typeQuestionManually_radioButton_clicked()
+{
+    ui->UpQuesStatePDF_pushButton_2->setEnabled(false);
+    ui->groupBox_typeQuestionManually->setEnabled(true);
+}
+
+
+void CreateQuestion::on_uploadPdf_radioButton_clicked()
+{
+    ui->groupBox_typeQuestionManually->setEnabled(false);
+    ui->UpQuesStatePDF_pushButton_2->setEnabled(true);
+}
+
+
+void CreateQuestion::on_inputTypeManually_radioButton_4_clicked()
+{
+    ui->inoutSelectFile_pushButton_2->setEnabled(false);
+    ui->inputOfTestCase___textEdit->setEnabled(true);
+}
+
+
+void CreateQuestion::on_inputSeleceFile_radioButton_4_clicked()
+{
+    ui->inoutSelectFile_pushButton_2->setEnabled(true);
+    ui->inputOfTestCase___textEdit->setEnabled(false);
 }
 

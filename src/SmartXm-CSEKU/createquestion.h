@@ -23,6 +23,16 @@ private slots:
 
     void on_saveEditorial_pushButton_2_clicked();
 
+    void on_radioButton_clicked();
+
+    void on_typeQuestionManually_radioButton_clicked();
+
+    void on_uploadPdf_radioButton_clicked();
+
+    void on_inputTypeManually_radioButton_4_clicked();
+
+    void on_inputSeleceFile_radioButton_4_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
