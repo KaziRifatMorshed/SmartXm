@@ -1,4 +1,4 @@
-QT       += core gui sql network concurrent pdfwidgets webenginecore
+QT       += core gui sql network concurrent pdfwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

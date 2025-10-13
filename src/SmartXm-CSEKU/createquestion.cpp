@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <toast.h>
-#include <QWebEnginePage>
+// #include <QWebEnginePage>
 #include <string>
 
 CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) { ui->setupUi(this); }
@@ -82,25 +82,25 @@ void CreateQuestion::writeQuestionToHTML()
 
 void CreateQuestion::convertHtmlToPdf(QString source, QString destination)
 {
-    QWebEnginePage *page = new QWebEnginePage;
+    // QWebEnginePage *page = new QWebEnginePage;
 
-    QFile htmlFile(source);
-    if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "Failed to open HTML file:" << source;
-        return;
-    }
+    // QFile htmlFile(source);
+    // if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    //     qDebug() << "Failed to open HTML file:" << source;
+    //     return;
+    // }
 
-    QString htmlContent = htmlFile.readAll();
+    // QString htmlContent = htmlFile.readAll();
 
-    page->setHtml(htmlContent);
+    // page->setHtml(htmlContent);
 
-    QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
-        if (ok) {
-            page->printToPdf(destination);
-        } else {
-            qDebug() << "Failed to load HTML content from file:" << source;
-        }
-    });
+    // QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
+    //     if (ok) {
+    //         page->printToPdf(destination);
+    //     } else {
+    //         qDebug() << "Failed to load HTML content from file:" << source;
+    //     }
+    // });
 }
 
 void CreateQuestion::on_save_pushButton_clicked()
