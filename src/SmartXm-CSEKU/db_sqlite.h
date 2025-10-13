@@ -10,6 +10,7 @@
 #include <QtSql/QSqlQuery>
 
 class SQliteDB {
+
 public:
   static SQliteDB *cacheDbInstance;
 
