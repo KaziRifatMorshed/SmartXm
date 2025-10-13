@@ -33,6 +33,8 @@ private slots:
 
     void on_inputSeleceFile_radioButton_4_clicked();
 
+    void on_RunSolution_execute_pushButton_2_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
