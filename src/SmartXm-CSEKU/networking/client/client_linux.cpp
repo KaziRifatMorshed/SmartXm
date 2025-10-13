@@ -100,7 +100,9 @@ void file_receive_loop(int sock_fd) {
                 }
 
             } else if (meta.message == "questions.tar") {
-                save_name = "./examResources/questions." + meta.extension;
+                std::string temp_save = "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/";
+                save_name = temp_save + "questions." + meta.extension;
+                // save_name = "./examResources/questions." + meta.extension;
 #ifdef DEBUG_ON
                 std::cout << "[FileReceiver] Saving as questions.tar." << meta.extension << std::endl;
 #endif

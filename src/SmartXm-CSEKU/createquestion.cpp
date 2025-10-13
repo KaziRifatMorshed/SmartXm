@@ -268,3 +268,35 @@ void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
     // code here
 }
 
+
+void CreateQuestion::on_newTestCaseINPUT_comboBox_currentIndexChanged(int index)
+{
+    switch (index) {
+    case 0:
+        ui->inputOfTestCase___textEdit->setEnabled(true);
+        ui->inoutSelectFile_pushButton_2->setEnabled(false);
+        break;
+    case 1:
+        ui->inputOfTestCase___textEdit->setEnabled(false);
+        ui->inoutSelectFile_pushButton_2->setEnabled(true);
+    default:
+        break;
+    }
+}
+
+
+void CreateQuestion::on_testcaseOutput_comboBox_currentIndexChanged(int index)
+{
+    switch (index) {
+    case 0:
+        ui->outputOfTestCase__textEdit->setEnabled(true);
+        ui->outputSelectFile_pushButton_3->setEnabled(false);
+        break;
+    case 1:
+        ui->outputOfTestCase__textEdit->setEnabled(false);
+        ui->outputSelectFile_pushButton_3->setEnabled(true);
+    default:
+        break;
+    }
+}
+

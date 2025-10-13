@@ -30,7 +30,7 @@ bool TarHandler::createTar(const string &tarName, const vector<string> &files)
 
 bool TarHandler::extractTar(string path, string tarName)
 {
-    string cmd = "cd " + path + "&& tar -xf '" + tarName + "'";
+    string cmd = "cd /home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources && tar -xf questions.tar";
     int ret = system(cmd.c_str());
     if (ret != 0)
     {

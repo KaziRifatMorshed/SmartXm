@@ -35,6 +35,10 @@ private slots:
 
     void on_RunSolution_execute_pushButton_2_clicked();
 
+    void on_newTestCaseINPUT_comboBox_currentIndexChanged(int index);
+
+    void on_testcaseOutput_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
