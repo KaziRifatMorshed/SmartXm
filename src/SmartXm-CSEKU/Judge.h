@@ -46,11 +46,11 @@ public:
 
 private:
 #ifdef _WIN32
-    QString dirPath = "C:/SmartXM/230201/Editor/";
-    QString systemDirPath = "C:/SmartXM/230201/System/";
+    QString dirPath = "C:/SmartXm/230201/Editor/";
+    QString systemDirPath = "C:/SmartXm/230201/System/";
 #else
-    QString dirPath = "/SmartXM/230201/Editor/";
-    QString systemDirPath = "/SmartXM/230201/System/";
+    QString dirPath = "/SmartXm/230201/Editor/";
+    QString systemDirPath = "/SmartXm/230201/System/";
 #endif
 
 private:
