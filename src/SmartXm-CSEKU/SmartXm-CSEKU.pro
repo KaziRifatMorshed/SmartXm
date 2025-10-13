@@ -18,6 +18,13 @@ SOURCES += \
     JudgeWorker2.cpp \
     Users.cpp \
     codeRunner.cpp \
+    createormodifyexam.cpp \
+    createquestion.cpp \
+    db_sqlite.cpp \
+    CodeRunnerWorker.cpp \
+    Judge.cpp \
+    JudgeWorker.cpp \
+    JudgeWorker2.cpp \
     db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
@@ -44,6 +51,8 @@ HEADERS += \
     Message.h \
     Student.h \
     TerminalExecuter.h \
+    createormodifyexam.h \
+    createquestion.h \
     Users.h \
     codeRunner.h \
     csv.h \
@@ -63,6 +72,8 @@ HEADERS += \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    createormodifyexam.ui \
+    createquestion.ui \
     ide.ui \
     studentmodulev2.ui \
     runtestcases.ui \

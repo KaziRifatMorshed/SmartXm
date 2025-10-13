@@ -90,7 +90,7 @@ rule CXX_MODULE_LIBRARY_LINKER__QSQLiteDriverPlugin_RelWithDebInfo
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake --regenerate-during-build -S/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers -B/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX
+  command = /usr/bin/cmake --regenerate-during-build -S/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers -B/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX
   description = Re-running CMake...
   generator = 1
 

@@ -2,23 +2,23 @@
 	"BUILD_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/mysql/QMYSQLDriverPlugin_autogen",
 	"CMAKE_BINARY_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX",
 	"CMAKE_CURRENT_BINARY_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/mysql",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql/CMakeLists.txt",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/QtPluginConfig.cmake.in",
+		"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql/CMakeLists.txt",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/QtPluginConfig.cmake.in",
 		"/usr/share/cmake/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/QtCMakePackageVersionFile.cmake.in"
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/QtCMakePackageVersionFile.cmake.in"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers",
+	"CMAKE_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers",
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/mysql/QMYSQLDriverPlugin_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "QMYSQLDriverPlugin_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql/qsql_mysql_p.h",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql/qsql_mysql_p.h",
 			"Mu",
 			"EWIEGA46WW/moc_qsql_mysql_p.cpp",
 			null
@@ -61,18 +61,18 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql",
+		"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql",
 		"/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/mysql",
 		"/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/include",
 		"/usr/include/mysql",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/mkspecs/linux-g++",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore/6.9.2",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore/6.9.2/QtCore",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql/6.9.2",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql/6.9.2/QtSql",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/mkspecs/linux-g++",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore/6.9.3",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore/6.9.3/QtCore",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql/6.9.3",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql/6.9.3/QtSql",
 		"/usr/include/c++/15.2.1",
 		"/usr/include/c++/15.2.1/x86_64-pc-linux-gnu",
 		"/usr/include/c++/15.2.1/backward",
@@ -107,7 +107,7 @@
 	"MULTI_CONFIG" : false,
 	"PARALLEL" : 6,
 	"PARSE_CACHE_FILE" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/mysql/CMakeFiles/QMYSQLDriverPlugin_autogen.dir/ParseCache.txt",
-	"QT_MOC_EXECUTABLE" : "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/libexec/moc",
+	"QT_MOC_EXECUTABLE" : "/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/libexec/moc",
 	"QT_UIC_EXECUTABLE" : "",
 	"QT_VERSION_MAJOR" : 6,
 	"QT_VERSION_MINOR" : 9,
@@ -115,12 +115,12 @@
 	"SOURCES" : 
 	[
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql/main.cpp",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql/main.cpp",
 			"Mu",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/mysql/qsql_mysql.cpp",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/mysql/qsql_mysql.cpp",
 			"Mu",
 			null
 		]

@@ -16,6 +16,7 @@ class WelcomeWindow;
 }
 QT_END_NAMESPACE
 
+
 class WelcomeWindow : public QMainWindow
 {
     Q_OBJECT

@@ -1,147 +1,186 @@
 #ifndef DB_SQLITE_H
 #define DB_SQLITE_H
 
-// INCOMPLETE
-
+#include <QDateTime>
 #include <QDebug>
 #include <QString>
 #include <QVariant>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
-#include <csv.h>
-#include <string>
-
-/*
-Database Design:
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL, -- STORED AS RAW/PLAIN TEXT (NOT HASHED)
-    student_id TEXT UNIQUE,
-    role TEXT NOT NULL DEFAULT 'Student' CHECK(role IN ('Teacher', 'Student')),
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-*/
 
 class SQliteDB {
-private:
-  static QSqlDatabase db;
 
 public:
-  SQliteDB() {
-    if (!db.isValid()) {
-      db = QSqlDatabase::addDatabase("QSQLITE");
+  static SQliteDB *cacheDbInstance;
+
+  // Get the singleton instance
+  static SQliteDB *instance() {
+    if (!cacheDbInstance) {
+      qDebug() << "[CACHE] local cache db started";
+      cacheDbInstance = new SQliteDB();
     }
+    return cacheDbInstance;
   }
 
-  ~SQliteDB() {
-    if (db.isOpen()) {
-      db.close();
-    }
-  }
+  // Delete copy and assignment
+  SQliteDB(const SQliteDB &) = delete;
+  SQliteDB &operator=(const SQliteDB &) = delete;
 
-  bool initDB(const QString &dbName) {
-    if (!db.isOpen()) {
-      db.setDatabaseName(dbName);
-      if (!db.open()) {
-        qDebug() << "Error: " << db.lastError().text();
-        return false;
-      }
-    }
-    return true;
-  }
-
-  bool createTable() { // though not necessary
-    QSqlQuery query;
-    if (!query.exec("CREATE TABLE IF NOT EXISTS users ("
-                    "id INTEGER PRIMARY KEY,"
-                    "name TEXT NOT NULL,"
-                    "email TEXT NOT NULL UNIQUE,"
-                    "password TEXT NOT NULL,"
-                    "student_id TEXT UNIQUE,"
-                    "role TEXT NOT NULL DEFAULT 'Student' CHECK(role IN "
-                    "('Teacher', 'Student')),"
-                    "created_at TEXT DEFAULT CURRENT_TIMESTAMP)")) {
-      qDebug() << "Create table failed:" << query.lastError().text();
-      return false;
-    }
-    return true;
-  }
-
-  bool insertUser(int id, const QString &name, const QString &email,
-                  const QString &password, const QString &student_id,
-                  const QString &role, const QString &created_at) {
-    QSqlQuery query;
-    query.prepare("INSERT OR REPLACE INTO users (id, name, email, password, "
-                  "student_id, role, created_at) "
-                  "VALUES (?, ?, ?, ?, ?, ?, ?)");
-    query.addBindValue(id);
-    query.addBindValue(name);
-    query.addBindValue(email);
-    query.addBindValue(password);
-    query.addBindValue(student_id);
-    query.addBindValue(role);
-    query.addBindValue(created_at);
-    if (!query.exec()) {
-      qDebug() << "Insert failed:" << query.lastError().text();
-      return false;
-    }
-    return true;
-  }
-
-  // Reads user data from CSV and inserts into DB
-  bool insertDataFromCSV(const QString &csvPath) {
-    try {
-      io::CSVReader<7, io::trim_chars<>, io::double_quote_escape<',', '\"'>> in(
-          csvPath.toStdString());
-      in.read_header(io::ignore_extra_column, "id", "name", "email", "password",
-                     "student_id", "role", "created_at");
-      std::string id, name, email, password, student_id, role, created_at;
-      int insertCount = 0;
-      while (in.read_row(id, name, email, password, student_id, role,
-                         created_at)) {
-        bool ok = insertUser(
-            QString::fromStdString(id).toInt(), QString::fromStdString(name),
-            QString::fromStdString(email), QString::fromStdString(password),
-            QString::fromStdString(student_id), QString::fromStdString(role),
-            QString::fromStdString(created_at));
-        if (ok)
-          insertCount++;
-      }
-      qDebug() << "Inserted" << insertCount << "users from CSV.";
+  // Open the database (encrypted with SQLCipher)
+  bool openDB(
+      const QString &dbPath = "./db/cache.sqlite"
+      // ,const QString &passphrase = "S3Jc>P(f*$.&E$!j+.c"
+      ) {
+    if (db.isOpen())
       return true;
-    } catch (const std::exception &e) {
-      qDebug() << "CSV import failed:" << e.what();
+
+    qDebug() << "opening db sqlite...";
+
+    QList listOfDrivers = QSqlDatabase::drivers();
+    qDebug() << listOfDrivers;
+
+    const QString connectionName = "cache_connection";
+    if (QSqlDatabase::contains(connectionName)) {
+        db = QSqlDatabase::database(connectionName);
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+        db.setDatabaseName(dbPath);
+    }
+
+    if (!db.open()) {
+      qCritical() << "Failed to open SQLite DB:" << db.lastError().text();
       return false;
     }
+
+    /*
+    // Set SQLCipher key
+    QSqlQuery pragmaQuery(db);
+    if (!pragmaQuery.exec(QString("PRAGMA key = '%1';").arg(passphrase))) {
+      qCritical() << "Failed to set SQLCipher key:"
+                  << pragmaQuery.lastError().text();
+      db.close();
+      return false;
+    }
+
+    // Optionally set SQLCipher4 defaults for compatibility
+    pragmaQuery.exec("PRAGMA cipher_compatibility = 4;");
+    */
+
+    printAllData();
+
+    return true;
   }
 
-  // Prints all data from the 'users' table
-  void printData() {
-    QSqlQuery query("SELECT id, name, email, password, student_id, role, "
-                    "created_at FROM users");
-    if (!query.exec()) {
-      qDebug() << "Select failed:" << query.lastError().text();
-      return;
+  // Execute a query and return QSqlQuery object
+  QSqlQuery execQuery(const QString &queryStr) {
+    QSqlQuery query(db);
+    if (!query.exec(queryStr)) {
+      qCritical() << "Query failed:" << queryStr
+                  << "Error:" << query.lastError().text();
     }
-    while (query.next()) {
-      int id = query.value(0).toInt();
-      QString name = query.value(1).toString();
-      QString email = query.value(2).toString();
-      QString password = query.value(3).toString();
-      QString student_id = query.value(4).toString();
-      QString role = query.value(5).toString();
-      QString created_at = query.value(6).toString();
-      qDebug() << "id:" << id << "name:" << name << "email:" << email
-               << "password:" << password << "student_id:" << student_id
-               << "role:" << role << "created_at:" << created_at;
-    }
+    return query;
   }
+
+  // Check if DB is open
+  bool isOpen() const { return db.isOpen(); }
+
+  // Close the database connection
+  void closeDB() {
+    if (db.isOpen())
+      db.close();
+  }
+
+  // Insert login cache entry
+  bool insertLoginCache(int user_id, const std::string &identity,
+                        const std::string &id, const std::string &user_mail,
+                        const std::string &last_login_time) {
+    qDebug() << "inserting Login Cache ";
+    QSqlQuery insertionQuery(db);
+    insertionQuery.prepare("INSERT INTO login_cache (user_id, identity, id, "
+                           "user_mail, last_login_time) "
+                           "VALUES (?, ?, ?, ?, ?);");
+    insertionQuery.addBindValue(user_id);
+    insertionQuery.addBindValue(QString::fromStdString(identity));
+    insertionQuery.addBindValue(QString::fromStdString(id));
+    insertionQuery.addBindValue(QString::fromStdString(user_mail));
+    insertionQuery.addBindValue(QString::fromStdString(last_login_time));
+
+    if (!insertionQuery.exec()) {
+      qCritical() << "Failed to insert into sqlite cache:"
+                  << insertionQuery.lastError().text();
+      return false;
+    }
+    return true;
+  }
+
+  /*
+   * if last login was within 3 hours from current time, return true, else false
+   */
+  bool checkLastLogin() {
+    QSqlQuery query(db);
+    // Assuming there's only one user or you have a way to get the current
+    // user's id Replace 'user_id' with the actual user id if needed
+    // query.prepare("SELECT last_login_time FROM login_cache WHERE user_id =
+    // ?"); query.addBindValue(currentUserId); // Replace with your variable for
+    // user id
+    query.prepare("SELECT last_login_time FROM login_cache ORDER BY "
+                  "last_login_time DESC LIMIT 1");
+
+    if (!query.exec() || !query.next()) {
+      qCritical() << "Failed to fetch last_login_time:"
+                  << query.lastError().text();
+      return false;
+    }
+
+    QString lastLoginStr = query.value(0).toString();
+    QDateTime lastLogin = QDateTime::fromString(lastLoginStr, Qt::ISODate);
+    QDateTime now = QDateTime::currentDateTime();
+
+    if (!lastLogin.isValid()) {
+      qCritical() << "Invalid last_login_time format:" << lastLoginStr;
+      return false;
+    }
+
+    qint64 secondsDiff = lastLogin.secsTo(now);
+    return (secondsDiff <= (3 * 3600)); // 3 hours in seconds
+  }
+
+  void printAllData() {
+      if (!db.isOpen()) {
+          qWarning() << "Database not open in printAllData()";
+          return;
+      }
+
+      QSqlQuery fetchAllData(db);
+      if (!fetchAllData.exec("SELECT * FROM login_cache;")) {
+          qCritical() << "Failed to fetch data:" << fetchAllData.lastError().text();
+          return;
+      }
+
+      bool hasRows = false;
+      while (fetchAllData.next()) {
+          hasRows = true;
+          qDebug() << "SQLITE :: Row:"
+                   << "user_id:" << fetchAllData.value("user_id").toInt()
+                   << "user_mail:" << fetchAllData.value("user_email").toString()
+                   << "last_login_time:" << fetchAllData.value("last_login_time").toString();
+      }
+
+      if (!hasRows) {
+          qDebug() << "No rows found in login_cache table.";
+      }
+  }
+
+
+  // Get raw QSqlDatabase for advanced operations
+  QSqlDatabase &database() { return db; }
+
+private:
+  SQliteDB() { openDB(); }
+  ~SQliteDB() { closeDB(); }
+
+  QSqlDatabase db;
 };
-
-// Definition of the static member outside the class
-QSqlDatabase SQliteDB::db;
 
 #endif // DB_SQLITE_H

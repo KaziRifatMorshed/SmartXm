@@ -1,13 +1,13 @@
 SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
-DocumentName: qsqlitedriverplugins-6.9.2
-DocumentNamespace: https://qt.io/spdxdocs/qsqlitedriverplugins-6.9.2
+DocumentName: qsqlitedriverplugins-6.9.3
+DocumentNamespace: https://qt.io/spdxdocs/qsqlitedriverplugins-6.9.3
 Creator: Organization: TheQtCompany
 Creator: Tool: Qt Build System
 CreatorComment: <text>This SPDX document was created from CMake 4.1.1, using the qt
 build system from https://code.qt.io/cgit/qt/qtbase.git/tree/cmake/QtPublicSbomHelpers.cmake</text>
-Created: 2025-10-03T20:16:15Z${QT_SBOM_EXTERNAL_DOC_REFS}
+Created: 2025-10-10T11:54:18Z${QT_SBOM_EXTERNAL_DOC_REFS}
 
 PackageName: GNU
 SPDXID: SPDXRef-compiler
@@ -25,9 +25,10 @@ RelationshipComment: <text>SPDXRef-Package-qsqlitedriverplugins is built by comp
 
 PackageName: qsqlitedriverplugins
 SPDXID: SPDXRef-Package-qsqlitedriverplugins
-ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.2:*:*:*:*:*:*:*
-ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins@6.9.2
-PackageVersion: 6.9.2
+ExternalRef: SECURITY cpe23Type cpe:2.3:a:qt:qsqlitedriverplugins:6.9.3:*:*:*:*:*:*:*
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins@6.9.3
+PackageVersion: 6.9.3
+ExternalRef: PACKAGE-MANAGER purl pkg:generic/TheQtCompany/qsqlitedriverplugins@6.9.3
 PackageSupplier: Organization: TheQtCompany
 PackageDownloadLocation: git://code.qt.io/qt/qsqlitedriverplugins.git
 PackageLicenseConcluded: NOASSERTION
@@ -35,6 +36,6 @@ PackageLicenseDeclared: NOASSERTION
 PackageCopyrightText: Copyright (C) The Qt Company Ltd. and other contributors.
 PackageHomePage: https://qt.io
 PackageComment: <text>Built by CMake 4.1.1 with RelWithDebInfo configuration for Linux (x86_64)</text>
-PackageVerificationCode: ${QT_SBOM_VERIFICATION_CODE}
-BuiltDate: 2025-10-03T20:16:15Z
+FilesAnalyzed: false
+BuiltDate: 2025-10-10T11:54:18Z
 Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-Package-qsqlitedriverplugins

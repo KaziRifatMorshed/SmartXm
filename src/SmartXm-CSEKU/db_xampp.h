@@ -148,7 +148,7 @@ private:
     }
 
     // --- 6. Test and Print Data ---
-    QSqlQuery testPrintAllUsers = execQuery("SELECT * FROM users;");
+    QSqlQuery testPrintAllUsers = execQuery("SELECT * FROM Users;");
 
     if (testPrintAllUsers.isActive() && testPrintAllUsers.size() > 0) {
       while (testPrintAllUsers.next()) {

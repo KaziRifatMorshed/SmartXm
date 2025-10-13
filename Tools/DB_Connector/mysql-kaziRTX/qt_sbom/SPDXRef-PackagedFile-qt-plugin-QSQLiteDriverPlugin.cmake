@@ -12,7 +12,14 @@
                 else()
                     file(SHA1 "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/plugins/sqldrivers/libqsqlite.so" sha1)
                 endif()
-                list(APPEND QT_SBOM_VERIFICATION_CODES ${sha1})
+
+                set("QT_SBOM_PACKAGE_HAS_FILES_SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin" true)
+
+                list(APPEND QT_SBOM_PACKAGES_WITH_VERIFICATION_CODES
+                    "SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin")
+                list(APPEND
+                    "QT_SBOM_PACKAGES_WITH_VERIFICATION_CODES_SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin"
+                    "${sha1}")
             endif()
             file(APPEND "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/staging-qsqlitedriverplugins.spdx.in"
 "
@@ -35,7 +42,7 @@ RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/qsql_sqlite_vfs_p.h
 Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
 RelationshipComment: /src_dir/qsqlitedriverplugins/sqlite/smain.cpp
 Relationship: SPDXRef-PackagedFile-qt-plugin-QSQLiteDriverPlugin GENERATED_FROM NOASSERTION
-RelationshipComment: /home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
+RelationshipComment: /home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
 "
                 )
         endif()

@@ -1,4 +1,4 @@
-# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/config.tests/binary_for_strip
+# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/config.tests/binary_for_strip
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
