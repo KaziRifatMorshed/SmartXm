@@ -2,6 +2,9 @@
 #define CREATEQUESTION_H
 
 #include <QWidget>
+#include<QThread>
+#include<JudgeWorker3.h>
+#include<verdict.h>
 
 namespace Ui
 {
@@ -39,6 +42,8 @@ private slots:
 
     void on_testcaseOutput_comboBox_currentIndexChanged(int index);
 
+    void on_stopExecution_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
@@ -48,6 +53,9 @@ private:
     QString getFileContent(QString path);
     void saveToFile(QString path, QString& textToSave);
     void loadPreviouslySavedQuestion(QString path);
+    JudgeWorker3 *judgeWorker;
+    QThread *judgeThread;
+    bool judging =false;
 };
 
 #endif // CREATEQUESTION_H

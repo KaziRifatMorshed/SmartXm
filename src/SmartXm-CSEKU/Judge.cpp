@@ -1,6 +1,6 @@
 #include "Judge.h"
 
-
+Judge::Judge(){};
 void Judge::setCurrentFile(const std::string &cFile)
 {
     currentFile = cFile;
@@ -828,7 +828,7 @@ Verdict Judge::runOnSingleTestCase()
 
 #ifdef _WIN32
         exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
-        compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+        compileCmd = "g++ -O2  -march=x86-64 -mtune=generic -pipe -s -static -DONLINE_JUDGE -fno-asm \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #else
 
         exeFile = "\"" + directoryPath + "./" + filename +"-judge.out"+"\"";
@@ -958,7 +958,8 @@ std::vector<Verdict> Judge::runOnTestCases()
 
 #ifdef _WIN32
         exeFile = "\"" + directoryPath + filename + "-judge.exe" + "\"";
-        compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
+        compileCmd = "g++ -O2  -march=x86-64 -mtune=generic -pipe -s -static -DONLINE_JUDGE -fno-asm \"" + currentFile + "\" -o " + exeFile + " -Wall";
+
 #else
         exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
         compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";

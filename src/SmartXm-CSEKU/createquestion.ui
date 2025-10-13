@@ -27,7 +27,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="attribute_tab">
       <attribute name="title">
@@ -222,6 +222,11 @@
             <column>
              <property name="text">
               <string>Weight</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Action</string>
              </property>
             </column>
            </widget>
@@ -720,11 +725,25 @@
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="RunSolution_execute_pushButton_2">
-              <property name="text">
-               <string>Execute</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="stopExecution">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Stop Execution</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="RunSolution_execute_pushButton_2">
+                <property name="text">
+                 <string>Execute</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="Line" name="line_2">
@@ -735,6 +754,9 @@
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_2">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <column>
                <property name="text">
                 <string>Testcase Title</string>
@@ -776,7 +798,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLabel" name="label_30">
+                <widget class="QLabel" name="maxCpuTimeUses">
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -789,13 +811,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="label_31">
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_29">
                  <property name="text">
@@ -804,9 +819,16 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QLabel" name="label_32">
+                <widget class="QLabel" name="finalVerdict">
                  <property name="text">
                   <string>?</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="maxMemoryUses">
+                 <property name="text">
+                  <string>0</string>
                  </property>
                 </widget>
                </item>

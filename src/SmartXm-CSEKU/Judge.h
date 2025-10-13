@@ -42,7 +42,7 @@
 class Judge
 {
 public:
-
+    Judge();
 
 private:
 #ifdef _WIN32

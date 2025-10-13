@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <toast.h>
+#include<iostream>
 // #include <QWebEnginePage>
 #include <string>
 
@@ -82,25 +83,25 @@ void CreateQuestion::writeQuestionToHTML()
 
 void CreateQuestion::convertHtmlToPdf(QString source, QString destination)
 {
-    // QWebEnginePage *page = new QWebEnginePage;
+  // QWebEnginePage *page = new QWebEnginePage;
 
-    // QFile htmlFile(source);
-    // if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    //     qDebug() << "Failed to open HTML file:" << source;
-    //     return;
-    // }
+           // QFile htmlFile(source);
+           // if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+           //     qDebug() << "Failed to open HTML file:" << source;
+           //     return;
+           // }
 
-    // QString htmlContent = htmlFile.readAll();
+           // QString htmlContent = htmlFile.readAll();
 
-    // page->setHtml(htmlContent);
+           // page->setHtml(htmlContent);
 
-    // QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
-    //     if (ok) {
-    //         page->printToPdf(destination);
-    //     } else {
-    //         qDebug() << "Failed to load HTML content from file:" << source;
-    //     }
-    // });
+           // QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
+           //     if (ok) {
+           //         page->printToPdf(destination);
+           //     } else {
+           //         qDebug() << "Failed to load HTML content from file:" << source;
+           //     }
+           // });
 }
 
 void CreateQuestion::on_save_pushButton_clicked()
@@ -108,12 +109,12 @@ void CreateQuestion::on_save_pushButton_clicked()
     // Create Folder with Question Name
     createFolder();
 
-    // Write complete question to a HTML
+           // Write complete question to a HTML
 
     if (ui->typeQuestionManually_radioButton->isChecked()) {
         writeQuestionToHTML();
 
-        // Convert html to pdf
+               // Convert html to pdf
         QString questionName = ui->quesTitle_lineEdit->text();
 
         convertHtmlToPdf(path + questionName + ".html", path + questionName + ".pdf");
@@ -127,7 +128,7 @@ void CreateQuestion::on_save_pushButton_clicked()
     // Save solutions
     on_soluSrcCodeSaveBtn_pushButton_2_clicked();
 
-    // Save editorial
+           // Save editorial
     on_saveEditorial_pushButton_2_clicked();
 }
 
@@ -248,25 +249,101 @@ void CreateQuestion::on_inputSeleceFile_radioButton_4_clicked()
 
 void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
 {
-    on_soluSrcCodeSaveBtn_pushButton_2_clicked();
-    int cpuTime = ui->RunSolution_CPUtime_lineEdit->text().toInt();
-    int memoryLimit = ui->RunSolution_Memory_lineEdit->text().toInt();
-    QString solutionPath = path + "Solution";
-    QString testCasePath = path + "Testcases/";
-    int testCaseCount;
+    if(!judging)
+    {
+        judging=true;
+        ui->maxCpuTimeUses->setText(QString::fromStdString("**")+" s");
+        ui->maxMemoryUses->setText(QString::fromStdString("**")+" MB");
+        ui->finalVerdict->setText(QString::fromStdString("Execution Running"));
 
-    if (ui->solutionLanguage_comboBox->currentText() == "C/C++") {
-        solutionPath += ".cpp";
+
+        on_soluSrcCodeSaveBtn_pushButton_2_clicked();
+        double cpuTime = ui->RunSolution_CPUtime_lineEdit->text().toInt();
+        int memoryLimit = ui->RunSolution_Memory_lineEdit->text().toInt();
+        QString solutionPath = path + "Solution";
+        QString testCasePath = path + "Testcases/";
+        std::cout<<testCasePath.toStdString()<<std::endl;
+        int testCaseCount=14;
+        cpuTime*=1000;
+        memoryLimit*=1024;
+        if (ui->solutionLanguage_comboBox->currentText() == "C/C++") {
+            solutionPath += ".cpp";
+        }
+        else if (ui->solutionLanguage_comboBox->currentText() == "Python") {
+            solutionPath += ".py";
+        }
+        else {
+            solutionPath += ".java";
+        }
+
+        std::vector<std::string>testCaseData={solutionPath.toStdString()
+                                                 ,testCasePath.toStdString()};
+        std::vector<double>judgeInformation={0,1,double(cpuTime),1,1,1,double(memoryLimit),1,1,1,1024*1024,1,1,1};
+
+        QThread* thread = new QThread();
+        JudgeWorker3* worker = new JudgeWorker3(testCaseData, judgeInformation,
+                                                testCaseCount);
+        judgeThread=thread;
+        judgeWorker=worker;
+        worker->moveToThread(thread);
+
+        connect(thread, &QThread::started, worker, &JudgeWorker3::process);
+        connect(worker, &JudgeWorker3::finished, this, [=](std::vector<Verdict> verdicts){
+
+
+                    std::string verdict;
+                    double cpuUsedTimeMS=0;
+                    double usedMemoryKB=0;
+                    for(auto v:verdicts)
+                    {
+                        if(verdict.size()==0&&v.verdict!="Accepted")
+                        {
+                            verdict=v.verdict;
+                        }
+                        usedMemoryKB=fmax(usedMemoryKB,v.memory_size);
+                        cpuUsedTimeMS=fmax(cpuUsedTimeMS,v.cpu_time);
+                    }
+                    if(verdict.size()==0)verdict="Accepted";
+                    usedMemoryKB/=1024;
+                    cpuUsedTimeMS/=1000;
+
+                    ui->maxCpuTimeUses->setText(QString::number(cpuUsedTimeMS)+" s");
+                    ui->maxMemoryUses->setText(QString::number(usedMemoryKB)+" MB");
+                    ui->finalVerdict->setText(QString::fromStdString(verdict));
+
+                    judging = false;
+
+                    thread->quit();
+                    thread->wait();
+                    worker->deleteLater();
+                    thread->deleteLater();
+                });
+
+        thread->start();
     }
-    else if (ui->solutionLanguage_comboBox->currentText() == "Python") {
-        solutionPath += ".py";
-    }
-    else {
-        solutionPath += ".java";
+    else
+    {
+        QMessageBox::warning(this, "Warning", "Another judge is running.");
+
+        return;
     }
 
-    // code here
+           // code here
 }
+
+void CreateQuestion::on_stopExecution_clicked()
+{
+
+    if(judging)
+    {
+        judgeWorker->killJudge();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Warning", "There is no running execution.");
+    }
+}
+
 
 
 void CreateQuestion::on_newTestCaseINPUT_comboBox_currentIndexChanged(int index)
@@ -299,4 +376,6 @@ void CreateQuestion::on_testcaseOutput_comboBox_currentIndexChanged(int index)
         break;
     }
 }
+
+
 

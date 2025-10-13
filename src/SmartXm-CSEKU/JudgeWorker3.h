@@ -17,8 +17,6 @@ class JudgeWorker3 : public QObject
 public:
     explicit JudgeWorker3(const std::vector<std::string> &testcaseData,
                           const std::vector<double> &judgeInformation,
-                          const std::string &systemDirPath,
-                          const std::string &dirPath,
                           int totalTestCases,
                           QObject *parent = nullptr);
 

@@ -25,6 +25,8 @@
 
 class CodeRunner
 {
+public:
+    CodeRunner();
 
 
 private:
