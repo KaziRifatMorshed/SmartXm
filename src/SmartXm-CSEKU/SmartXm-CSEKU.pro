@@ -16,6 +16,7 @@ SOURCES += \
     Judge.cpp \
     JudgeWorker.cpp \
     JudgeWorker2.cpp \
+    JudgeWorker3.cpp \
     Users.cpp \
     codeRunner.cpp \
     createormodifyexam.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     Judge.h \
     JudgeWorker.h \
     JudgeWorker2.h \
+    JudgeWorker3.h \
     Message.h \
     Student.h \
     TerminalExecuter.h \

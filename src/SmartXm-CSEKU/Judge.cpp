@@ -934,6 +934,9 @@ std::vector<Verdict> Judge::generateVerdicts(std::string verdict,int n)
     }
     return verdicts;
 }
+
+
+
 std::vector<Verdict> Judge::runOnTestCases()
 {
     std::vector<Verdict> verdicts;
@@ -1081,6 +1084,7 @@ std::vector<Verdict> Judge::runOnTestCases()
     }
     return verdicts;
 }
+
 
 // void Judge::runOnTestCases()
 // {

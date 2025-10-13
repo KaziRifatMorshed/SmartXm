@@ -84,6 +84,7 @@ private:
 
 public:
     std::vector<Verdict> runOnTestCases();
+
     Verdict runOnSingleTestCase();
     void runOnAllStudentsSolution();
     void setCurrentFile(const std::string &cFile);
@@ -118,20 +119,20 @@ public:
     void setNumberOfTotalTestCase(int totalTestCase);
 //judge information
 private:
-    bool checkerFlag;
-    bool inputFlag;
-    double timeLimit;
-    double cppTimeLimit;
-    double pythonTimeLimit;
-    double javaTimeLimit;
-    double memoryLimit;
-    double cppMemoryLimit;
-    double pythonMemoryLimit;
-    double javaMemoryLimit;
-    double sourceCodeLimit;
-    double cppSourceCodeLimit;
-    double pythonSourceCodeLimit;
-    double javaSourceCodeLimit;
+    bool checkerFlag=0;
+    bool inputFlag=1;
+    double timeLimit=1000;
+    double cppTimeLimit=1;
+    double pythonTimeLimit=1;
+    double javaTimeLimit=1;
+    double memoryLimit=512*1024*1024.0;
+    double cppMemoryLimit=1;
+    double pythonMemoryLimit=1;
+    double javaMemoryLimit=1;
+    double sourceCodeLimit=1024*1024;
+    double cppSourceCodeLimit=1;
+    double pythonSourceCodeLimit=1;
+    double javaSourceCodeLimit=1;
 
 public:
     // Setter for judge info
