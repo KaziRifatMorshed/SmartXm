@@ -41,6 +41,7 @@ private:
     void convertHtmlToPdf(QString source, QString destination);
     QString getFileContent(QString path);
     void saveToFile(QString path, QString& textToSave);
+    void loadPreviouslySavedQuestion(QString path);
 };
 
 #endif // CREATEQUESTION_H

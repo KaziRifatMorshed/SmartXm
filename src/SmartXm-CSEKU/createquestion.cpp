@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <toast.h>
 #include <QWebEnginePage>
+#include <string>
 
 CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) { ui->setupUi(this); }
 
@@ -23,7 +24,7 @@ void CreateQuestion::createFolder()
 
     qDebug() << questionName << "\n";
 
-    path = std::filesystem::current_path().c_str();
+    path = QString(std::filesystem::current_path().string().c_str());
     path += "/" + questionName + "/";
 
     if (!std::filesystem::is_directory(path.toStdString())) {
@@ -243,4 +244,5 @@ void CreateQuestion::on_inputSeleceFile_radioButton_4_clicked()
     ui->inoutSelectFile_pushButton_2->setEnabled(true);
     ui->inputOfTestCase___textEdit->setEnabled(false);
 }
+
 

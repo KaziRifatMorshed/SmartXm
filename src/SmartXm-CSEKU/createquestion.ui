@@ -917,6 +917,25 @@
       <attribute name="title">
        <string>Preview PDF</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_13">
+       <item>
+        <widget class="QTabWidget" name="tabWidget_2">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="statementTab">
+          <attribute name="title">
+           <string>Statement</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="editorialTab">
+          <attribute name="title">
+           <string>Editorial</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
