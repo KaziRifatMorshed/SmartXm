@@ -609,6 +609,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
 
                // Check memory usage
         long long currentMemoryKB = getProcessMemoryUsage(pid);
+        usedMemoryKB=fmax(usedMemoryKB,currentMemoryKB);
         if (currentMemoryKB > memoryLimitKB) {
             killProcessSafely(pid);
             process.waitForFinished(500);
@@ -636,7 +637,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
     usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
            // Get final memory usage
-    usedMemoryKB = getProcessMemoryUsage(pid);
+    //usedMemoryKB = getProcessMemoryUsage(pid);
 
            // Check stop request one more time before determining verdict
     if (stopRequested.load()) {
@@ -757,17 +758,19 @@ long long Judge::getProcessMemoryUsage(pid_t pid)
     long long memoryKB = 0;
 
     while (std::getline(file, line)) {
-        // Look for VmRSS (Resident Set Size - actual physical memory used)
-        if (line.find("VmRSS:") == 0) {
+        // Trim leading spaces
+        size_t first = line.find_first_not_of(" \t");
+        if (first == std::string::npos) continue;
+
+        if (line.substr(first, 6) == "VmRSS:") {
             std::istringstream iss(line);
             std::string label;
             long long value;
             std::string unit;
 
-            iss >> label >> value >> unit;
-
-                   // Value is typically in kB
-            memoryKB = value;
+            if (iss >> label >> value >> unit) {
+                memoryKB = value; // Already in kB
+            }
             break;
         }
     }
@@ -788,13 +791,15 @@ long long Judge::getProcessMemoryUsageFast(pid_t pid)
         return 0;
     }
 
-    long long vmSize, rss;
+    long long vmSize = 0, rss = 0;
     file >> vmSize >> rss;
     file.close();
 
-           // rss is in pages, convert to KB (assuming 4KB page size)
-    long long pageSize = sysconf(_SC_PAGESIZE) / 1024;
-    return rss * pageSize;
+    if (rss <= 0) return 0;
+
+           // rss is in pages, convert to KB (assuming system page size)
+    long long pageSizeKB = sysconf(_SC_PAGESIZE) / 1024;
+    return rss * pageSizeKB;
 }
 
 #endif
@@ -832,7 +837,7 @@ Verdict Judge::runOnSingleTestCase()
 #else
 
         exeFile = "\"" + directoryPath + "./" + filename +"-judge.out"+"\"";
-        compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+        compileCmd = "g++   -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
         std::string compileOutput = executeCommand(compileCmd);
@@ -962,7 +967,7 @@ std::vector<Verdict> Judge::runOnTestCases()
 
 #else
         exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
-        compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+        compileCmd = "g++   -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
         std::string compileOutput = executeCommand(compileCmd);
@@ -1189,7 +1194,7 @@ std::vector<Verdict> Judge::runOnTestCases()
 //     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 // #else
 //     exeFile = "\"" + directoryPath + "./" + filename + "\"";
-//     compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+//     compileCmd = "g++   -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 // #endif
 
 //     std::string compileOutput = executeCommand(compileCmd);
