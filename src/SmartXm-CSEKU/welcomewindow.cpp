@@ -235,7 +235,7 @@ void WelcomeWindow::on_pushButton_clicked() {
   }
 #endif
 
-// #define LOGIN_DEBUG
+#define LOGIN_DEBUG
 #ifdef LOGIN_DEBUG
   bool temp = true; // if login info are true
   // bool isTeacher = (inputtedEmail == "t") ? true : false;

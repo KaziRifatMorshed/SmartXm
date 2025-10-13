@@ -27,7 +27,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="attribute_tab">
       <attribute name="title">
@@ -66,29 +66,33 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="typeQuestionManually_radioButton">
-           <property name="text">
-            <string>Type Question Manually</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QRadioButton" name="uploadPdf_radioButton">
-           <property name="text">
-            <string>Upload PDF</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_15">
+         <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Chose one:</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
+           <item>
+            <widget class="QRadioButton" name="typeQuestionManually_radioButton">
+             <property name="text">
+              <string>Type Question Manually</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="uploadPdf_radioButton">
+             <property name="text">
+              <string>Upload PDF</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
@@ -285,7 +289,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <layout class="QHBoxLayout" name="horizontalLayout_16">
             <item>
              <widget class="QLabel" name="label_24">
               <property name="text">
@@ -294,18 +298,22 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="preTestCase_radioButton_4">
-              <property name="text">
-               <string>pre testcase</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="systemTestCase_radioButton_5">
-              <property name="text">
-               <string>system testcase</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QRadioButton" name="preTestCase_radioButton_4">
+                <property name="text">
+                 <string>pre testcase</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="systemTestCase_radioButton_5">
+                <property name="text">
+                 <string>system testcase</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <spacer name="horizontalSpacer_3">
@@ -334,22 +342,18 @@
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <widget class="QComboBox" name="newTestCaseINPUT_comboBox">
                 <item>
-                 <widget class="QRadioButton" name="inputTypeManually_radioButton_4">
-                  <property name="text">
-                   <string>type manually</string>
-                  </property>
-                 </widget>
+                 <property name="text">
+                  <string>Type manually (Testcase Input)</string>
+                 </property>
                 </item>
                 <item>
-                 <widget class="QRadioButton" name="inputSeleceFile_radioButton_4">
-                  <property name="text">
-                   <string>select file</string>
-                  </property>
-                 </widget>
+                 <property name="text">
+                  <string>Select file (Testcase Input)</string>
+                 </property>
                 </item>
-               </layout>
+               </widget>
               </item>
               <item>
                <widget class="QTextEdit" name="inputOfTestCase___textEdit">
@@ -380,22 +384,18 @@
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <widget class="QComboBox" name="testcaseOutput_comboBox">
                 <item>
-                 <widget class="QRadioButton" name="outputTypeManually_radioButton_4">
-                  <property name="text">
-                   <string>type manually</string>
-                  </property>
-                 </widget>
+                 <property name="text">
+                  <string>Type manually (Testcase Output)</string>
+                 </property>
                 </item>
                 <item>
-                 <widget class="QRadioButton" name="outputSelectFileradioButton_4">
-                  <property name="text">
-                   <string>select file</string>
-                  </property>
-                 </widget>
+                 <property name="text">
+                  <string>Select File (Testcase Output)</string>
+                 </property>
                 </item>
-               </layout>
+               </widget>
               </item>
               <item>
                <widget class="QTextEdit" name="outputOfTestCase__textEdit">
@@ -842,7 +842,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QLabel" name="label_21">
            <property name="text">
@@ -851,18 +851,22 @@
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="typeEditManually_radioButton_3">
-           <property name="text">
-            <string>Type editorial manually</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_3">
-           <property name="text">
-            <string>Upload PDF</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QRadioButton" name="typeEditManually_radioButton_3">
+             <property name="text">
+              <string>Type editorial manually</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_3">
+             <property name="text">
+              <string>Upload PDF</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <spacer name="horizontalSpacer_2">
