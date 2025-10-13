@@ -10,6 +10,7 @@
 #include <db_xampp.h>
 #include <Users.h>
 
+
 Server *server;
 QString instructionFileName = "";
 Users &currentUser = Users::getInstance();
@@ -185,5 +186,42 @@ void TeacherModule::on_testExam_pushButton_3_clicked() {
   } else {
     QMessageBox::warning(this, "failed!", "Questions File Send Failed!!!");
   }
+}
+
+
+void TeacherModule::on_createXm_pushButton_clicked()
+{
+    // Exam creation features will be here
+
+    if(!createOrModifyXm){
+        createOrModifyXm = new CreateOrModifyExam();
+    }
+    createOrModifyXm->show();
+    createOrModifyXm->raise();
+    createOrModifyXm->activateWindow();
+}
+
+
+void TeacherModule::on_editExam_pushButon_2_clicked()
+{
+    // Exam entry modification
+
+    if(!createOrModifyXm){
+        createOrModifyXm = new CreateOrModifyExam(); // may need to pass ExamId (PrimaryKey)
+    }
+    createOrModifyXm->show();
+    createOrModifyXm->raise();
+    createOrModifyXm->activateWindow();
+}
+
+
+void TeacherModule::on_createQues_pushButton_clicked()
+{
+    if (!createQuesWidgetWindow){
+        createQuesWidgetWindow = new CreateQuestion();
+    }
+    createQuesWidgetWindow->show();
+    createQuesWidgetWindow->raise();
+    createQuesWidgetWindow->activateWindow();
 }
 

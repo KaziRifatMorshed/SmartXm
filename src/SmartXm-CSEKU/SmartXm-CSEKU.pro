@@ -1,4 +1,4 @@
-QT       += core gui sql network concurrent pdfwidgets
+QT       += core gui sql network concurrent pdfwidgets webenginecore
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,6 +14,8 @@ win32:LIBS += -lws2_32 \
 SOURCES += \
     Users.cpp \
     codeRunner.cpp \
+    createormodifyexam.cpp \
+    createquestion.cpp \
     db_sqlite.cpp \
     CodeRunnerWorker.cpp \
     Judge.cpp \
@@ -45,6 +47,8 @@ HEADERS += \
     Message.h \
     Student.h \
     TerminalExecuter.h \
+    createormodifyexam.h \
+    createquestion.h \
     Users.h \
     csv.h \
     db_sqlite.h \
@@ -62,6 +66,8 @@ HEADERS += \
     dependencies/linux/Encryption/encryption.h
 
 FORMS += \
+    createormodifyexam.ui \
+    createquestion.ui \
     ide.ui \
     studentmodulev2.ui \
     teachermodule.ui \
