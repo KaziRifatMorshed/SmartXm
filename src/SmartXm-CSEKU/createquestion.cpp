@@ -121,7 +121,6 @@ void CreateQuestion::on_save_pushButton_clicked()
     else {
         QMessageBox::warning(this, "Warning", "Saving pdf is not implemented yet");
     }
-
     // Save the testcases
     // Save checker
     // Save limits
