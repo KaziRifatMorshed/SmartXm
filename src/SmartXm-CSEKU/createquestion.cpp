@@ -248,6 +248,23 @@ void CreateQuestion::on_inputSeleceFile_radioButton_4_clicked()
 
 void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
 {
+    on_soluSrcCodeSaveBtn_pushButton_2_clicked();
+    int cpuTime = ui->RunSolution_CPUtime_lineEdit->text().toInt();
+    int memoryLimit = ui->RunSolution_Memory_lineEdit->text().toInt();
+    QString solutionPath = path + "Solution";
+    QString testCasePath = path + "Testcases/";
+    int testCaseCount;
 
+    if (ui->solutionLanguage_comboBox->currentText() == "C/C++") {
+        solutionPath += ".cpp";
+    }
+    else if (ui->solutionLanguage_comboBox->currentText() == "Python") {
+        solutionPath += ".py";
+    }
+    else {
+        solutionPath += ".java";
+    }
+
+    // code here
 }
 
