@@ -1,0 +1,5 @@
+# ninja log v6
+0	14	1760097258527282159	CMakeFiles/lib1.dir/lib1.cpp.o	96e4509a49419474
+14	50	1760097258540615781	liblib1.so	9b11db3580262699
+50	57	1760097258577283241	CMakeFiles/print_lib_path	5607c8b2f5806bfe
+50	57	1760097258577283241	/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/config.tests/binary_for_strip_built/CMakeFiles/print_lib_path	5607c8b2f5806bfe

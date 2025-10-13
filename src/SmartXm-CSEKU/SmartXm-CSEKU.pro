@@ -2,18 +2,26 @@ QT       += core gui sql network concurrent pdfwidgets webenginecore
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++20
+CONFIG += c++23
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-win32:LIBS += -lws2_32
+win32:LIBS += -lws2_32 \
+    -lShell32
 
 SOURCES += \
+    Users.cpp \
     codeRunner.cpp \
     createormodifyexam.cpp \
     createquestion.cpp \
+    db_sqlite.cpp \
+    CodeRunnerWorker.cpp \
+    Judge.cpp \
+    JudgeWorker.cpp \
+    JudgeWorker2.cpp \
+    db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
     main.cpp \
@@ -31,11 +39,17 @@ SOURCES += \
 
 HEADERS += \
     ClientInfo.h \
+    codeRunner.h \
+    CodeRunnerWorker.h \
+    Judge.h \
+    JudgeWorker.h \
+    JudgeWorker2.h \
     Message.h \
     Student.h \
     TerminalExecuter.h \
     createormodifyexam.h \
     createquestion.h \
+    Users.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -47,6 +61,7 @@ HEADERS += \
     studentmodulev2.h \
     teachermodule.h \
     toast.h \
+    verdict.h \
     welcomewindow.h \
     dependencies/linux/Encryption/encryption.h
 
@@ -71,3 +86,4 @@ DISTFILES += \
 
 RESOURCES += \
     qt_resources.qrc
+

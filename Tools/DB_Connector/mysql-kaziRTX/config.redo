@@ -1,0 +1,2 @@
+#!/bin/sh
+/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/bin/qt-configure-module /home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers -redo "$@"

@@ -19,13 +19,14 @@
 #include <qmessagebox.h>
 #include "toast.h"
 #include "ui_ide.h"
+#include<qthread.h>
 // #include <Qsci/qsciscintilla.h>
 // #include <Qsci/qscilexercpp.h>
 // #include <Qsci/qscilexerpython.h>
 #include <QString>
 #include <iostream>
 #include <string>
-#include "codeRunner.h"
+
 
 IDE* IDE::ideInstance = nullptr;
 
@@ -198,34 +199,72 @@ void IDE::save() {
 
     ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
-
 void IDE::run() {
-    save();
-
-    QFile file(QString("input.txt"));
-
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+    save(); // save editor content to current file
+    QFile file("input.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-
         return;
     }
-
     QTextStream out(&file);
-    QString text = ui->input_textEdit->toPlainText();
-    out << text;
+    out << ui->input_textEdit->toPlainText();
     file.close();
+    ui->CompilerDebudOutput_textEdit->clear();
+    ui->CompilerDebudOutput_textEdit->append("Compiling and executing.\n");
+    ui->output_textEdit->clear();
 
-    CodeRunner runner;
-    runner.setCurrentFile(currentFile.toStdString());
-    runner.run();
+    CodeRunnerWorker *worker = new CodeRunnerWorker(currentFile.toStdString());
+    QThread *thread = new QThread();
+    threadExecution=thread;
+    executionThreadFlag=true;
 
-    QString outputText = getFileContent(QString("output.txt"));
+    workerExecution=worker;
+    worker->moveToThread(thread);
 
-    ui->output_textEdit->setPlainText(outputText);
+    connect(thread, &QThread::started, worker, &CodeRunnerWorker::run);
 
-    QString debugText = getFileContent(QString("error.txt"));
+           // KEY FIX: Use Qt::QueuedConnection to ensure UI updates happen in main thread
+    connect(worker, &CodeRunnerWorker::finished, this,
+            [this, thread]{
+                // All UI updates now safely happen in the main thread
 
-    ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
+
+                QString debugText = getFileContent(QString("error.txt"));
+
+                ui->CompilerDebudOutput_textEdit->setPlainText(debugText);
+
+
+                QString outputText;
+
+                if(!forciblyKillExecutionFlag)
+                    outputText= getFileContent(QString("output.txt"));
+
+                ui->output_textEdit->setPlainText((outputText.left(2*1024*1024)));
+
+                       //ui->CompilerDebudOutput_textEdit->append("\nOutput is Displayed.");
+
+
+                if(forciblyKillExecutionFlag)
+                {
+                    ui->CompilerDebudOutput_textEdit->append("\nExecution is forcibly terminated.");
+                    ToastManager::showMessage(this, "Execution terminated.");
+                    forciblyKillExecutionFlag=false;
+                }
+                else
+                {
+                    ui->CompilerDebudOutput_textEdit->append("\nExecution is finished.");
+                    ToastManager::showMessage(this, "Execution complete.");
+                }
+
+                executionThreadFlag=false;
+                thread->quit();
+            }, Qt::QueuedConnection); // <- Important: Forces main thread execution
+
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    ToastManager::showMessage(this, "Running in background...");
+    thread->start();
 }
 
 void IDE::openFile(QString path) {

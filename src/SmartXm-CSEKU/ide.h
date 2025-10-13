@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileSystemModel>
 #include <string>
+#include "CodeRunnerWorker.h"
 
 namespace Ui
 {
@@ -51,6 +52,10 @@ private:
     void initialize();
     void loadInput(std::string path);
     void loadOutput(std::string path);
+    QThread *threadExecution;
+    CodeRunnerWorker *workerExecution;
+    bool executionThreadFlag;
+    bool forciblyKillExecutionFlag;
 };
 
 #endif // IDE_H
