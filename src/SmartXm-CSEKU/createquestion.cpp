@@ -245,3 +245,9 @@ void CreateQuestion::on_inputSeleceFile_radioButton_4_clicked()
 }
 
 
+
+void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
+{
+
+}
+
