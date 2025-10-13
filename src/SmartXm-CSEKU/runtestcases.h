@@ -1,0 +1,71 @@
+#ifndef RUNTESTCASES_H
+#define RUNTESTCASES_H
+
+#include <QWidget>
+#include <filesystem>
+#include<QString>
+#include<iostream>
+#include "verdict.h"
+#include<JudgeWorker.h>
+#include<JudgeWorker2.h>
+
+namespace Ui
+{
+    class runTestcases;
+}
+
+class runTestcases : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit runTestcases(QWidget* parent = nullptr);
+    ~runTestcases();
+
+private slots:
+
+    void on_runThisTestcase_pushButton_clicked();
+
+    void on_SelectProblem_comboBox_activated(int index);
+
+    void on_SelectProblem_comboBox_currentIndexChanged(int index);
+
+    void on_SelectTestcase_comboBox_currentIndexChanged(int index);
+
+    void on_runAllTestcases_pushButton_2_clicked();
+
+
+
+    void on_stopJudging_clicked();
+
+private:
+
+    QThread *threadJudgeSingle;
+
+
+private:
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXm/230201/Editor/";
+    QString systemDirPath = "C:/SmartXm/230201/System/";
+#else
+    QString dirPath = "/SmartXm/230201/Editor/";
+    QString systemDirPath = "/SmartXm/230201/System/";
+#endif
+
+    std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
+    QString getFileContent(QString path);
+    QString getFileContent(QString path, long long readSizeByte);
+    std::vector <std::string> splitStringByChar(std::string s, char delimiter);
+    std::vector <std::string> getTestcaseData();
+    bool readJudgeInfo(const std::string &judgeInfoFile, std::vector<double> &judgeInformation);
+    Ui::runTestcases* ui;
+    bool judging=false;
+    Judge *judge;
+    JudgeWorker *judgeWorker;
+    JudgeWorker2 *judgeWorker2;
+    QThread *threadJudge;
+    int judgingType=0;
+
+};
+
+#endif // RUNTESTCASES_H

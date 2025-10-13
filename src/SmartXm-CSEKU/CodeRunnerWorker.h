@@ -14,12 +14,12 @@ public:
 
 public slots:
     void run();  // will be called in a separate thread
-
+    void killExecution();
 
 signals:
     void finished();
 
 private:
     std::string currentFile;
-    CodeRunner runner;
+    CodeRunner *runner=new CodeRunner();
 };

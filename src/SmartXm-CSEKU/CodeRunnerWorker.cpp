@@ -12,8 +12,8 @@ CodeRunnerWorker::CodeRunnerWorker(const std::string &file, QObject *parent)
 void CodeRunnerWorker::run()
 {
 
-    runner.setCurrentFile(currentFile);
-    runner.run(); // blocking, safe in this thread
+    runner->setCurrentFile(currentFile);
+    runner->run(); // blocking, safe in this thread
 
 
 
@@ -22,4 +22,12 @@ void CodeRunnerWorker::run()
     emit finished();
 }
 
+void CodeRunnerWorker::killExecution()
+{
 
+
+
+    runner->stopExecution();
+
+
+}

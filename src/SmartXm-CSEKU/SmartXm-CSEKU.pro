@@ -12,6 +12,10 @@ win32:LIBS += -lws2_32 \
     -lShell32
 
 SOURCES += \
+    CodeRunnerWorker.cpp \
+    Judge.cpp \
+    JudgeWorker.cpp \
+    JudgeWorker2.cpp \
     Users.cpp \
     codeRunner.cpp \
     createormodifyexam.cpp \
@@ -32,6 +36,7 @@ SOURCES += \
     networking/server/server_linux.cpp \
     networking/server/server_windows.cpp \
     studentmodulev2.cpp \
+    runtestcases.cpp \
     teachermodule.cpp \
     toast.cpp \
     welcomewindow.cpp \
@@ -39,7 +44,6 @@ SOURCES += \
 
 HEADERS += \
     ClientInfo.h \
-    codeRunner.h \
     CodeRunnerWorker.h \
     Judge.h \
     JudgeWorker.h \
@@ -50,6 +54,7 @@ HEADERS += \
     createormodifyexam.h \
     createquestion.h \
     Users.h \
+    codeRunner.h \
     csv.h \
     db_sqlite.h \
     db_xampp.h \
@@ -59,6 +64,7 @@ HEADERS += \
     networking/client/Client.h \
     networking/server/Server.h \
     studentmodulev2.h \
+    runtestcases.h \
     teachermodule.h \
     toast.h \
     verdict.h \
@@ -70,6 +76,7 @@ FORMS += \
     createquestion.ui \
     ide.ui \
     studentmodulev2.ui \
+    runtestcases.ui \
     teachermodule.ui \
     welcomewindow.ui
 

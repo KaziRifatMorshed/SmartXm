@@ -1,4 +1,6 @@
 #include "ide.h"
+#include "toast.h"
+#include "ui_ide.h"
 #include <QApplication>
 #include <QDir>
 #include <QFile>
@@ -7,6 +9,8 @@
 #include <QFontMetricsF>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QProcess>
 #include <QPushButton>
 #include <QTextEdit>
@@ -17,187 +21,180 @@
 #include <QtPdf/QPdfPageNavigator>
 #include <QtPdfWidgets/QPdfView>
 #include <qmessagebox.h>
-#include "toast.h"
-#include "ui_ide.h"
-#include<qthread.h>
 // #include <Qsci/qsciscintilla.h>
 // #include <Qsci/qscilexercpp.h>
 // #include <Qsci/qscilexerpython.h>
+#include "codeRunner.h"
 #include <QString>
 #include <iostream>
 #include <string>
 
+#include <QThread>
+#include <runtestcases.h>
 
-IDE* IDE::ideInstance = nullptr;
+IDE *IDE::ideInstance = nullptr;
+runTestcases *testcasesWindow;
 
-IDE::IDE(QWidget* parent) : QMainWindow(parent), ui(new Ui::IDE) {
-    ui->setupUi(this);
-    initialize();
+IDE::IDE(QWidget *parent) : QMainWindow(parent), ui(new Ui::IDE) {
+  ui->setupUi(this);
+  initialize();
 }
 
 IDE::~IDE() { delete ui; }
 
 void IDE::initialize() {
-    ui->CompilerDebudOutput_textEdit->setReadOnly(true);
+  executionThreadFlag = false;
+  forciblyKillExecutionFlag=false;
+  ui->actionRun->setVisible(true);
+  ui->actionTerminate->setVisible(false);
 
-    ui->Editor->setFont(QFont("Monospace"));
-    ui->input_textEdit->setFont(QFont("Monospace"));
-    ui->output_textEdit->setFont(QFont("Monospace"));
-    ui->CompilerDebudOutput_textEdit->setFont(QFont("Monospace"));
 
-    model = new QFileSystemModel(this);
-    model->setRootPath(dirPath);
-    model->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
+  ui->CompilerDebudOutput_textEdit->setReadOnly(true);
 
-    ui->treeViewFiles->setModel(model);
-    ui->treeViewFiles->setRootIndex(model->index(dirPath));
+  ui->Editor->setFont(QFont("Monospace"));
+  ui->input_textEdit->setFont(QFont("Monospace"));
+  ui->output_textEdit->setFont(QFont("Monospace"));
+  ui->CompilerDebudOutput_textEdit->setFont(QFont("Monospace"));
 
-    QAction* newAction = new QAction("New", this);
-    QAction* saveAction = new QAction("Save", this);
-    QAction* runAction = new QAction("Run", this);
-    QAction* loadAction = new QAction("Load Problem", this);
+  model = new QFileSystemModel(this);
+  model->setRootPath(dirPath);
+  model->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
 
-    connect(newAction, &QAction::triggered, this, &IDE::newFile);
-    connect(saveAction, &QAction::triggered, this, &IDE::save);
-    connect(runAction, &QAction::triggered, this, &IDE::run);
-    connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
-            [=](const QModelIndex& index)
-            {
-                QString path = model->filePath(index);
+  ui->treeViewFiles->setModel(model);
+  ui->treeViewFiles->setRootIndex(model->index(dirPath));
 
-                if (QFileInfo(path).isFile()) {
-                    openFile(path);
-                }
-            });
-    connect(loadAction, &QAction::triggered, this, &IDE::loadProblem);
 
-    ui->menuFile->addAction(newAction);
-    ui->menuFile->addAction(saveAction);
-    ui->menuFile->addAction(runAction);
-    ui->menuFile->addAction(loadAction);
+  connect(ui->treeViewFiles, &QTreeView::doubleClicked, this,
+          [=](const QModelIndex &index) {
+            QString path = model->filePath(index);
+
+            if (QFileInfo(path).isFile()) {
+              openFile(path);
+            }
+          });
+
 }
 
-void IDE::loadPdfInQuesTab(QWidget* ques_tab, std::string pdfFilePath) {
-    if (ques_tab->layout()) {
-        QLayoutItem* item;
-        while ((item = ques_tab->layout()->takeAt(0)) != nullptr) {
-            delete item->widget();
-            delete item;
-        }
-        delete ques_tab->layout();
+void IDE::loadPdfInQuesTab(QWidget *ques_tab, std::string pdfFilePath) {
+  if (ques_tab->layout()) {
+    QLayoutItem *item;
+    while ((item = ques_tab->layout()->takeAt(0)) != nullptr) {
+      delete item->widget();
+      delete item;
     }
+    delete ques_tab->layout();
+  }
 
-    QPdfDocument* quesPdfDoc = new QPdfDocument(ques_tab);
-    QPdfView* quesPdfView = new QPdfView(ques_tab);
+  QPdfDocument *quesPdfDoc = new QPdfDocument(ques_tab);
+  QPdfView *quesPdfView = new QPdfView(ques_tab);
 
-    quesPdfDoc->load(QString(pdfFilePath.c_str()));
-    quesPdfView->setDocument(quesPdfDoc);
+  quesPdfDoc->load(QString(pdfFilePath.c_str()));
+  quesPdfView->setDocument(quesPdfDoc);
 
-    quesPdfView->setPageMode(QPdfView::PageMode::MultiPage);
+  quesPdfView->setPageMode(QPdfView::PageMode::MultiPage);
 
-    QPushButton* quesZoomInBtn = new QPushButton("Zoom In");
-    QPushButton* quesZoomOutBtn = new QPushButton("Zoom Out");
+  QPushButton *quesZoomInBtn = new QPushButton("Zoom In");
+  QPushButton *quesZoomOutBtn = new QPushButton("Zoom Out");
 
-    QObject::connect(quesZoomInBtn, &QPushButton::clicked,
-                     [quesPdfView]()
-                     {
-                         qreal zoom = quesPdfView->zoomFactor();
-                         quesPdfView->setZoomFactor(zoom + 0.1);
-                     });
+  QObject::connect(quesZoomInBtn, &QPushButton::clicked, [quesPdfView]() {
+    qreal zoom = quesPdfView->zoomFactor();
+    quesPdfView->setZoomFactor(zoom + 0.1);
+  });
 
-    QObject::connect(quesZoomOutBtn, &QPushButton::clicked,
-                     [quesPdfView]()
-                     {
-                         qreal zoom = quesPdfView->zoomFactor();
-                         if (zoom > 0.2)
-                             quesPdfView->setZoomFactor(zoom - 0.1);
-                     });
+  QObject::connect(quesZoomOutBtn, &QPushButton::clicked, [quesPdfView]() {
+    qreal zoom = quesPdfView->zoomFactor();
+    if (zoom > 0.2)
+      quesPdfView->setZoomFactor(zoom - 0.1);
+  });
 
-    QHBoxLayout* quesNavLayout = new QHBoxLayout();
-    quesNavLayout->addStretch();
-    quesNavLayout->addWidget(quesZoomOutBtn);
-    quesNavLayout->addWidget(quesZoomInBtn);
+  QHBoxLayout *quesNavLayout = new QHBoxLayout();
+  quesNavLayout->addStretch();
+  quesNavLayout->addWidget(quesZoomOutBtn);
+  quesNavLayout->addWidget(quesZoomInBtn);
 
-    QVBoxLayout* quesMainLayout = new QVBoxLayout(ques_tab);
-    quesMainLayout->addWidget(quesPdfView);
-    quesMainLayout->addLayout(quesNavLayout);
+  QVBoxLayout *quesMainLayout = new QVBoxLayout(ques_tab);
+  quesMainLayout->addWidget(quesPdfView);
+  quesMainLayout->addLayout(quesNavLayout);
 
-    ques_tab->setLayout(quesMainLayout);
+  ques_tab->setLayout(quesMainLayout);
 }
 
 void IDE::newFile() {
-    ui->Editor->setText(QString());
+  ui->Editor->setText(QString());
 
-    QString fileName = QFileDialog::getSaveFileName(this, "Save New File", dirPath, "All Files (*)");
+  QString fileName = QFileDialog::getSaveFileName(this, "Save New File",
+                                                  dirPath, "All Files (*)");
 
-    if (!fileName.isEmpty()) {
-        currentFile = fileName;
+  if (!fileName.isEmpty()) {
+    currentFile = fileName;
 
-        QFileInfo fileInfo(fileName);
-        QFileInfo dirInfo(dirPath);
+    QFileInfo fileInfo(fileName);
+    QFileInfo dirInfo(dirPath);
 
-        QString selectedDir = fileInfo.absolutePath();
-        QString projectDir = dirInfo.absolutePath();
+    QString selectedDir = fileInfo.absolutePath();
+    QString projectDir = dirInfo.absolutePath();
 
-        QFile file(fileName);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream out(&file);
-            out << "";
-            file.close();
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QTextStream out(&file);
+      out << "";
+      file.close();
 
-            model->setRootPath(dirPath);
+      model->setRootPath(dirPath);
 
-            QModelIndex index = model->index(fileName);
-            if (index.isValid()) {
-                ui->treeViewFiles->expand(index.parent());
-                ui->treeViewFiles->setCurrentIndex(index);
-            }
-        }
-        else {
-            QMessageBox::critical(this, "Error", "Could not create file: " + fileName);
-        }
+      QModelIndex index = model->index(fileName);
+      if (index.isValid()) {
+        ui->treeViewFiles->expand(index.parent());
+        ui->treeViewFiles->setCurrentIndex(index);
+      }
+    } else {
+      QMessageBox::critical(this, "Error",
+                            "Could not create file: " + fileName);
     }
+  }
 }
 
 QString IDE::getFileContent(QString path) {
-    QFile file(path);
+  QFile file(path);
 
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot read file: " + file.errorString());
+  if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot read file: " + file.errorString());
 
-        return QString();
-    }
+    return QString();
+  }
 
-    QString text = file.readAll();
+  QString text = file.readAll();
 
-    file.close();
+  file.close();
 
-    return text;
+  return text;
 }
 
 void IDE::save() {
-    QString fileName;
+  QString fileName;
 
-    fileName = currentFile;
+  fileName = currentFile;
 
-    if (IDE::getFileContent(fileName) == ui->Editor->toPlainText()) {
-        return;
-    }
+  if (IDE::getFileContent(fileName) == ui->Editor->toPlainText()) {
+    return;
+  }
 
-    QFile file(fileName);
+  QFile file(fileName);
 
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+  if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot save file: " + file.errorString());
 
-        return;
-    }
+    return;
+  }
 
-    QTextStream out(&file);
-    QString text = ui->Editor->toPlainText();
-    out << text;
-    file.close();
+  QTextStream out(&file);
+  QString text = ui->Editor->toPlainText();
+  out << text;
+  file.close();
 
-    ToastManager::showMessage(this, "File saved as: " + currentFile);
+  ToastManager::showMessage(this, "File saved as: " + currentFile);
 }
 void IDE::run() {
     save(); // save editor content to current file
@@ -217,7 +214,8 @@ void IDE::run() {
     QThread *thread = new QThread();
     threadExecution=thread;
     executionThreadFlag=true;
-
+    ui->actionRun->setVisible(false);
+    ui->actionTerminate->setVisible(true);
     workerExecution=worker;
     worker->moveToThread(thread);
 
@@ -237,7 +235,7 @@ void IDE::run() {
                 QString outputText;
 
                 if(!forciblyKillExecutionFlag)
-                    outputText= getFileContent(QString("output.txt"));
+                outputText= getFileContent(QString("output.txt"));
 
                 ui->output_textEdit->setPlainText((outputText.left(2*1024*1024)));
 
@@ -255,7 +253,8 @@ void IDE::run() {
                     ui->CompilerDebudOutput_textEdit->append("\nExecution is finished.");
                     ToastManager::showMessage(this, "Execution complete.");
                 }
-
+                ui->actionRun->setVisible(true);
+                ui->actionTerminate->setVisible(false);
                 executionThreadFlag=false;
                 thread->quit();
             }, Qt::QueuedConnection); // <- Important: Forces main thread execution
@@ -266,89 +265,142 @@ void IDE::run() {
     ToastManager::showMessage(this, "Running in background...");
     thread->start();
 }
+void IDE::terminateExecution()
+{
+    if(executionThreadFlag&&threadExecution && threadExecution->isRunning() && workerExecution)
+    {
+        forciblyKillExecutionFlag=true;
+        workerExecution->killExecution(); // directly call the slot
+        executionThreadFlag=false;
+    }
+}
 
 void IDE::openFile(QString path) {
-    QString fileName;
+  QString fileName;
 
-    if (path == "") {
-        fileName = QFileDialog::getOpenFileName(this, "Open the file");
-    }
-    else {
-        fileName = path;
-    }
+  if (path == "") {
+    fileName = QFileDialog::getOpenFileName(this, "Open the file");
+  } else {
+    fileName = path;
+  }
 
-    if (fileName.isEmpty()) {
-        return;
-    }
+  if (fileName.isEmpty()) {
+    return;
+  }
 
-    QFile file(fileName);
+  QFile file(fileName);
 
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+  if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot open file: " + file.errorString());
 
-        return;
-    }
+    return;
+  }
 
-    QTextStream in(&file);
-    QString text = in.readAll();
+  QTextStream in(&file);
+  QString text = in.readAll();
 
-    ui->Editor->setText(text);
+  ui->Editor->setText(text);
 
-    currentFile = fileName;
+  currentFile = fileName;
 
-    file.close();
+  file.close();
 }
 
 void IDE::loadInput(std::string path) {
-    QString fileName = QString(path.c_str());
+  QString fileName = QString(path.c_str());
 
-    if (fileName.isEmpty()) {
-        return;
-    }
+  if (fileName.isEmpty()) {
+    return;
+  }
 
-    QFile file(fileName);
+  QFile file(fileName);
 
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+  if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot open file: " + file.errorString());
 
-        return;
-    }
+    return;
+  }
 
-    QTextStream in(&file);
-    QString text = in.readAll();
+  QTextStream in(&file);
+  QString text = in.readAll();
 
-    ui->input_textEdit->setText(text);
+  ui->input_textEdit->setText(text);
 
-    file.close();
+  file.close();
 }
 
 void IDE::loadOutput(std::string path) {
-    QString fileName = QString(path.c_str());
+  QString fileName = QString(path.c_str());
 
-    if (fileName.isEmpty()) {
-        return;
-    }
+  if (fileName.isEmpty()) {
+    return;
+  }
 
-    QFile file(fileName);
+  QFile file(fileName);
 
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+  if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+    QMessageBox::warning(this, "Warning",
+                         "Cannot open file: " + file.errorString());
 
-        return;
-    }
+    return;
+  }
 
-    QTextStream in(&file);
-    QString text = in.readAll();
+  QTextStream in(&file);
+  QString text = in.readAll();
 
-    ui->output_textEdit->setText(text);
+  ui->output_textEdit->setText(text);
 
-    file.close();
+  file.close();
 }
 
 void IDE::loadProblem() {
-    std::string path = "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/230201/";
+  std::string path =
+      "/home/seam/Desktop/SmartXm/src/SmartXm-CSEKU/examResources/230201/";
 
-    loadPdfInQuesTab(ui->ques_tab, path + "questions.pdf");
-    loadInput(path + "sample_in.txt");
-    loadOutput(path + "sample_out.txt");
+  loadPdfInQuesTab(ui->ques_tab, path + "questions.pdf");
+  loadInput(path + "sample_in.txt");
+  loadOutput(path + "sample_out.txt");
 }
+
+void IDE::on_actionTestcases_triggered() {
+  // QMessageBox::information(this, "run test case", "test");
+  testcasesWindow = new runTestcases();
+  testcasesWindow->show();
+}
+
+void IDE::on_actionRun_triggered() {
+    IDE::run();
+
+}
+
+void IDE::on_actionTerminate_triggered() {
+    IDE::terminateExecution();
+
+}
+void IDE::on_actionRun_Testcases_triggered() {}
+
+void IDE::on_actionNew_triggered()
+{
+    newFile();
+}
+
+
+void IDE::on_actionSave_triggered()
+{
+    save();
+}
+
+
+void IDE::on_actionLoad_Questions_triggered()
+{
+    loadProblem();
+}
+
+
+void IDE::on_actionExit_triggered()
+{
+
+}
+

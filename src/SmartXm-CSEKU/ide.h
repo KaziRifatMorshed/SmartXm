@@ -6,6 +6,7 @@
 #include <string>
 #include "CodeRunnerWorker.h"
 
+
 namespace Ui
 {
     class IDE;
@@ -41,14 +42,39 @@ private slots:
     void openFile(QString path);
     void save();
     void run();
+    void terminateExecution();
     void loadProblem();
+
+    void on_actionTestcases_triggered();
+    void on_actionRun_triggered();
+    void on_actionTerminate_triggered();
+
+    void on_actionRun_Testcases_triggered();
+
+    void on_actionNew_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionLoad_Questions_triggered();
+
+    void on_actionExit_triggered();
 
 private:
     Ui::IDE* ui;
     QFileSystemModel *model;
-    QString dirPath = QDir::homePath() + "/Desktop/Test-Notepad";
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXm/230201/Editor/";
+    QString systemDirPath = "C:/SmartXm/230201/System/";
+#else
+    QString dirPath = "/SmartXm/230201/Editor/";
+    QString systemDirPath = "/SmartXm/230201/System/";
+#endif
     QString currentFile;
     QString getFileContent(QString path);
+    QThread *threadExecution;
+    CodeRunnerWorker *workerExecution;
+    bool executionThreadFlag;
+    bool forciblyKillExecutionFlag;
     void initialize();
     void loadInput(std::string path);
     void loadOutput(std::string path);
