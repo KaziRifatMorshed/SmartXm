@@ -832,7 +832,7 @@ Verdict Judge::runOnSingleTestCase()
 #else
 
         exeFile = "\"" + directoryPath + "./" + filename +"-judge.out"+"\"";
-        compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+        compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
         std::string compileOutput = executeCommand(compileCmd);
@@ -962,7 +962,7 @@ std::vector<Verdict> Judge::runOnTestCases()
 
 #else
         exeFile = "\"" + directoryPath + "./" + filename +"-judge"+"\"";
-        compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+        compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 #endif
 
         std::string compileOutput = executeCommand(compileCmd);
@@ -1189,7 +1189,7 @@ std::vector<Verdict> Judge::runOnTestCases()
 //     compileCmd = "g++ \"" + currentFile + "\" -o " + exeFile + " -Wall";
 // #else
 //     exeFile = "\"" + directoryPath + "./" + filename + "\"";
-//     compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall ";
+//     compileCmd = "g++ -O2 -std=c++17 -march=x86-64 -mtune=generic -pipe -s -static \"" + currentFile + "\" -o " + exeFile + " -Wall ";
 // #endif
 
 //     std::string compileOutput = executeCommand(compileCmd);

@@ -262,7 +262,7 @@ void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
         int memoryLimit = ui->RunSolution_Memory_lineEdit->text().toInt();
         QString solutionPath = path + "Solution";
         QString testCasePath = path + "Testcases/";
-        std::cout<<testCasePath.toStdString()<<std::endl;
+
         int testCaseCount=14;
         cpuTime*=1000;
         memoryLimit*=1024;
