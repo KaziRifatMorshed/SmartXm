@@ -7,9 +7,7 @@
 #define pclose _pclose
 #endif
 
-CodeRunner::CodeRunner(){
 
-};
 std::string CodeRunner::getFileExtension(const std::string &filename)
 {
     size_t ind = filename.find_last_of('.');

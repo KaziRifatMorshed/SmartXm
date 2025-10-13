@@ -1,6 +1,6 @@
 #include "Judge.h"
 
-Judge::Judge() {}
+
 void Judge::setCurrentFile(const std::string &cFile)
 {
     currentFile = cFile;

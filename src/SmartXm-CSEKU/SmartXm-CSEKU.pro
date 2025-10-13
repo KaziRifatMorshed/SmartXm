@@ -21,10 +21,6 @@ SOURCES += \
     createormodifyexam.cpp \
     createquestion.cpp \
     db_sqlite.cpp \
-    CodeRunnerWorker.cpp \
-    Judge.cpp \
-    JudgeWorker.cpp \
-    JudgeWorker2.cpp \
     db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
     ide.cpp \
