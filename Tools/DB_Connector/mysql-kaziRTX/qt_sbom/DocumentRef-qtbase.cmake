@@ -1,6 +1,6 @@
 
-        set(relative_file_name "sbom/qtbase-6.9.2.spdx")
-        set(document_dir_paths /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom;$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX};/home/noobcod3r-rtx/Qt/6.9.2/gcc_64)
+        set(relative_file_name "sbom/qtbase-6.9.3.spdx")
+        set(document_dir_paths /home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom;$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX};/home/noobcod3r-rtx/Qt/6.9.3/gcc_64)
         list(JOIN document_dir_paths "\n" document_dir_paths_per_line)
         foreach(document_dir_path IN LISTS document_dir_paths)
             set(document_file_path "${document_dir_path}/${relative_file_name}")

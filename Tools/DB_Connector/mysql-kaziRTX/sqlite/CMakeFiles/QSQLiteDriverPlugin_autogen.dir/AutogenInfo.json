@@ -2,35 +2,35 @@
 	"BUILD_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite/QSQLiteDriverPlugin_autogen",
 	"CMAKE_BINARY_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX",
 	"CMAKE_CURRENT_BINARY_DIR" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/CMakeLists.txt",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/QtPluginConfig.cmake.in",
+		"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/CMakeLists.txt",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/QtPluginConfig.cmake.in",
 		"/usr/share/cmake/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib/cmake/Qt6/QtCMakePackageVersionFile.cmake.in"
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib/cmake/Qt6/QtCMakePackageVersionFile.cmake.in"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers",
+	"CMAKE_SOURCE_DIR" : "/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers",
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite/QSQLiteDriverPlugin_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "QSQLiteDriverPlugin_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite/sqlite3.h",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/3rdparty/sqlite/sqlite3.h",
 			"Mu",
-			"25TFN2ZMFA/moc_sqlite3.cpp",
+			"PX6EGEX3IG/moc_sqlite3.cpp",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_p.h",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_p.h",
 			"Mu",
 			"EWIEGA46WW/moc_qsql_sqlite_p.cpp",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_vfs_p.h",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_vfs_p.h",
 			"Mu",
 			"EWIEGA46WW/moc_qsql_sqlite_vfs_p.cpp",
 			null
@@ -86,18 +86,18 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite",
+		"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite",
 		"/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite",
 		"/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/include",
-		"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/mkspecs/linux-g++",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore/6.9.2",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtCore/6.9.2/QtCore",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql/6.9.2",
-		"/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/include/QtSql/6.9.2/QtSql",
+		"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/3rdparty/sqlite",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/mkspecs/linux-g++",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore/6.9.3",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtCore/6.9.3/QtCore",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql/6.9.3",
+		"/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/include/QtSql/6.9.3/QtSql",
 		"/usr/include/c++/15.2.1",
 		"/usr/include/c++/15.2.1/x86_64-pc-linux-gnu",
 		"/usr/include/c++/15.2.1/backward",
@@ -132,7 +132,7 @@
 	"MULTI_CONFIG" : false,
 	"PARALLEL" : 6,
 	"PARSE_CACHE_FILE" : "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/sqlite/CMakeFiles/QSQLiteDriverPlugin_autogen.dir/ParseCache.txt",
-	"QT_MOC_EXECUTABLE" : "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/libexec/moc",
+	"QT_MOC_EXECUTABLE" : "/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/libexec/moc",
 	"QT_UIC_EXECUTABLE" : "",
 	"QT_VERSION_MAJOR" : 6,
 	"QT_VERSION_MINOR" : 9,
@@ -140,22 +140,22 @@
 	"SOURCES" : 
 	[
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/3rdparty/sqlite/sqlite3.c",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/3rdparty/sqlite/sqlite3.c",
 			"Mu",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite.cpp",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite.cpp",
 			"Mu",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_vfs.cpp",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/qsql_sqlite_vfs.cpp",
 			"Mu",
 			null
 		],
 		[
-			"/home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite/smain.cpp",
+			"/home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite/smain.cpp",
 			"Mu",
 			null
 		]

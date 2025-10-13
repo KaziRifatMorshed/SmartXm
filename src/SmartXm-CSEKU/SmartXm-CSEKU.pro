@@ -14,6 +14,7 @@ win32:LIBS += -lws2_32 \
 SOURCES += \
     Users.cpp \
     codeRunner.cpp \
+    db_sqlite.cpp \
     CodeRunnerWorker.cpp \
     Judge.cpp \
     JudgeWorker.cpp \

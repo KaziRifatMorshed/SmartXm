@@ -1,8 +1,8 @@
-# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers/sqlite
+# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers/sqlite
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64")
+  set(CMAKE_INSTALL_PREFIX "/home/noobcod3r-rtx/Qt/6.9.3/gcc_64")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -62,7 +62,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/plugins/sqldrivers/libqsqlite.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/plugins/sqldrivers/libqsqlite.so"
-         OLD_RPATH "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64/lib:"
+         OLD_RPATH "/home/noobcod3r-rtx/Qt/6.9.3/gcc_64/lib:"
          NEW_RPATH "\$ORIGIN/../../lib")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/libexec/qt-internal-strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/plugins/sqldrivers/libqsqlite.so")

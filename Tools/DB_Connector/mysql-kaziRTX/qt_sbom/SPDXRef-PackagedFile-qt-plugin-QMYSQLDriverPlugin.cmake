@@ -12,7 +12,14 @@
                 else()
                     file(SHA1 "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/plugins/sqldrivers/libqsqlmysql.so" sha1)
                 endif()
-                list(APPEND QT_SBOM_VERIFICATION_CODES ${sha1})
+
+                set("QT_SBOM_PACKAGE_HAS_FILES_SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin" true)
+
+                list(APPEND QT_SBOM_PACKAGES_WITH_VERIFICATION_CODES
+                    "SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin")
+                list(APPEND
+                    "QT_SBOM_PACKAGES_WITH_VERIFICATION_CODES_SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QMYSQLDriverPlugin"
+                    "${sha1}")
             endif()
             file(APPEND "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/staging-qsqlitedriverplugins.spdx.in"
 "

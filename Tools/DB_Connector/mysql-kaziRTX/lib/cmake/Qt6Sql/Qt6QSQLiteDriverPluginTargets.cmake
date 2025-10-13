@@ -59,10 +59,10 @@ set_target_properties(Qt6::QSQLiteDriverPlugin PROPERTIES
   QT_PLUGIN_TYPE "sqldrivers"
   _qt_is_internal_library "TRUE"
   _qt_is_internal_target "TRUE"
-  _qt_package_version "6.9.2"
+  _qt_package_version "6.9.3"
   _qt_sbom_spdx_id "SPDXRef-Package-qsqlitedriverplugins-qt-plugin-QSQLiteDriverPlugin"
-  _qt_sbom_spdx_relative_installed_repo_document_path "sbom/qsqlitedriverplugins-6.9.2.spdx"
-  _qt_sbom_spdx_repo_document_namespace "https://qt.io/spdxdocs/qsqlitedriverplugins-6.9.2"
+  _qt_sbom_spdx_relative_installed_repo_document_path "sbom/qsqlitedriverplugins-6.9.3.spdx"
+  _qt_sbom_spdx_repo_document_namespace "https://qt.io/spdxdocs/qsqlitedriverplugins-6.9.3"
   _qt_sbom_spdx_repo_project_name_lowercase "qsqlitedriverplugins"
 )
 

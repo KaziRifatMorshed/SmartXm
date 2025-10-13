@@ -5,14 +5,20 @@
 #include <QMessageBox>
 #include <QtConcurrent>
 #include <Users.h>
+#include <db_sqlite.h>
 #include <db_xampp.h>
 #include <iostream>
 #include <networking/client/Client.h>
 #include <stdlib.h>
 #include <studentmodulev2.h>
+#include <QDateTime>
+
+// #define LOGIN_CACHE_ENABLE
+#define TEACHER_CACHE_ENABLE
 
 Client *client;
 localDB *dbInstance = nullptr;
+SQliteDB *cacheDbInstance_ = nullptr;
 
 bool clientConnectedToLocalServer = false;
 
@@ -38,6 +44,8 @@ WelcomeWindow::WelcomeWindow(QWidget *parent)
               statusUpdateTimer->stop();
             }
           });
+
+  cacheDbInstance_ = SQliteDB::instance();
 }
 
 WelcomeWindow::~WelcomeWindow() { delete ui; }
@@ -121,20 +129,20 @@ void WelcomeWindow::on_teacherWelcome_pushButton_4_clicked() {
 }
 
 void WelcomeWindow::updateStatusLabels() {
-    QtConcurrent::run([this]() {
+  QtConcurrent::run([this]() {
     bool xamppRunning = isXamppServiceRunning("127.0.0.1", 3306);
     bool internetConnected =
 #ifdef __linux__
         (system("ping -c 1 8.8.8.8 > /dev/null 2>&1") == 0);
 #elif _WIN32
         ([]() {
-            QProcess pingProcess;
-            QString program = "ping";
-            QStringList arguments;
-            arguments << "-n" << "1" << "8.8.8.8";
-            pingProcess.start(program, arguments);
-            bool finished = pingProcess.waitForFinished(2000);
-            return finished && (pingProcess.exitCode() == 0);
+          QProcess pingProcess;
+          QString program = "ping";
+          QStringList arguments;
+          arguments << "-n" << "1" << "8.8.8.8";
+          pingProcess.start(program, arguments);
+          bool finished = pingProcess.waitForFinished(2000);
+          return finished && (pingProcess.exitCode() == 0);
         })();
 #endif
 
@@ -217,7 +225,17 @@ void WelcomeWindow::on_pushButton_clicked() {
   QString inputtedEmail = ui->email_lineEdit->text().trimmed();
   QString inputtedPass = ui->pass_lineEdit_2->text().trimmed();
 
-#define LOGIN_DEBUG
+// #define LOGIN_CACHE_ENABLE
+#ifdef LOGIN_CACHE_ENABLE
+    cacheDbInstance = SQliteDB::instance();
+  if (cacheDbInstance->checkLastLogin()) {
+      close();
+      studentModuleV2Window = new StudentModuleV2();
+      studentModuleV2Window->show();
+  }
+#endif
+
+// #define LOGIN_DEBUG
 #ifdef LOGIN_DEBUG
   bool temp = true; // if login info are true
   // bool isTeacher = (inputtedEmail == "t") ? true : false;
@@ -245,7 +263,8 @@ void WelcomeWindow::on_pushButton_clicked() {
         "SELECT * FROM `Users` WHERE Users.email = '" + inputtedEmail +
         "' AND Users.password = '" + inputtedPass + "';");
 
-    if (loginDataValidationFromDB.isActive() && loginDataValidationFromDB.next() &&
+    if (loginDataValidationFromDB.isActive() &&
+        loginDataValidationFromDB.next() &&
         loginDataValidationFromDB.size() == 1) {
       close();
 
@@ -265,6 +284,16 @@ void WelcomeWindow::on_pushButton_clicked() {
 
       teacherModuleWindow = new TeacherModule();
       teacherModuleWindow->show();
+
+#ifdef TEACHER_CACHE_ENABLE
+      qDebug() << "call inserting Login Cache ";
+      cacheDbInstance_ = SQliteDB::instance();
+      cacheDbInstance_->insertLoginCache(loginDataValidationFromDB.value("user_id").toInt(),
+                                        loginDataValidationFromDB.value("identity").toString().toStdString(),
+                                        loginDataValidationFromDB.value("id").toString().toStdString(),
+                                        loginDataValidationFromDB.value("email").toString().toStdString(),
+                                        QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
+#endif
 
     } else {
       QMessageBox::critical(

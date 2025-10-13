@@ -1,8 +1,8 @@
-# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.2/Src/qtbase/src/plugins/sqldrivers
+# Install script for directory: /home/noobcod3r-rtx/Qt/6.9.3/Src/qtbase/src/plugins/sqldrivers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/noobcod3r-rtx/Qt/6.9.2/gcc_64")
+  set(CMAKE_INSTALL_PREFIX "/home/noobcod3r-rtx/Qt/6.9.3/gcc_64")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -64,15 +64,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "sbom" OR NOT CMAKE_INSTALL_COMPONENT)
         if(QT_SBOM_INSTALLED_ALL_CONFIGS)
             set(QT_SBOM_BUILD_TIME FALSE)
             set(QT_SBOM_OUTPUT_DIR "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom")
-            set(QT_SBOM_OUTPUT_PATH "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom/qsqlitedriverplugins-6.9.2.spdx")
-            set(QT_SBOM_OUTPUT_PATH_WITHOUT_EXT "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom/qsqlitedriverplugins-6.9.2")
+            set(QT_SBOM_OUTPUT_PATH "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom/qsqlitedriverplugins-6.9.3.spdx")
+            set(QT_SBOM_OUTPUT_PATH_WITHOUT_EXT "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom/qsqlitedriverplugins-6.9.3")
             file(MAKE_DIRECTORY "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/sbom")
             include("/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/assemble_sbom.cmake")
             
-            list(SORT QT_SBOM_VERIFICATION_CODES)
-            string(REPLACE ";" "" QT_SBOM_VERIFICATION_CODES "${QT_SBOM_VERIFICATION_CODES}")
-            file(WRITE "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/verification.txt" "${QT_SBOM_VERIFICATION_CODES}")
-            file(SHA1 "/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/verification.txt" QT_SBOM_VERIFICATION_CODE)
+            include("/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/process_verification_codes.cmake")
             
             message(STATUS "Finalizing SBOM generation in install dir: ${QT_SBOM_OUTPUT_PATH}")
             configure_file("/home/noobcod3r-rtx/Documents/GitHub/SmartXm-Cross-Platform-Desktop-Exam-Management-with-Integrated-Judge/Tools/DB_Connector/mysql-kaziRTX/qt_sbom/staging-qsqlitedriverplugins.spdx.in" "${QT_SBOM_OUTPUT_PATH}")
