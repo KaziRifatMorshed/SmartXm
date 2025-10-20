@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TeacherModule</string>
+   <string>SmartXm : Teacher Module</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -393,7 +393,14 @@
            <item>
             <widget class="QPushButton" name="testExam_pushButton_3">
              <property name="text">
-              <string>Leaderboard</string>
+              <string>Send Questions</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Evaluate</string>
              </property>
             </widget>
            </item>

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <createormodifyexam.h>
 #include <createquestion.h>
+#include <evaluation.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,9 +37,12 @@ private slots:
 
     void on_createQues_pushButton_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::TeacherModule *ui;
     CreateOrModifyExam *createOrModifyXm = nullptr;
     CreateQuestion *createQuesWidgetWindow = nullptr;
+    Evaluation *evaluationWindow = nullptr;
 };
 #endif // TEACHERMODULE_H

@@ -11,6 +11,7 @@
 #include <Users.h>
 
 
+
 Server *server;
 QString instructionFileName = "";
 Users &currentUser = Users::getInstance();
@@ -28,7 +29,7 @@ TeacherModule::TeacherModule(QWidget *parent)
   ui->dashboard_teacherName->setText(QString::fromStdString(currentUser.getName()));
   ui->dashboard_teacherEmail->setText(QString::fromStdString(currentUser.getEmail()));
   ui->dashboard_TeacherDesignation->setText(QString::fromStdString(currentUser.getId()));
-  ui->tabWidget->setCurrentIndex(1);
+  ui->tabWidget->setCurrentIndex(0);
 
   // ServerConnectedPC_Table:
   ui->connectedPCwithServer_tableWidget->setRowCount(100);
@@ -223,5 +224,17 @@ void TeacherModule::on_createQues_pushButton_clicked()
     createQuesWidgetWindow->show();
     createQuesWidgetWindow->raise();
     createQuesWidgetWindow->activateWindow();
+}
+
+
+void TeacherModule::on_pushButton_clicked()
+{
+    if(!evaluationWindow){
+        evaluationWindow = new Evaluation();
+    }
+
+    evaluationWindow->show();
+    evaluationWindow->raise();
+    evaluationWindow->activateWindow();
 }
 
