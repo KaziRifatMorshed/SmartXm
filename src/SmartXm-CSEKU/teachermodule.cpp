@@ -4,12 +4,15 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QHeaderView>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QTableWidgetItem>
+#include <QTimer>
+#include <Users.h>
+#include <db_xampp.h>
 #include <fstream>
 #include <iostream>
-#include <db_xampp.h>
-#include <Users.h>
-
 
 Server *server;
 QString instructionFileName = "";
@@ -24,22 +27,42 @@ TeacherModule::TeacherModule(QWidget *parent)
   ui->serverIP_label_3->setText(
       "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
       "NOT STARTED</span></p></body></html>");
-  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Welcome, " + QString::fromStdString(currentUser.getName()) + " Sir</span></p></body></html>");
-  ui->dashboard_teacherName->setText(QString::fromStdString(currentUser.getName()));
-  ui->dashboard_teacherEmail->setText(QString::fromStdString(currentUser.getEmail()));
-  ui->dashboard_TeacherDesignation->setText(QString::fromStdString(currentUser.getId()));
+  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" "
+                     "font-size:20pt;\">Welcome, " +
+                     QString::fromStdString(currentUser.getName()) +
+                     " Sir</span></p></body></html>");
+  ui->dashboard_teacherName->setText(
+      QString::fromStdString(currentUser.getName()));
+  ui->dashboard_teacherEmail->setText(
+      QString::fromStdString(currentUser.getEmail()));
+  ui->dashboard_TeacherDesignation->setText(
+      QString::fromStdString(currentUser.getId()));
   ui->tabWidget->setCurrentIndex(1);
 
-  // ServerConnectedPC_Table:
-  ui->connectedPCwithServer_tableWidget->setRowCount(100);
-  for (int var = 0; var < 20; ++var) {
-    ui->connectedPCwithServer_tableWidget->setItem(
-        var, 0, new QTableWidgetItem(QString("a")));
-    ui->connectedPCwithServer_tableWidget->setItem(
-        var, 1, new QTableWidgetItem(QString("b")));
-    ui->connectedPCwithServer_tableWidget->setItem(
-        var, 2, new QTableWidgetItem(QString("c")));
-  }
+  // Initial table setup (keeps headers visible)
+  ui->connectedPCwithServer_tableWidget->setColumnCount(4);
+  ui->connectedPCwithServer_tableWidget->setHorizontalHeaderLabels(QStringList()
+                                                                   << "Name"
+                                                                   << "Stu ID"
+                                                                   << "Local IP"
+                                                                   << "Action");
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setStretchLastSection(false);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(0, QHeaderView::Stretch);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+
+  // Start a timer that updates the connected clients list every 1 second.
+  clientsUpdateTimer = new QTimer(this);
+  clientsUpdateTimer->setInterval(1000); // 1 second
+  connect(clientsUpdateTimer, &QTimer::timeout, this,
+          &TeacherModule::showConnectedStudentInfo);
+  clientsUpdateTimer->start();
 }
 
 TeacherModule::~TeacherModule() { delete ui; }
@@ -67,7 +90,6 @@ void TeacherModule::on_StartServer_toolButton_clicked() {
 void TeacherModule::on_StopServer_toolButton_2_clicked() {
   std::cout << "Stop Server button clicked" << std::endl;
   if (server != nullptr && Server::isRunning()) {
-    // if (server != nullptr) {
     std::cout << "trying to stop server..." << std::endl;
     server->stop();
     server = nullptr;
@@ -84,28 +106,77 @@ void TeacherModule::on_StopServer_toolButton_2_clicked() {
   ui->StopServer_toolButton_2->setEnabled(false);
 }
 
-/*
-void updateStudentInfo(const QString& name, const QString& id, const QString&
-localIp) {
-    // Check if the student already exists (by ID for example)
-    int row = -1;
-    for (int i = 0; i < tableWidget->rowCount(); ++i) {
-        if (tableWidget->item(i, 1)->text() == id) {
-            row = i;
-            break;
-        }
-    }
-    if (row == -1) {
-        // New student, add a new row
-        row = tableWidget->rowCount();
-        tableWidget->insertRow(row);
-    }
+void TeacherModule::showConnectedStudentInfo() {
+  // This function populates the connectedPCwithServer_tableWidget with
+  // currently connected clients from the server instance.
+  // It tolerantly handles the absence of a server instance.
 
-    tableWidget->setItem(row, 0, new QTableWidgetItem(name));
-    tableWidget->setItem(row, 1, new QTableWidgetItem(id));
-    tableWidget->setItem(row, 2, new QTableWidgetItem(localIp));
+  if (!ui)
+    return; // defensive
+  if (server == nullptr) {
+    // No server running: clear the table
+    ui->connectedPCwithServer_tableWidget->setRowCount(0);
+    return;
+  }
+
+  // Get a snapshot of connected clients in a thread-safe way.
+  std::vector<ClientInfo> clients;
+  try {
+    clients = server->getClients();
+  } catch (...) {
+    ui->connectedPCwithServer_tableWidget->setRowCount(0);
+    return;
+  }
+
+  const int connectedClientsNo = static_cast<int>(clients.size());
+
+  // Clear existing rows (this deletes any cell widgets too) and set new row
+  // count.
+  ui->connectedPCwithServer_tableWidget->setRowCount(0);
+  ui->connectedPCwithServer_tableWidget->setRowCount(connectedClientsNo);
+
+  for (int row = 0; row < connectedClientsNo; ++row) {
+    const ClientInfo &ci = clients[row];
+
+    // Column 0: Name (use clientName if present)
+    QString name = QString::fromStdString(ci.clientName);
+    if (name.isEmpty())
+      name = QString("Client %1").arg(row + 1);
+    ui->connectedPCwithServer_tableWidget->setItem(row, 0,
+                                                   new QTableWidgetItem(name));
+
+    // Column 1: Stu ID (ClientInfo does not have explicit student id; use
+    // socket fd as identifier)
+    ui->connectedPCwithServer_tableWidget->setItem(
+        row, 1, new QTableWidgetItem(QString::number(00)));
+
+    // Column 2: Local IP
+    ui->connectedPCwithServer_tableWidget->setItem(
+        row, 2, new QTableWidgetItem(QString::fromStdString(ci.ip)));
+
+    // Column 3: Action - provide a small Info button that shows details.
+    QPushButton *infoBtn = new QPushButton("Info");
+    infoBtn->setProperty("client_name", name);
+    infoBtn->setProperty("client_ip", QString::fromStdString(ci.ip));
+    infoBtn->setProperty("client_socfd", ci.socfd);
+
+    // When clicked, show a simple info dialog. (Disconnect requires server API)
+    connect(infoBtn, &QPushButton::clicked, this, [this, infoBtn]() {
+      QString n = infoBtn->property("client_name").toString();
+      QString ip = infoBtn->property("client_ip").toString();
+      int fd = infoBtn->property("client_socfd").toInt();
+      QMessageBox::information(this, "Connected Client",
+                               QString("Name: %1\nLocal IP: %2\nSocket FD: %3")
+                                   .arg(n)
+                                   .arg(ip)
+                                   .arg(fd));
+    });
+
+    ui->connectedPCwithServer_tableWidget->setCellWidget(row, 3, infoBtn);
+  }
+
+  ui->connectedPCwithServer_tableWidget->resizeColumnsToContents();
 }
- */
 
 void TeacherModule::on_selectFile_pushButton_clicked() {
   QString filter =
@@ -188,40 +259,34 @@ void TeacherModule::on_testExam_pushButton_3_clicked() {
   }
 }
 
+void TeacherModule::on_createXm_pushButton_clicked() {
+  // Exam creation features will be here
 
-void TeacherModule::on_createXm_pushButton_clicked()
-{
-    // Exam creation features will be here
-
-    if(!createOrModifyXm){
-        createOrModifyXm = new CreateOrModifyExam();
-    }
-    createOrModifyXm->show();
-    createOrModifyXm->raise();
-    createOrModifyXm->activateWindow();
+  if (!createOrModifyXm) {
+    createOrModifyXm = new CreateOrModifyExam();
+  }
+  createOrModifyXm->show();
+  createOrModifyXm->raise();
+  createOrModifyXm->activateWindow();
 }
 
+void TeacherModule::on_editExam_pushButon_2_clicked() {
+  // Exam entry modification
 
-void TeacherModule::on_editExam_pushButon_2_clicked()
-{
-    // Exam entry modification
-
-    if(!createOrModifyXm){
-        createOrModifyXm = new CreateOrModifyExam(); // may need to pass ExamId (PrimaryKey)
-    }
-    createOrModifyXm->show();
-    createOrModifyXm->raise();
-    createOrModifyXm->activateWindow();
+  if (!createOrModifyXm) {
+    createOrModifyXm =
+        new CreateOrModifyExam(); // may need to pass ExamId (PrimaryKey)
+  }
+  createOrModifyXm->show();
+  createOrModifyXm->raise();
+  createOrModifyXm->activateWindow();
 }
 
-
-void TeacherModule::on_createQues_pushButton_clicked()
-{
-    if (!createQuesWidgetWindow){
-        createQuesWidgetWindow = new CreateQuestion();
-    }
-    createQuesWidgetWindow->show();
-    createQuesWidgetWindow->raise();
-    createQuesWidgetWindow->activateWindow();
+void TeacherModule::on_createQues_pushButton_clicked() {
+  if (!createQuesWidgetWindow) {
+    createQuesWidgetWindow = new CreateQuestion();
+  }
+  createQuesWidgetWindow->show();
+  createQuesWidgetWindow->raise();
+  createQuesWidgetWindow->activateWindow();
 }
-

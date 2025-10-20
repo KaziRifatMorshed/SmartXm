@@ -4,10 +4,11 @@
 #include <QMainWindow>
 #include <createormodifyexam.h>
 #include <createquestion.h>
+#include <QTimer>
 
-QT_BEGIN_NAMESPACE
+              QT_BEGIN_NAMESPACE
 namespace Ui {
-class TeacherModule;
+    class TeacherModule;
 }
 QT_END_NAMESPACE
 
@@ -36,9 +37,14 @@ private slots:
 
     void on_createQues_pushButton_clicked();
 
+           // Periodic updater for connected clients UI
+    void showConnectedStudentInfo();
+
 private:
     Ui::TeacherModule *ui;
     CreateOrModifyExam *createOrModifyXm = nullptr;
     CreateQuestion *createQuesWidgetWindow = nullptr;
+
+    QTimer *clientsUpdateTimer = nullptr;
 };
 #endif // TEACHERMODULE_H

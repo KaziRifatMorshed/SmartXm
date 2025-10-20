@@ -7,6 +7,7 @@ public:
     int socfd; // socket file discriptor
     std::string ip;
     std::string clientName;
+    std::string studentID;
     int port;
 };
 #endif
