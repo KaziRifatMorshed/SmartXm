@@ -1,8 +1,10 @@
 #ifndef EVALUATION_H
 #define EVALUATION_H
-
+#include <QMessageBox>
 #include <QMainWindow>
-
+#include <QWidget>
+#include <filesystem>
+#include<QString>
 namespace Ui
 {
     class Evaluation;
@@ -23,8 +25,26 @@ private slots:
 
     void on_complete_pushButton_clicked();
 
+    void on_evaluate_clicked();
+
+    void on_reEvaluate_clicked();
+
+    void on_stopEvaluation_clicked();
+
 private:
     Ui::Evaluation* ui;
+    bool evaluating =false;
+    bool readSubmissionInfo(const std::string &submissionInfoFile, std::vector<int> &submissionInformation);
+    bool readJudgeInfo(const std::string &judgeInfoPath, std::vector<std::vector<double>> &judgeInformation);
+    bool readTestCaseInfo(const std::string &testCaseInfoFile, std::vector<int> &testCaseInformation);
+
+#ifdef _WIN32
+    QString dirPath = "C:/SmartXm/Editor/";
+    QString systemDirPath = "C:/SmartXm/System/";
+#else
+    QString dirPath = "/SmartXm/Editor/";
+    QString systemDirPath = "/SmartXm/System/";
+#endif
 };
 
 #endif // EVALUATION_H

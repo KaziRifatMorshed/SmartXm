@@ -80,7 +80,7 @@ Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
         return Verdict("Unsupported File Type",0,0);
     }
 
-
+    sourceCodeLimit*=1024;
 
     if (ext == "c"||ext=="cpp"||ext=="c++")
     {
@@ -401,7 +401,7 @@ double Judge::getNormalizeFactor()
         cpuTimeMS = (endTime.tv_sec - startTime.tv_sec) * 1000 +
             (endTime.tv_nsec - startTime.tv_nsec) / 1000000;
 
-         factor = cpuTimeMS / 140.0;
+         factor = cpuTimeMS / 170.0;
     });
 
     thread->start();
@@ -424,7 +424,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
                           long long &usedMemoryKB,
                           bool inFlag)
 {
-    usedTimeMS=0;
+    usedTimeMS=30;
     double factor=getNormalizeFactor();
     timeLimitMS=round(timeLimitMS*factor);
 

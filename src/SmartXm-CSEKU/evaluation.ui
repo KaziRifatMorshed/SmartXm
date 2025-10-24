@@ -33,64 +33,130 @@
          <attribute name="title">
           <string>Dashboard</string>
          </attribute>
-         <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Course:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Total Students:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Total Submission Files:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QPushButton" name="evaluateAll_pushButton_2">
-            <property name="text">
-             <string>Evaluate All</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>Date of exam:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Topic:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QLabel" name="autoEvalStatus_label_10">
-            <property name="text">
-             <string>0/?? Completed</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Autometic &lt;br/&gt;Evaluation Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QLabel" name="label_7">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>9</y>
+            <width>51</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Course:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_5">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>267</y>
+            <width>102</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Total Students:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_6">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>332</y>
+            <width>151</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Total Submission Files:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_9">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>138</y>
+            <width>94</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Date of exam:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_8">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>74</y>
+            <width>40</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Topic:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="autoEvalStatus_label_10">
+          <property name="geometry">
+           <rect>
+            <x>166</x>
+            <y>460</y>
+            <width>104</width>
+            <height>18</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0/?? Completed</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_11">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>460</y>
+            <width>120</width>
+            <height>36</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Automatic &lt;br/&gt;Evaluation Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>360</x>
+            <y>390</y>
+            <width>307</width>
+            <height>28</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QPushButton" name="evaluate">
+             <property name="text">
+              <string>Evaluate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reEvaluate">
+             <property name="text">
+              <string>Re-Evaluate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="stopEvaluation">
+             <property name="text">
+              <string>Stop Evaluation</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
         <widget class="QWidget" name="manualEvalTab">
          <attribute name="title">
@@ -432,7 +498,7 @@
      <x>0</x>
      <y>0</y>
      <width>1092</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
