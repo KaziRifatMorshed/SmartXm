@@ -370,6 +370,46 @@ double Judge::getNormalizeFactor()
 
     CloseHandle(hThread);
 
+#else
+    const int n = 200000;
+    const char* filename = "normalizeFactorCal.txt";
+
+    long long cpuTimeMS = 0;
+
+           // Create and run the thread using a lambda
+    QThread* thread = QThread::create([n, filename, &cpuTimeMS,&factor]() {
+        // Measure CPU time at thread start
+        struct timespec startTime, endTime;
+        clock_gettime(CLOCK_THREAD_CPUTIME_ID, &startTime);
+
+        QFile file(filename);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            int sum = 0;
+            for (int i = 0; i < n; ++i) {
+                sum = (sum + i) % 10000007;
+                out << sum << Qt::endl;
+            }
+            file.close();
+        }
+
+        std::remove(filename);  // delete file
+
+               // Measure CPU time at thread end
+        clock_gettime(CLOCK_THREAD_CPUTIME_ID, &endTime);
+
+        cpuTimeMS = (endTime.tv_sec - startTime.tv_sec) * 1000 +
+            (endTime.tv_nsec - startTime.tv_nsec) / 1000000;
+
+         factor = cpuTimeMS / 140.0;
+    });
+
+    thread->start();
+    thread->wait();  // wait for thread to finish
+    delete thread;
+
+
+
 #endif
       return factor;
 }
@@ -387,6 +427,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
     usedTimeMS=0;
     double factor=getNormalizeFactor();
     timeLimitMS=round(timeLimitMS*factor);
+
 #ifdef _WIN32
 
 
@@ -535,7 +576,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
                // Convert from 100-nanosecond units to milliseconds
         long long elapsed = (k.QuadPart + u.QuadPart) / 10000;
         usedTimeMS=fmax(elapsed/(1.0*factor),usedTimeMS);
-        if (elapsed > timeLimitMS) {
+        if (elapsed >= timeLimitMS) {
             // Time limit exceeded
 
             TerminateProcess(pi.hProcess, 1);
@@ -677,7 +718,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
            // Store only the PID atomically - no pointers
     currentProcessPid.store(pid);
 
-    auto start = std::chrono::steady_clock::now();
+
 
            // Monitoring loop with precise timing
     while (true) {
@@ -698,8 +739,9 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
 
                // Calculate elapsed time
-        auto now = std::chrono::steady_clock::now();
-        long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+
+        long long elapsed =getChildCpuTimeMS(pid);
+        usedTimeMS=fmax(usedTimeMS,elapsed/(1.0*factor));
 
                // Check memory usage
         long long currentMemoryKB = getProcessMemoryUsage(pid);
@@ -727,8 +769,9 @@ int Judge::runWithTimeout(const std::string &runCommand,
         process.waitForFinished(waitTime);
     }
 
-    auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    long long elapsed =getChildCpuTimeMS(pid);
+    usedTimeMS=fmax(usedTimeMS,elapsed/(1.0*factor));
 
            // Get final memory usage
     //usedMemoryKB = getProcessMemoryUsage(pid);
@@ -801,6 +844,34 @@ void Judge::stopJudge() {
 }
 
 #ifndef _WIN32
+
+long long Judge::getChildCpuTimeMS(pid_t pid)
+{
+    std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
+    if (!statFile.is_open())
+        return 0;
+
+    std::string content;
+    std::getline(statFile, content);
+    statFile.close();
+
+    std::istringstream iss(content);
+    std::string token;
+    int i = 0;
+    long utime = 0, stime = 0;
+
+    while (iss >> token) {
+        ++i;
+        if (i == 14) utime = std::stol(token);   // user CPU time
+        if (i == 15) { stime = std::stol(token); break; } // kernel CPU time
+    }
+
+    long ticksPerSec = sysconf(_SC_CLK_TCK); // usually 100
+    long long cpuMS = (utime + stime) * 1000 / ticksPerSec;
+    return cpuMS;
+}
+
+
 bool Judge::isProcessRunning(pid_t pid)
 {
     if (pid <= 0) return false;

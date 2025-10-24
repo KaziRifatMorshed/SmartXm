@@ -11,7 +11,9 @@
 #include <filesystem>
 #include <atomic>
 #include<chrono>
-
+#include <QFile>
+#include <QTextStream>
+#include<cstdio>
 #include "verdict.h"
 
 #ifdef _WIN32
@@ -80,6 +82,7 @@ private:
     Verdict isReadyForJudge(int &effectiveTimeLimit,
                                    int &effectiveMemoryLimit,
                             int &effectiveSourceCodeLimit);
+
     std::vector<Verdict> generateVerdicts(std::string verdict,int n);
     std::string normalize(const std::string &s);
 
@@ -103,7 +106,7 @@ public:
 private:
     long long getProcessMemoryUsageFast(pid_t pid);
     long long getProcessMemoryUsage(pid_t pid);
-
+    long long getChildCpuTimeMS(pid_t pid);
     std::mutex processControlMutex;
     std::atomic<pid_t> currentProcessPid{0};
 private:
