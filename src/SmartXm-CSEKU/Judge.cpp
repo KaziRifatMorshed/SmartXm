@@ -296,6 +296,83 @@ std::string Judge::executeCommand(std::string &command)
     return result;
 }
 
+#ifdef _WIN32
+
+DWORD WINAPI ThreadFunction(LPVOID lpParam)
+{
+    int n = 100000;
+    const char* filename = "temp.txt";
+    std::ofstream outFile(filename);
+    if (!outFile) {
+
+        return 0;
+    }
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum = (sum + i) % 10000007;
+        outFile << sum << std::endl;
+    }
+
+
+    outFile.close();
+
+
+    if (std::remove(filename) == 0) {
+        return 0;
+    } else {
+        return 0;
+    }
+    return 0;
+}
+#endif
+
+double Judge::getNormalizeFactor()
+{
+#ifdef _WIN32
+    HANDLE hThread;
+    DWORD threadId;
+
+           // Create the thread
+    hThread = CreateThread(
+        NULL,              // default security
+        0,                 // default stack size
+        ThreadFunction,    // thread function
+        NULL,              // parameter
+        0,                 // default creation flags
+        &threadId          // thread ID
+        );
+
+    if (hThread == NULL) {
+
+        return 1;
+    }
+
+           // Wait for the thread to finish
+    WaitForSingleObject(hThread, INFINITE);
+
+           // Get thread CPU times
+    FILETIME createTime, exitTime, kernelTime, userTime;
+    if (!GetThreadTimes(hThread, &createTime, &exitTime, &kernelTime, &userTime)) {
+
+        return 1;
+    }
+
+           // Convert FILETIME to milliseconds
+    ULARGE_INTEGER k, u;
+    k.LowPart = kernelTime.dwLowDateTime;
+    k.HighPart = kernelTime.dwHighDateTime;
+    u.LowPart = userTime.dwLowDateTime;
+    u.HighPart = userTime.dwHighDateTime;
+
+    long long cpuTimeMS = (k.QuadPart + u.QuadPart) / 10000;
+    double factor =cpuTimeMS/110.0;
+
+    CloseHandle(hThread);
+    return factor;
+#endif
+}
+
+
 int Judge::runWithTimeout(const std::string &runCommand,
                           std::string &inputFile,
                           std::string &outputFile,
@@ -305,7 +382,11 @@ int Judge::runWithTimeout(const std::string &runCommand,
                           long long &usedMemoryKB,
                           bool inFlag)
 {
+    usedTimeMS=0;
 #ifdef _WIN32
+    double factor=getNormalizeFactor();
+    timeLimitMS=round(timeLimitMS*factor);
+    std::cout<<factor<<std::endl;
     STARTUPINFOA si = {sizeof(si)};
     si.dwFlags = STARTF_USESTDHANDLES;
     HANDLE hInput = INVALID_HANDLE_VALUE;
@@ -409,7 +490,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
                 peakMemoryBytes = pmcEx.PrivateUsage;
             }
 
-            // Check if memory limit exceeded (in case job object didn't catch it)
+                   // Check if memory limit exceeded (in case job object didn't catch it)
             SIZE_T currentMemoryKB = pmcEx.PrivateUsage / 1024;
             if (currentMemoryKB > memoryLimitKB) {
                 TerminateProcess(pi.hProcess, 1);
@@ -437,11 +518,22 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
 
                // Calculate remaining time
-        auto now = std::chrono::steady_clock::now();
-        long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
 
-        if (elapsed >= timeLimitMS) {
+        FILETIME createTime, exitTime, kernelTime, userTime;
+        GetProcessTimes(currentProcessHandle, &createTime, &exitTime, &kernelTime, &userTime);
+
+        ULARGE_INTEGER k, u;
+        k.LowPart = kernelTime.dwLowDateTime;
+        k.HighPart = kernelTime.dwHighDateTime;
+        u.LowPart = userTime.dwLowDateTime;
+        u.HighPart = userTime.dwHighDateTime;
+
+               // Convert from 100-nanosecond units to milliseconds
+        long long elapsed = (k.QuadPart + u.QuadPart) / 10000;
+        usedTimeMS=fmax(elapsed/(1.0*factor),usedTimeMS);
+        if (elapsed > timeLimitMS) {
             // Time limit exceeded
+
             TerminateProcess(pi.hProcess, 1);
             WaitForSingleObject(pi.hProcess, 500);
             verdict = 2; // TLE
@@ -460,8 +552,32 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
     }
 
-    auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    FILETIME createTime, exitTime, kernelTime, userTime;
+    GetProcessTimes(currentProcessHandle, &createTime, &exitTime, &kernelTime, &userTime);
+
+    ULARGE_INTEGER k, u, c, e;
+
+           // Assign kernel and user times
+    k.LowPart = kernelTime.dwLowDateTime;
+    k.HighPart = kernelTime.dwHighDateTime;
+    u.LowPart = userTime.dwLowDateTime;
+    u.HighPart = userTime.dwHighDateTime;
+
+           // Assign create and exit times
+    c.LowPart = createTime.dwLowDateTime;
+    c.HighPart = createTime.dwHighDateTime;
+    e.LowPart = exitTime.dwLowDateTime;
+    e.HighPart = exitTime.dwHighDateTime;
+
+           // Convert from 100-nanosecond units to milliseconds
+    long long elapsed = (k.QuadPart + u.QuadPart) / 10000;
+
+
+           // ✅ Calculate process lifetime (exit - create)
+    long long lifetimeMS = (e.QuadPart - c.QuadPart) / 10000;
+
+    std::cout<<lifetimeMS<<std::endl;
+
 
            // Use the peak memory we tracked during execution
     usedMemoryKB = peakMemoryBytes / 1024;
@@ -580,7 +696,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
 
     pid_t pid = process.processId();
 
-    // Store only the PID atomically - no pointers
+           // Store only the PID atomically - no pointers
     currentProcessPid.store(pid);
 
     auto start = std::chrono::steady_clock::now();
@@ -711,8 +827,8 @@ bool Judge::isProcessRunning(pid_t pid)
 {
     if (pid <= 0) return false;
 
-    // Use kill with signal 0 to check if process exists
-    // Returns 0 if process exists, -1 if not
+           // Use kill with signal 0 to check if process exists
+           // Returns 0 if process exists, -1 if not
     return (kill(pid, 0) == 0);
 }
 
@@ -722,20 +838,20 @@ void Judge::killProcessSafely(pid_t pid)
         return; // Invalid PID, do nothing
     }
 
-    // Double-check this is the exact PID we stored
+           // Double-check this is the exact PID we stored
     if (pid != currentProcessPid.load()) {
         return; // Safety check - don't kill if PID doesn't match
     }
 
-    // Verify process exists before killing
+           // Verify process exists before killing
     if (!isProcessRunning(pid)) {
         return; // Process already dead
     }
 
-    // Send SIGTERM for graceful shutdown
+           // Send SIGTERM for graceful shutdown
     kill(pid, SIGTERM);
 
-    // If still running, send SIGKILL
+           // If still running, send SIGKILL
     if (isProcessRunning(pid)) {
 
         kill(pid, SIGKILL);

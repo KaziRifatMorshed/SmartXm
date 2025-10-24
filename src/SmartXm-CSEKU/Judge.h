@@ -66,6 +66,8 @@ private:
     bool checkCompiler(const std::string& ext);
     std::string executeCommand(std::string& command);
     std::string runHiddenCommand(const std::string &cmd);
+    double getNormalizeFactor();
+
 
     int runWithTimeout(const std::string &exeFile,
                                std::string &inputFile,
