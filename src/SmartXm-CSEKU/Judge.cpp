@@ -301,7 +301,7 @@ std::string Judge::executeCommand(std::string &command)
 DWORD WINAPI ThreadFunction(LPVOID lpParam)
 {
     int n = 100000;
-    const char* filename = "temp.txt";
+    const char* filename = "normalizeFactorCal.txt";
     std::ofstream outFile(filename);
     if (!outFile) {
 
