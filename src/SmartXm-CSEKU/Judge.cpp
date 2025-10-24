@@ -328,6 +328,7 @@ DWORD WINAPI ThreadFunction(LPVOID lpParam)
 
 double Judge::getNormalizeFactor()
 {
+    double factor=1;
 #ifdef _WIN32
     HANDLE hThread;
     DWORD threadId;
@@ -365,11 +366,12 @@ double Judge::getNormalizeFactor()
     u.HighPart = userTime.dwHighDateTime;
 
     long long cpuTimeMS = (k.QuadPart + u.QuadPart) / 10000;
-    double factor =cpuTimeMS/110.0;
+     factor =cpuTimeMS/110.0;
 
     CloseHandle(hThread);
-    return factor;
+
 #endif
+      return factor;
 }
 
 
@@ -383,10 +385,12 @@ int Judge::runWithTimeout(const std::string &runCommand,
                           bool inFlag)
 {
     usedTimeMS=0;
-#ifdef _WIN32
     double factor=getNormalizeFactor();
     timeLimitMS=round(timeLimitMS*factor);
-    std::cout<<factor<<std::endl;
+#ifdef _WIN32
+
+
+
     STARTUPINFOA si = {sizeof(si)};
     si.dwFlags = STARTF_USESTDHANDLES;
     HANDLE hInput = INVALID_HANDLE_VALUE;
@@ -458,7 +462,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
            // Resume the process
     ResumeThread(pi.hThread);
 
-    auto start = std::chrono::steady_clock::now();
+
 
            // Track peak memory usage during execution
     SIZE_T peakMemoryBytes = 0;
@@ -551,32 +555,6 @@ int Judge::runWithTimeout(const std::string &runCommand,
             break;
         }
     }
-
-    FILETIME createTime, exitTime, kernelTime, userTime;
-    GetProcessTimes(currentProcessHandle, &createTime, &exitTime, &kernelTime, &userTime);
-
-    ULARGE_INTEGER k, u, c, e;
-
-           // Assign kernel and user times
-    k.LowPart = kernelTime.dwLowDateTime;
-    k.HighPart = kernelTime.dwHighDateTime;
-    u.LowPart = userTime.dwLowDateTime;
-    u.HighPart = userTime.dwHighDateTime;
-
-           // Assign create and exit times
-    c.LowPart = createTime.dwLowDateTime;
-    c.HighPart = createTime.dwHighDateTime;
-    e.LowPart = exitTime.dwLowDateTime;
-    e.HighPart = exitTime.dwHighDateTime;
-
-           // Convert from 100-nanosecond units to milliseconds
-    long long elapsed = (k.QuadPart + u.QuadPart) / 10000;
-
-
-           // ✅ Calculate process lifetime (exit - create)
-    long long lifetimeMS = (e.QuadPart - c.QuadPart) / 10000;
-
-    std::cout<<lifetimeMS<<std::endl;
 
 
            // Use the peak memory we tracked during execution
