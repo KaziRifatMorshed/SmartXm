@@ -25,7 +25,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="Dashboard_tab">
        <attribute name="title">
@@ -238,16 +238,6 @@
              <property name="selectionBehavior">
               <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
              </property>
-             <row>
-              <property name="text">
-               <string>2</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>1</string>
-              </property>
-             </row>
              <row/>
              <column>
               <property name="text">
@@ -286,22 +276,22 @@
              </column>
              <item row="0" column="0">
               <property name="text">
-               <string>Data Structure Lab</string>
+               <string>Algorithms Lab</string>
               </property>
              </item>
              <item row="0" column="1">
               <property name="text">
-               <string>CSE 2100</string>
+               <string>CSE 2200</string>
               </property>
              </item>
              <item row="0" column="2">
               <property name="text">
-               <string>Mr. XYZ ABCD</string>
+               <string>Mr. ABC XYZ</string>
               </property>
              </item>
              <item row="0" column="3">
               <property name="text">
-               <string>Stack</string>
+               <string>Greedy</string>
               </property>
              </item>
              <item row="0" column="4">
@@ -310,66 +300,6 @@
               </property>
              </item>
              <item row="0" column="5">
-              <property name="text">
-               <string>dummy</string>
-              </property>
-             </item>
-             <item row="1" column="0">
-              <property name="text">
-               <string>Computer Fundamentals Lab</string>
-              </property>
-             </item>
-             <item row="1" column="1">
-              <property name="text">
-               <string>CSE 1100</string>
-              </property>
-             </item>
-             <item row="1" column="2">
-              <property name="text">
-               <string>Mr WXYZ</string>
-              </property>
-             </item>
-             <item row="1" column="3">
-              <property name="text">
-               <string>PowerPoint</string>
-              </property>
-             </item>
-             <item row="1" column="4">
-              <property name="text">
-               <string>dummy</string>
-              </property>
-             </item>
-             <item row="1" column="5">
-              <property name="text">
-               <string>dummy</string>
-              </property>
-             </item>
-             <item row="2" column="0">
-              <property name="text">
-               <string>Algorithms Lab</string>
-              </property>
-             </item>
-             <item row="2" column="1">
-              <property name="text">
-               <string>CSE 2200</string>
-              </property>
-             </item>
-             <item row="2" column="2">
-              <property name="text">
-               <string>Mr. ABC XYZ</string>
-              </property>
-             </item>
-             <item row="2" column="3">
-              <property name="text">
-               <string>Greedy</string>
-              </property>
-             </item>
-             <item row="2" column="4">
-              <property name="text">
-               <string>dummy</string>
-              </property>
-             </item>
-             <item row="2" column="5">
               <property name="text">
                <string>dummy</string>
               </property>

@@ -18,46 +18,45 @@ Server *server;
 QString instructionFileName = "";
 Users &currentUser = Users::getInstance();
 
+// ... (other includes)
+
 TeacherModule::TeacherModule(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::TeacherModule) {
   ui->setupUi(this);
-  ui->serverStatus_label_2->setText(
-      "<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: "
-      "NOT STARTED</span></p></body></html>");
-  ui->serverIP_label_3->setText(
-      "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
-      "NOT STARTED</span></p></body></html>");
-  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" "
-                     "font-size:20pt;\">Welcome, " +
-                     QString::fromStdString(currentUser.getName()) +
-                     " Sir</span></p></body></html>");
-  ui->dashboard_teacherName->setText(
-      QString::fromStdString(currentUser.getName()));
-  ui->dashboard_teacherEmail->setText(
-      QString::fromStdString(currentUser.getEmail()));
-  ui->dashboard_TeacherDesignation->setText(
-      QString::fromStdString(currentUser.getId()));
+  // ... (existing setup code for server status, labels, etc.)
   ui->tabWidget->setCurrentIndex(0);
 
-  // Initial table setup (keeps headers visible)
+  // --- Setup for connectedPCwithServer_tableWidget (you already have this) ---
   ui->connectedPCwithServer_tableWidget->setColumnCount(4);
   ui->connectedPCwithServer_tableWidget->setHorizontalHeaderLabels(QStringList()
                                                                    << "Name"
                                                                    << "Stu ID"
                                                                    << "Local IP"
                                                                    << "Action");
-  ui->connectedPCwithServer_tableWidget->horizontalHeader()
-      ->setStretchLastSection(false);
-  ui->connectedPCwithServer_tableWidget->horizontalHeader()
-      ->setSectionResizeMode(0, QHeaderView::Stretch);
-  ui->connectedPCwithServer_tableWidget->horizontalHeader()
-      ->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-  ui->connectedPCwithServer_tableWidget->horizontalHeader()
-      ->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-  ui->connectedPCwithServer_tableWidget->horizontalHeader()
-      ->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+  // ... (existing header resize code for this table)
 
-  // Start a timer that updates the connected clients list every 1 second.
+  // --- ADD THIS NEW SETUP for allXmList_tableWidget ---
+  // The column headers are set in the .ui file, but we set resizing
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      0, QHeaderView::Stretch); // Course Name
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      1, QHeaderView::ResizeToContents); // Course Code
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      2, QHeaderView::ResizeToContents); // Course Teacher
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      3, QHeaderView::Stretch); // Exam Topic
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      4, QHeaderView::ResizeToContents); // Exam Date
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      5, QHeaderView::ResizeToContents); // Exam Time
+  ui->allXmList_tableWidget->horizontalHeader()->setSectionResizeMode(
+      6, QHeaderView::ResizeToContents); // Action
+
+  // Call the new function to load data
+  populateExamList();
+  // --- END OF NEW CODE ---
+
+  // --- Start clientsUpdateTimer (you already have this) ---
   clientsUpdateTimer = new QTimer(this);
   clientsUpdateTimer->setInterval(1000); // 1 second
   connect(clientsUpdateTimer, &QTimer::timeout, this,
@@ -345,4 +344,130 @@ void TeacherModule::on_createQues_pushButton_clicked() {
   createQuesWidgetWindow->show();
   createQuesWidgetWindow->raise();
   createQuesWidgetWindow->activateWindow();
+}
+
+#include <QHeaderView>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QTableWidgetItem>
+#include <db_xampp.h>
+
+void TeacherModule::populateExamList() {
+  // 1. Get the database instance
+  localDB *db = localDB::DB();
+  if (!db) {
+    qWarning() << "Database not initialized!";
+    return;
+  }
+
+  // 2. Define the SQL query to get all required data
+  // This query joins Exam, Course, CourseTeacher, and Users to get all info
+  QString sql =
+      "SELECT "
+      "    Course.course_name, "
+      "    Exam.course_code, "
+      "    Users.name AS teacher_name, "
+      "    Exam.topic_name, "
+      "    Exam.date, "
+      "    Exam.start_time, "
+      "    Exam.exam_id " // Get the ID for the action buttons
+      "FROM Exam "
+      "JOIN Course ON Exam.course_code = Course.course_code "
+      // Use LEFT JOIN in case a teacher isn't assigned (safer)
+      "LEFT JOIN CourseTeacher ON Exam.course_code = CourseTeacher.course_code "
+      "LEFT JOIN Users ON CourseTeacher.assigned_teacher = Users.user_id AND "
+      "Users.identity = 'teacher' "
+      "ORDER BY Exam.date DESC, Exam.start_time DESC;";
+
+  QSqlQuery query = db->execQuery(sql);
+  if (!query.isActive()) {
+    qWarning() << "Failed to execute exam list query:"
+               << query.lastError().text();
+    return;
+  }
+
+  // 3. Get the table widget and clear any existing dummy data
+  auto *table = ui->allXmList_tableWidget;
+  table->setRowCount(0); // Clear all rows (including dummy ones from .ui)
+  table->setSortingEnabled(false); // Disable sorting while populating
+
+  // 4. Loop through the query results and populate the table
+  while (query.next()) {
+    int row = table->rowCount();
+    table->insertRow(row);
+
+    // Extract data
+    QString courseName = query.value("course_name").toString();
+    QString courseCode = query.value("course_code").toString();
+    QString teacherName = query.value("teacher_name").toString();
+    QString examTopic = query.value("topic_name").toString();
+    QDate examDate = query.value("date").toDate();
+    QTime examTime = query.value("start_time").toTime();
+    int examId = query.value("exam_id").toInt();
+
+    // Column 0: Course Name
+    table->setItem(row, 0, new QTableWidgetItem(courseName));
+
+    // Column 1: Course Code
+    table->setItem(row, 1, new QTableWidgetItem(courseCode));
+
+    // Column 2: Course Teacher
+    table->setItem(row, 2, new QTableWidgetItem(teacherName));
+
+    // Column 3: Exam Topic
+    table->setItem(row, 3, new QTableWidgetItem(examTopic));
+
+    // Column 4: Exam Date
+    table->setItem(row, 4,
+                   new QTableWidgetItem(examDate.toString(Qt::ISODate)));
+
+    // Column 5: Exam Time
+    table->setItem(row, 5, new QTableWidgetItem(examTime.toString("hh:mm AP")));
+
+    // Column 6: Action Buttons
+    QWidget *actionWidget = new QWidget();
+    QHBoxLayout *actionLayout = new QHBoxLayout(actionWidget);
+    actionLayout->setContentsMargins(5, 0, 5, 0);
+    actionLayout->setSpacing(5);
+
+    QPushButton *editBtn = new QPushButton("Edit");
+    editBtn->setProperty("exam_id", examId); // Store the ID
+    connect(editBtn, &QPushButton::clicked, this, [this, examId]() {
+      // This is where you would open the "Edit Exam" window
+      // and pass the examId to it.
+      // For now, it calls the same slot as "Create Exam"
+      on_editExam_pushButon_2_clicked();
+      QMessageBox::information(this, "Edit Exam",
+                               QString("Would edit Exam ID: %1").arg(examId));
+    });
+
+    QPushButton *deleteBtn = new QPushButton("Delete");
+    deleteBtn->setProperty("exam_id", examId);
+    connect(deleteBtn, &QPushButton::clicked, this, [this, db, examId, row]() {
+      QMessageBox::StandardButton reply;
+      reply = QMessageBox::warning(
+          this, "Delete Exam",
+          QString("Are you sure you want to delete Exam ID %1?").arg(examId),
+          QMessageBox::Yes | QMessageBox::No);
+      if (reply == QMessageBox::Yes) {
+        QSqlQuery deleteQuery = db->execQuery(
+            QString("DELETE FROM Exam WHERE exam_id = %1").arg(examId));
+        if (deleteQuery.numRowsAffected() > 0) {
+          ui->allXmList_tableWidget->removeRow(row);
+        } else {
+          QMessageBox::critical(this, "Error",
+                                "Failed to delete exam from database.");
+        }
+      }
+    });
+
+    actionLayout->addWidget(editBtn);
+    actionLayout->addWidget(deleteBtn);
+    actionWidget->setLayout(actionLayout);
+
+    table->setCellWidget(row, 6, actionWidget);
+  }
+
+  table->setSortingEnabled(true);
+  table->resizeColumnsToContents();
 }

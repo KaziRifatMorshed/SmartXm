@@ -275,8 +275,10 @@ private:
 
   void insertTestData() {
     // --- 5. Insert Data ---
-    QString insertData =
-        "        INSERT INTO Users (name, email, password, identity, id) VALUES"
+    // Each INSERT statement MUST be in its own string.
+
+    QString insertUsers =
+        "INSERT IGNORE INTO Users (name, email, password, identity, id) VALUES"
         "        ('Alice Smith', '230201@ku.ac.bd', 'hashed_pass_123', "
         "'student', '230201'),"
         "        ('Bob Johnson', '210236@ku.ac.bd', 'hashed_pass_abc', "
@@ -427,8 +429,8 @@ private:
         "'hashed_pass_240230', 'student', '240230'),"
         "        ('Tom Hanks', '240231@ku.ac.bd', 'hashed_pass_240231', "
         "'student', '240231'),"
-        "        ('Vin Diesel', '240232@ku.ac.bd', 'hashed_pass_240232', "
-        "'student', '240232'),"
+        "        ('Vin Diesel', '240232@ku.ac.bd', 'hashed_pass_230232', "
+        "'student', '230232'),"
         "        ('Will Smith', '240233@ku.ac.bd', 'hashed_pass_240233', "
         "'student', '240233'),"
         "        ('Zoe Saldana', '240234@ku.ac.bd', 'hashed_pass_240234', "
@@ -448,117 +450,105 @@ private:
         "        ('Henry Cavill', '240241@ku.ac.bd', 'hashed_pass_240241', "
         "'student', '240241'),"
         "        ('Jessica Chastain', '240242@ku.ac.bd', 'hashed_pass_240242', "
-        "'student', '240242');"
+        "'student', '240242');";
 
-        "INSERT INTO Course (course_code, course_name) VALUES"
+    QString insertCourses =
+        "INSERT IGNORE INTO Course (course_code, course_name) VALUES"
         "        ('CSE 1102', 'Structured Programming Laboratory'),"
         "        ('CSE 2102', 'Data Structures Laboratory'),"
         "        ('CSE 2206', 'Database Systems Project/Fieldwork'),"
         "        ('CSE 3108', 'Operating System and Systems Programming "
         "Laboratory/Project'),"
         "        ('CSE 3202', 'Artificial Intelligence "
-        "Laboratory/Project/Fieldwork');"
+        "Laboratory/Project/Fieldwork');";
 
-        "INSERT INTO CourseTeacher (course_code, assigned_teacher) VALUES"
-        "        ('CSE 2102', 4), -- Dr. David Brown (user_id 4) teaches Data "
-        "Structures Lab"
-        "          ('CSE 2206', 5), -- Dr. Frank Miller (user_id 5) teaches "
-        "Database Project"
-        "          ('CSE 3108', 4), -- Dr. David Brown (user_id 4) also "
-        "teaches OS Lab"
-        "          ('CSE 3202', 5); -- Dr. Frank Miller (user_id 5) also "
-        "teaches AI Lab"
-        "          "
-        "              INSERT INTO Exam (status, date, start_time, end_time, "
+    QString insertCourseTeachers =
+        "INSERT IGNORE INTO CourseTeacher (course_code, assigned_teacher) "
+        "VALUES"
+        "        ('CSE 2102', 4),"  // -- Dr. David Brown (user_id 4)
+        "        ('CSE 2206', 5),"  // -- Dr. Frank Miller (user_id 5)
+        "        ('CSE 3108', 4),"  // -- Dr. David Brown (user_id 4)
+        "        ('CSE 3202', 5);"; // -- Dr. Frank Miller (user_id 5)
+
+    QString insertExams =
+        "INSERT IGNORE INTO Exam (status, date, start_time, end_time, "
         "full_marks, topic_name, exam_no, course_code, show_marks) VALUES"
-        "('Evaluated', '2025-05-10', '09:00:00', '12:00:00', 100, 'Final Lab "
-        "Exam', 1, 'CSE 2102', TRUE),"
+        "        ('Evaluated', '2025-05-10', '09:00:00', '12:00:00', 100, "
+        "'Final Lab Exam', 1, 'CSE 2102', TRUE),"
         "        ('Evaluating', '2025-05-15', '09:00:00', '17:00:00', 50, "
         "'Project Final Submission', 1, 'CSE 2206', FALSE),"
         "        ('Scheduled', '2025-06-01', '10:00:00', '11:30:00', 40, "
-        "'Midterm Lab Test', 2, 'CSE 2102', FALSE);"
+        "'Midterm Lab Test', 2, 'CSE 2102', FALSE);";
 
-        "INSERT INTO Participates (student_id, exam_id, set_code_no) VALUES"
-        "        ('230201', 1, 1), -- Alice in Exam 1 (DS Lab Final), Set 1"
-        "        ('210236', 1, 2), -- Bob in Exam 1 (DS Lab Final), Set 2"
-        "        ('220215', 1, 1), -- Carol in Exam 1 (DS Lab Final), Set 1"
-        "        ('230202', 1, 2), -- Eve in Exam 1 (DS Lab Final), Set 2"
-        "        ('210236', 2, 1), -- Bob in Exam 2 (DB Project)"
-        "        ('220215', 2, 1), -- Carol in Exam 2 (DB Project)"
-        "        ('230201', 3, 1), -- Alice in Exam 3 (DS Midterm)"
-        "        ('230202', 3, 2); -- Eve in Exam 3 (DS Midterm)"
-        "        "
-        "        INSERT INTO PreviousCode (submitted_by, code, is_allowed) "
+    QString insertParticipates = "INSERT IGNORE INTO Participates (student_id, "
+                                 "exam_id, set_code_no) VALUES"
+                                 "        ('230201', 1, 1),"
+                                 "        ('210236', 1, 2),"
+                                 "        ('220215', 1, 1),"
+                                 "        ('230202', 1, 2),"
+                                 "        ('210236', 2, 1),"
+                                 "        ('220215', 2, 1),"
+                                 "        ('230201', 3, 1),"
+                                 "        ('230202', 3, 2);";
+
+    QString insertPreviousCodes =
+        "INSERT IGNORE INTO PreviousCode (submitted_by, code, is_allowed) "
         "VALUES"
         "        ('210236', 'public static int binarySearch(int[] arr, int "
         "target) { ... }', TRUE),"
-        "        ('220215', 'private void connectDB() { ... }', FALSE);"
+        "        ('220215', 'private void connectDB() { ... }', FALSE),"
+        "        ('230205', 'function calculateArea(radius) {\n  return "
+        "Math.PI * radius * radius;\n}', TRUE),"
+        "        ('240210', 'SELECT student_id, COUNT(exam_id) AS "
+        "exams_taken\nFROM Participates\nGROUP BY student_id\nHAVING "
+        "COUNT(exam_id) > 2;', TRUE),"
+        "        ('210236', 'for i in range(10):\n    print(f\"Iteration "
+        "{i+1}\")', FALSE),"
+        "        ('230215', 'class Node {\n  int data;\n  Node next;\n  "
+        "Node(int d) { data = d; next = NULL; }\n}', TRUE),"
+        "        ('230215', 'public int factorial(int n) {\n  if (n == 0) "
+        "return 1;\n  else return n * factorial(n-1);\n}', FALSE),"
+        "        ('240201', 'UPDATE Exam SET status = ''Finished'' WHERE "
+        "end_time < NOW();', TRUE),"
+        "        ('230230', '#include <iostream>\nint main() {\n  std::cout << "
+        "\"Hello World!\";\n  return 0;\n}', FALSE),"
+        "        ('220215', 'const fetchData = async (url) => {\n  const "
+        "response = await fetch(url);\n  return await response.json();\n}', "
+        "TRUE),"
+        "        ('240222', 'CREATE INDEX idx_student_exam ON Participates "
+        "(student_id, exam_id);', TRUE),"
+        "        ('230208', 'while (current != null) {\n  "
+        "process(current.data);\n  current = current.next;\n}', FALSE);";
 
-        "INSERT INTO PreviousCode (submitted_by, code, is_allowed) VALUES"
-        "        ('230205',"
-        "         'function calculateArea(radius) {\n  return Math.PI * radius "
-        "* radius;\n}',"
-        "         TRUE),"
-        "        ('240210',"
-        "         'SELECT student_id, COUNT(exam_id) AS exams_taken\nFROM "
-        "Participates\nGROUP BY student_id\nHAVING COUNT(exam_id) > 2;',"
-        "         TRUE),"
-        "        ('210236',"
-        "         'for i in range(10):\n    print(f\"Iteration {i+1}\")',"
-        "         FALSE),"
-        "        ('230215',"
-        "         'class Node {\n  int data;\n  Node next;\n  Node(int d) { "
-        "data = d; next = NULL; }\n}',"
-        "         TRUE),"
-        "        ('230215',"
-        "         'public int factorial(int n) {\n  if (n == 0) return 1;\n  "
-        "else return n * factorial(n-1);\n}',"
-        "         FALSE),"
-        "        ('240201',"
-        "         'UPDATE Exam SET status = ''Finished'' WHERE end_time < "
-        "NOW();',"
-        "         TRUE),"
-        "        ('230230',"
-        "         '#include <iostream>\nint main() {\n  std::cout << \"Hello "
-        "World!\";\n  return 0;\n}',"
-        "         FALSE),"
-        "        ('220215',"
-        "         'const fetchData = async (url) => {\n  const response = "
-        "await fetch(url);\n  return await response.json();\n}',"
-        "         TRUE),"
-        "        ('240222',"
-        "         'CREATE INDEX idx_student_exam ON Participates (student_id, "
-        "exam_id);',"
-        "         TRUE),"
-        "        ('230208',"
-        "         'while (current != null) {\n  process(current.data);\n  "
-        "current = current.next;\n}',"
-        "         FALSE);";
+    // Put all insert statements into a list
+    QStringList inserts;
+    inserts << insertUsers << insertCourses << insertCourseTeachers
+            << insertExams << insertParticipates << insertPreviousCodes;
 
-    QSqlQuery insertIntoDB;
-    if (insertIntoDB.exec(insertData)) {
-      std::cout << "Data insertion successful." << std::endl;
+    QSqlQuery query;
+    int successfulInserts = 0;
+
+    // Loop through the list and execute each query one by one
+    foreach (const QString &sql, inserts) {
+      if (!query.exec(sql)) {
+        // If one fails, print the error and the failing query
+        qDebug() << "Error inserting test data:" << query.lastError().text();
+        qDebug() << "Failing query:" << sql;
+      } else {
+        successfulInserts++;
+      }
+    }
+
+    if (successfulInserts == inserts.size()) {
+      std::cout << "All test data inserted successfully (or already existed)."
+                << std::endl;
     } else {
-      qDebug() << "Error inserting data:" << insertIntoDB.lastError().text();
+      qDebug() << "Executed " << successfulInserts << " out of "
+               << inserts.size() << " insert statements.";
     }
 
     // --- 6. Test and Print Data ---
-    // QSqlQuery testPrintAllUsers = execQuery("SELECT * FROM Users;");
-
-    // if (testPrintAllUsers.isActive() && testPrintAllUsers.size() > 0) {
-    //   while (testPrintAllUsers.next()) {
-    //     std::string name =
-    //         testPrintAllUsers.value("name").toString().toStdString();
-    //     std::string email =
-    //         testPrintAllUsers.value("email").toString().toStdString();
-    //     std::string pass =
-    //         testPrintAllUsers.value("password").toString().toStdString();
-    //     std::cout << "name: " << name << " email: " << email
-    //               << " pass: " << pass << std::endl;
-    //   }
-    // } else {
-    //   std::cout << "No data found or query was inactive." << std::endl;
-    // }
+    // (This part is fine as it's commented out)
   }
 };
 
