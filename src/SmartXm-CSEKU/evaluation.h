@@ -7,6 +7,20 @@
 #include<QString>
 #include<verdict.h>
 #include<Judge.h>
+#include <thread>          // For std::thread
+#include <mutex>           // For std::mutex, std::lock_guard, std::unique_lock
+#include <condition_variable>  // For std::condition_variable
+#include <atomic>          // For std::atomic<bool>, std::atomic<int>
+#include <queue>           // For std::queue
+#include <vector>          // For std::vector
+#include <string>          // For std::string
+#include <iostream>        // For std::cout, std::cerr
+#include<set>
+#if defined(_WIN32) || defined(_WIN64)
+#include <intrin.h>
+#include <windows.h>
+#endif
+
 namespace Ui
 {
     class Evaluation;
@@ -17,6 +31,7 @@ class Evaluation : public QMainWindow
     Q_OBJECT
 
 public:
+
     explicit Evaluation(QWidget* parent = nullptr);
     ~Evaluation();
 
@@ -35,11 +50,14 @@ private slots:
 
 private:
     Ui::Evaluation* ui;
-    bool evaluating =false;
+    bool evaluating=false;
+    bool termination=false;
+    std::set<Judge *>judges;
     bool readStudentInfo(const std::string &submissionInfoFile, std::vector<std::string> &submissionInformation);
     bool readJudgeInfo(const std::string &judgeInfoPath, std::vector<std::vector<double>> &judgeInformation);
     bool readTestCaseInfo(const std::string &testCaseInfoFile, std::vector<int> &testCaseInformation);
     bool readSubmissionFileInfo(const std::string &submissionFilePath, std::vector<std::string> &submissionFiles);
+    unsigned int getPhysicalCoreCount();
 
 #ifdef _WIN32
     QString dirPath = "C:/SmartXm/Editor/";

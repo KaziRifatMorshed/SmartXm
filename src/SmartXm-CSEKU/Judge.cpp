@@ -15,7 +15,10 @@ void Judge::setPretestCasesPath(const std::string &path)
 {
     pretestCasesPath = path;
 }
-
+void Judge::setStudentID(const std::string &stID)
+{
+    studentID=stID;
+}
 void Judge::setJudgeInfo(const std::vector<double> &judgeInfo)
 {
     if (judgeInfo.size() < 14)
@@ -973,7 +976,7 @@ long long Judge::getProcessMemoryUsageFast(pid_t pid)
 Verdict Judge::runOnSingleTestCase()
 {
 
-    std::string outputFile = pretestCasesPath + currentTestCaseNo + ".output";
+    std::string outputFile = pretestCasesPath + currentTestCaseNo +'.'+studentID+ ".output";
 
     std::ofstream output(outputFile);
     output.close();
@@ -1213,7 +1216,7 @@ std::vector<Verdict> Judge::runOnTestCases()
         long long memorySize=0;
         std::string inputFile = pretestCasesPath + testCaseNo + ".in";
         std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
-        std::string outputFile = pretestCasesPath + testCaseNo + ".output";
+        std::string outputFile = pretestCasesPath + testCaseNo +'.'+studentID+ ".output";
 
 
         int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
@@ -1287,7 +1290,7 @@ std::vector<Verdict> Judge::runOnTestCases()
     for(int i=1;i<=numberOfTotalTestCase;i++)
     {
         std::string testCaseNo=std::to_string(i);
-        std::string outputFile = pretestCasesPath + testCaseNo + ".output";
+        std::string outputFile = pretestCasesPath + testCaseNo +'.'+studentID+ ".output";
         std::remove(outputFile.c_str());
     }
     exeFile.pop_back();

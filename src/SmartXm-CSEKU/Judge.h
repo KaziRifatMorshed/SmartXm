@@ -59,6 +59,7 @@ private:
     std::string currentFile;
     std::string currentProblem;
     std::string pretestCasesPath;
+    std::string studentID="000000";
 
 
 
@@ -95,6 +96,7 @@ public:
     void setCurrentFile(const std::string &cFile);
     void setCurrentProblem(const std::string &cProblem);
     void setPretestCasesPath(const std::string &path);
+    void setStudentID(const std::string &stID);
     void stopJudge(); // 🚀 new function to terminate current process
 
 
