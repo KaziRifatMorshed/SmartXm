@@ -37,31 +37,59 @@ void Evaluation::on_complete_pushButton_clicked()
 }
 
 
-bool Evaluation::readSubmissionInfo(const std::string &submissionInfoFile, std::vector<int> &submissionInformation)
+bool Evaluation::readStudentInfo(const std::string &studentInfoFile, std::vector<std::string> &studentInformation)
 {
-    std::ifstream submissionInfoIn(submissionInfoFile);
-    if (!submissionInfoIn.is_open())
+    std::ifstream studentInfoIn(studentInfoFile);
+    if (!studentInfoIn.is_open())
     {
 
         return false;
     }
 
-    submissionInformation.clear();
+    studentInformation.clear();
     int n;
-    submissionInfoIn>>n;
-    submissionInformation.resize(n);
+    studentInfoIn>>n;
+    studentInformation.resize(n);
     for (int i = 0; i < n; i++)
     {
-        int d;
-        if (!(submissionInfoIn >> d))
+        std::string s;
+        if (!(studentInfoIn >> s))
         {
 
 
             return false;
         }
 
-        submissionInformation[i]=d;
+        studentInformation[i]=s;
     }
+
+
+    return true;
+}
+bool Evaluation::readSubmissionFileInfo(const std::string &submissionFilePath, std::vector<std::string> &submissionFiles)
+{
+    int n=submissionFiles.size();
+    int i;
+    char ch='A';
+    for(i=0;i<n;i++)
+    {
+        std::string submissionFile=submissionFilePath+ch+".txt";
+
+        std::ifstream submissionFileIn(submissionFile);
+        if (!submissionFileIn.is_open())
+        {
+
+            return false;
+        }
+
+
+        std::string s;
+        submissionFileIn >> s;
+        std::string solutionFile=submissionFilePath+ch+"/"+s;
+        submissionFiles[i]=solutionFile;
+        ch++;
+    }
+
 
 
     return true;
@@ -99,9 +127,11 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
 {
     int n=judgeInformation.size();
     int i;
-    for(char ch='A',i=0;i<n,ch++;i++)
+    char ch='A';
+    for(i=0;i<n;i++)
     {
-        std::string judgeInfoFile=judgeInfoPath+"/"+ch+".txt";
+        std::string judgeInfoFile=judgeInfoPath+ch+".txt";
+
         std::ifstream judgeInfoIn(judgeInfoFile);
         if (!judgeInfoIn.is_open())
         {
@@ -110,7 +140,7 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
         }
 
         judgeInformation.clear();
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < n; i++)
         {
             double d;
             if (!(judgeInfoIn >> d))
@@ -122,6 +152,7 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
 
             judgeInformation[i].push_back(d);
         }
+        ch++;
     }
 
     return true;
@@ -133,17 +164,18 @@ void Evaluation::on_evaluate_clicked()
     if(!evaluating)
     {
         evaluating=true;
-        std::cout<<"OKay"<<std::endl;
-        std::vector<int> submissionInformation;
-        std::string submissionInfoFile = systemDirPath.toStdString()  + "submissionInfo.txt";
 
-        if(!readSubmissionInfo(submissionInfoFile,submissionInformation))
+        std::vector<std::string> studentInformation;
+        std::string studentInfoFile = systemDirPath.toStdString()  + "studentInfo.txt";
+
+        if(!readStudentInfo(studentInfoFile,studentInformation))
         {
             QMessageBox::warning(this, "Warning",
-                                 "Submission information not found for evaluation.");
+                                 "student information not found for evaluation.");
             evaluating=false;
             return;
         }
+        int numOfStudents=studentInformation.size();
         std::vector<int> testCaseInformation;
         std::string testCaseInfoFile = systemDirPath.toStdString()  + "testCaseInfo.txt";
 
@@ -156,7 +188,7 @@ void Evaluation::on_evaluate_clicked()
         }
         int numberOfProblem=testCaseInformation.size();
         std::vector<std::vector<double>> judgeInformation(numberOfProblem);
-         std::string judgeInfoPath = systemDirPath.toStdString()  + "/Judge";
+        std::string judgeInfoPath = systemDirPath.toStdString()  + "Judge/";
         if(!readJudgeInfo(judgeInfoPath,judgeInformation))
         {
             QMessageBox::warning(this, "Warning",
@@ -164,7 +196,33 @@ void Evaluation::on_evaluate_clicked()
             evaluating=false;
             return;
         }
-        std::cout<<numberOfProblem<<std::endl;
+
+        std::vector<std::pair<std::string,std::vector<std::string>>>submissionInformation;
+        int i;
+        for(i=0;i<numOfStudents;i++)
+        {
+            std::string stID=studentInformation[i];
+            std::vector<std::string>submissionsFile(numberOfProblem);
+            std::string submissionFilePath=systemDirPath.toStdString()+"Submissions/"+stID+"/";
+            if(!readSubmissionFileInfo(submissionFilePath,submissionsFile))
+            {
+                QMessageBox::warning(this, "Warning",
+                                     "Submission Folder not found for evaluation.");
+                evaluating=false;
+                return;
+            }
+            submissionInformation.push_back({stID,submissionsFile});
+
+        }
+        for(i=0;i<numOfStudents;i++)
+        {
+            std::cout<<submissionInformation[i].first<<std::endl;
+            for(auto it:submissionInformation[i].second)
+            {
+                std::cout<<"        "<<it<<std::endl;
+            }
+
+        }
         evaluating=false;
 
     }

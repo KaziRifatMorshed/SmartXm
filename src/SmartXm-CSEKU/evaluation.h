@@ -34,9 +34,10 @@ private slots:
 private:
     Ui::Evaluation* ui;
     bool evaluating =false;
-    bool readSubmissionInfo(const std::string &submissionInfoFile, std::vector<int> &submissionInformation);
+    bool readStudentInfo(const std::string &submissionInfoFile, std::vector<std::string> &submissionInformation);
     bool readJudgeInfo(const std::string &judgeInfoPath, std::vector<std::vector<double>> &judgeInformation);
     bool readTestCaseInfo(const std::string &testCaseInfoFile, std::vector<int> &testCaseInformation);
+    bool readSubmissionFileInfo(const std::string &submissionFilePath, std::vector<std::string> &submissionFiles);
 
 #ifdef _WIN32
     QString dirPath = "C:/SmartXm/Editor/";

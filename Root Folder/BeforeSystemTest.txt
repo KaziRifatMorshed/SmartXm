@@ -1,0 +1,50 @@
+Windows:
+
+
+
+
+
+
+Linux:
+"/SmartXm/System/" inside of this directory 
+must have a directory "Judge/" , a dirctory "Submissions/" , a directory "Test-Cases"
+
+Judge contains A.txt, B.txt, etc
+A.txt contains 
+the information in below format
+checkerFlag
+inputFlag
+timeLimit in milliseconds
+c/cpp multiplier
+python multiplier
+java multiplier
+memoryLimit in KB
+c/cpp multiplier
+python multiplier
+java multiplier
+sourceCodeLimit in KB
+c/cpp multiplier
+python multiplier
+java multiplier
+
+
+
+Submissions the directory of all students who participated Exam with thier student id(6 digit)
+lets a student id 230201
+then 230201 contains A,B,C,.. etc folder and A.txt,B.txt,C.txt,.. Files 
+A folder contains the solution file of Problem A of student 230201
+A.txt conatains the solution file name with proper extension
+
+
+Test-Cases contains A,B,C,.. directory 
+every contains it's test cases
+
+
+in "/SmartXm/System/" must have more 2 text files
+"studentInfo.txt" and "testCaseInfo.txt"
+
+studentInfo.txt must contains the total student number in first lines and then contains students id 
+
+testCaseInfo.txt contains the number of problem in first lines and then contains the number of total test cases of these problem serially first contain corresponding problem A and then B and then C.
+
+If you have any query.Please contact me.
