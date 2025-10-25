@@ -37,7 +37,7 @@ TeacherModule::TeacherModule(QWidget *parent)
       QString::fromStdString(currentUser.getEmail()));
   ui->dashboard_TeacherDesignation->setText(
       QString::fromStdString(currentUser.getId()));
-  ui->tabWidget->setCurrentIndex(1);
+  ui->tabWidget->setCurrentIndex(0);
 
   // Initial table setup (keeps headers visible)
   ui->connectedPCwithServer_tableWidget->setColumnCount(4);
