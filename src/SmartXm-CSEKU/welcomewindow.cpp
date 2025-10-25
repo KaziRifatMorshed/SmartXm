@@ -284,6 +284,17 @@ void WelcomeWindow::on_pushButton_clicked() {
         currentUser.setId(
             loginDataValidationFromDB.value("id").toString().toStdString());
 
+
+        std::cout << "--- Current User Logged In ---" << std::endl;
+        std::cout << "DB User ID: " << currentUser.getUserId() << std::endl;
+            std::cout << "Name: " << currentUser.getName() << std::endl;
+            std::cout << "Email: " << currentUser.getEmail() << std::endl;
+            std::cout << "Public ID: " << currentUser.getId() << std::endl;
+            std::cout << "Identity: "
+            << Users::identityToString(currentUser.getIdentity())
+            << std::endl;
+        std::cout << "------------------------------" << std::endl;
+
         teacherModuleWindow = new TeacherModule();
         teacherModuleWindow->show();
 

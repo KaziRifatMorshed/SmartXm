@@ -23,10 +23,34 @@ Users &currentUser = Users::getInstance();
 TeacherModule::TeacherModule(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::TeacherModule) {
   ui->setupUi(this);
-  // ... (existing setup code for server status, labels, etc.)
+  ui->serverStatus_label_2->setText(
+      "<html><head/><body><p><span style=\" font-size:18pt;\">Server Status: "
+      "NOT STARTED</span></p></body></html>");
+  ui->serverIP_label_3->setText(
+      "<html><head/><body><p><span style=\" font-size:18pt;\">Server Local IP: "
+      "NOT STARTED</span></p></body></html>");
+  ui->label->setText("<html><head/><body><p align=\"center\"><span style=\" "
+                     "font-size:20pt;\">Welcome, " +
+                     QString::fromStdString(currentUser.getName()) +
+                     " Sir</span></p></body></html>");
+  ui->dashboard_teacherName->setText(
+      QString::fromStdString(currentUser.getName()));
+  ui->dashboard_teacherEmail->setText(
+      QString::fromStdString(currentUser.getEmail()));
+  ui->dashboard_TeacherDesignation->setText(
+      QString::fromStdString(currentUser.getId()));
   ui->tabWidget->setCurrentIndex(0);
 
-  // --- Setup for connectedPCwithServer_tableWidget (you already have this) ---
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setStretchLastSection(false);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(0, QHeaderView::Stretch);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+  ui->connectedPCwithServer_tableWidget->horizontalHeader()
+      ->setSectionResizeMode(3, QHeaderView::ResizeToContents);
   ui->connectedPCwithServer_tableWidget->setColumnCount(4);
   ui->connectedPCwithServer_tableWidget->setHorizontalHeaderLabels(QStringList()
                                                                    << "Name"
@@ -436,6 +460,7 @@ void TeacherModule::populateExamList() {
       // This is where you would open the "Edit Exam" window
       // and pass the examId to it.
       // For now, it calls the same slot as "Create Exam"
+      // need to pass exam id too
       on_editExam_pushButon_2_clicked();
       QMessageBox::information(this, "Edit Exam",
                                QString("Would edit Exam ID: %1").arg(examId));
