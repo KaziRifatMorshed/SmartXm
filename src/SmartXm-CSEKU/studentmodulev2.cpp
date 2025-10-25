@@ -17,7 +17,7 @@ StudentModuleV2::StudentModuleV2(QWidget* parent) : QMainWindow(parent), ui(new 
 
     ui->welcomeStudent_label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Welcome, " + QString::fromStdString(currentStuUser.getName()) + "</span></p></body></html>");
     ui->stuName_label_2->setText(QString::fromStdString(currentStuUser.getName()));
-    ui->stuName_label_2->setText(QString::fromStdString(currentStuUser.getId()));
+    ui->stuID_label_3->setText(QString::fromStdString(currentStuUser.getId()));
 }
 
 StudentModuleV2::~StudentModuleV2() { delete ui; }

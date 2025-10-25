@@ -3,6 +3,7 @@
 #include "Message.h"
 #include "Server.h"
 #include "networking/FileMeta.h"
+#include <Users.h>
 #include <algorithm>
 #include <cstring>
 #include <ctime>
@@ -12,7 +13,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <Users.h>
 
 bool Server::running = false;
 Server *Server::serverInstance = nullptr;
@@ -243,10 +243,28 @@ void Server::handleClient(int client_socket, ClientInfo ci) {
         QString L = checkLogin(meta.message);
         FileMeta LL;
         if (L != nullptr) {
-            LL.title = "LS"; // Login Succcess
-            LL.message = L.toStdString(); // name and student id
+          LL.title = "LS";              // Login Succcess
+          LL.message = L.toStdString(); // name and student id
+
+          size_t pos = LL.message.find(':');
+          std::string n = "";
+          std::string i = "";
+          if (pos != std::string::npos) {
+            n = LL.message.substr(0, pos);
+            i = LL.message.substr(pos + 1);
+          }
+          {
+            std::lock_guard<std::mutex> lock(clientsMutex);
+            for (ClientInfo &client : clients) {
+              if (client.socfd == client_socket) {
+                client.clientName = n;
+                client.studentID = i;
+              }
+            }
+          }
+
         } else {
-            LL.title = "LF"; // Login Failure
+          LL.title = "LF"; // Login Failure
         }
         LL.send_on_socket(client_socket);
       }
@@ -255,9 +273,8 @@ void Server::handleClient(int client_socket, ClientInfo ci) {
         // This is a connection test request
         std::cout << "[Server] Received HELLO FILE for testing." << std::endl;
 
-        std::string save_path = "./cache/"  +
-                                ci.clientName + "_" +
-                                ci.ip + "_" + meta.filename; // You need a better name
+        std::string save_path = "./cache/" + ci.clientName + "_" + ci.ip + "_" +
+                                meta.filename; // You need a better name
         std::ofstream ofs(save_path, std::ios::binary);
         if (ofs) {
           ofs.write(meta.file_data.data(), meta.file_data.size());
@@ -310,8 +327,6 @@ void Server::handleClient(int client_socket, ClientInfo ci) {
   std::cout << "Client Handler Thread Terminated!! socket id = "
             << client_socket << std::endl;
 }
-
-
 
 void Server::printClientsLoop(int intervalSeconds) { // LESS IMPORTANT
   while (running) {
@@ -410,41 +425,40 @@ FileMeta Server::receiveFileFromClient(int client_sock) {
 }
 
 #include <db_xampp.h>
-QString Server::checkLogin(std::string str){
-    size_t pos = str.find(':');
-    std::string e = "";
-    std::string p = "";
-    if (pos != std::string::npos) {
-        e = str.substr(0, pos);
-        p = str.substr(pos + 1);
+QString Server::checkLogin(std::string str) {
+  size_t pos = str.find(':');
+  std::string e = "";
+  std::string p = "";
+  if (pos != std::string::npos) {
+    e = str.substr(0, pos);
+    p = str.substr(pos + 1);
+  }
+  localDB *ddbb = localDB::DB();
+  QSqlQuery q = ddbb->execQuery(
+      "SELECT * FROM Users WHERE Users.email=\"" + QString::fromStdString(e) +
+      "\" AND Users.password=\"" + QString::fromStdString(p) + "\";");
+  if (q.isActive() && q.size() == 1) {
+    while (q.next()) {
+      std::string name = q.value("name").toString().toStdString();
+      std::string email = q.value("email").toString().toStdString();
+      std::string pass = q.value("password").toString().toStdString();
+      std::string id = q.value("id").toString().toStdString();
+      if (email == e && pass == p) {
+        return QString(q.value("name").toString() + ":" +
+                       q.value("id").toString());
+      } else {
+        return nullptr;
+      }
     }
-    localDB *ddbb = localDB::DB();
-    QSqlQuery q = ddbb->execQuery("SELECT * FROM Users WHERE Users.email=\"" + QString::fromStdString(e) + "\" AND Users.password=\"" + QString::fromStdString(p) + "\";");
-    if (q.isActive() && q.size() == 1) {
-        while (q.next()) {
-            std::string name =
-                q.value("name").toString().toStdString();
-            std::string email =
-                q.value("email").toString().toStdString();
-            std::string pass =
-                q.value("password").toString().toStdString();
-            std::string id =
-                q.value("id").toString().toStdString();
-            if (email == e && pass == p) {
-                return QString(q.value("name").toString()+":"+q.value("id").toString());
-            } else {
-                return nullptr;
-            }
-        }
-    }    else if (q.isActive() && q.size() == 0) {
-        std::cout << "[Server:DB] No data found." << std::endl;
-    }    else if (q.isActive() && q.size() > 1) {
-        std::cout << "Database should not contain duplicates." << std::endl;
-    }    else {
-        std::cout << "No data found or query was inactive." << std::endl;
-    }
-    std::cout << "[Server:checkLogin] ERROR" << std::endl;
-    return nullptr;
+  } else if (q.isActive() && q.size() == 0) {
+    std::cout << "[Server:DB] No data found." << std::endl;
+  } else if (q.isActive() && q.size() > 1) {
+    std::cout << "Database should not contain duplicates." << std::endl;
+  } else {
+    std::cout << "No data found or query was inactive." << std::endl;
+  }
+  std::cout << "[Server:checkLogin] ERROR" << std::endl;
+  return nullptr;
 }
 
 #endif
