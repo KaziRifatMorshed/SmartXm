@@ -2,6 +2,7 @@
 #include "TerminalExecuter.h"
 #include "dependencies/linux/Encryption/encryption.h"
 #include "ui_welcomewindow.h"
+#include <QDateTime>
 #include <QMessageBox>
 #include <QtConcurrent>
 #include <Users.h>
@@ -11,10 +12,10 @@
 #include <networking/client/Client.h>
 #include <stdlib.h>
 #include <studentmodulev2.h>
-#include <QDateTime>
 
 // #define LOGIN_CACHE_ENABLE
 #define TEACHER_CACHE_ENABLE
+#define LOGIN_DEBUG
 
 Client *client;
 localDB *dbInstance = nullptr;
@@ -221,21 +222,22 @@ void WelcomeWindow::on_sync_remoteS_pushButton_2_clicked() {
   encryption.decrypt();
 } // working
 
+
+
 void WelcomeWindow::on_pushButton_clicked() {
   QString inputtedEmail = ui->email_lineEdit->text().trimmed();
   QString inputtedPass = ui->pass_lineEdit_2->text().trimmed();
 
 // #define LOGIN_CACHE_ENABLE
 #ifdef LOGIN_CACHE_ENABLE
-    cacheDbInstance = SQliteDB::instance();
+  cacheDbInstance = SQliteDB::instance();
   if (cacheDbInstance->checkLastLogin()) {
-      close();
-      studentModuleV2Window = new StudentModuleV2();
-      studentModuleV2Window->show();
+    close();
+    studentModuleV2Window = new StudentModuleV2();
+    studentModuleV2Window->show();
   }
 #endif
 
-#define LOGIN_DEBUG
 #ifdef LOGIN_DEBUG
   bool temp = true; // if login info are true
   // bool isTeacher = (inputtedEmail == "t") ? true : false;
@@ -254,76 +256,85 @@ void WelcomeWindow::on_pushButton_clicked() {
       close();
       studentModuleV2Window = new StudentModuleV2();
       studentModuleV2Window->show();
-    }
-  }
-#else
-  if (inputtedEmail.contains("@cse.ku.ac.bd")) {
-    dbInstance = localDB::DB();
-    QSqlQuery loginDataValidationFromDB = dbInstance->execQuery(
-        "SELECT * FROM `Users` WHERE Users.email = '" + inputtedEmail +
-        "' AND Users.password = '" + inputtedPass + "';");
-
-    if (loginDataValidationFromDB.isActive() &&
-        loginDataValidationFromDB.next() &&
-        loginDataValidationFromDB.size() == 1) {
-      close();
-
-      Users &currentUser = Users::getInstance();
-      currentUser.setName(
-          loginDataValidationFromDB.value("name").toString().toStdString());
-      currentUser.setEmail(
-          loginDataValidationFromDB.value("email").toString().toStdString());
-      currentUser.setPassword(
-          loginDataValidationFromDB.value("password").toString().toStdString());
-      currentUser.setIdentity(
-          Users::identityFromString(loginDataValidationFromDB.value("identity")
-                                        .toString()
-                                        .toStdString()));
-      currentUser.setId(
-          loginDataValidationFromDB.value("id").toString().toStdString());
-
-      teacherModuleWindow = new TeacherModule();
-      teacherModuleWindow->show();
-
-#ifdef TEACHER_CACHE_ENABLE
-      qDebug() << "call inserting Login Cache ";
-      cacheDbInstance_ = SQliteDB::instance();
-      cacheDbInstance_->insertLoginCache(loginDataValidationFromDB.value("user_id").toInt(),
-                                        loginDataValidationFromDB.value("identity").toString().toStdString(),
-                                        loginDataValidationFromDB.value("id").toString().toStdString(),
-                                        loginDataValidationFromDB.value("email").toString().toStdString(),
-                                        QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
+    } else {
 #endif
 
-    } else {
-      QMessageBox::critical(
-          this, "Email & Password does not match",
-          "Your inputted email and password does not match with local "
-          "server database.\n\nPlease ensure local server has fetched "
-          "latest data from remote server. If system fails again and again, "
-          "contact "
-          "an admin/maintainer of the system.");
+      if (inputtedEmail.contains("@cse.ku.ac.bd")) { // TEACHER LOGIN; use local data
+        dbInstance = localDB::DB();
+        QSqlQuery loginDataValidationFromDB = dbInstance->execQuery(
+            "SELECT * FROM `Users` WHERE Users.email = '" + inputtedEmail +
+            "' AND Users.password = '" + inputtedPass + "';");
+
+        if (loginDataValidationFromDB.isActive() &&
+            loginDataValidationFromDB.next() &&
+            loginDataValidationFromDB.size() == 1) {
+          close();
+
+          Users &currentUser = Users::getInstance();
+          currentUser.setName(
+              loginDataValidationFromDB.value("name").toString().toStdString());
+          currentUser.setEmail(loginDataValidationFromDB.value("email")
+                                   .toString()
+                                   .toStdString());
+          currentUser.setPassword(loginDataValidationFromDB.value("password")
+                                      .toString()
+                                      .toStdString());
+          currentUser.setIdentity(Users::identityFromString(
+              loginDataValidationFromDB.value("identity")
+                  .toString()
+                  .toStdString()));
+          currentUser.setId(
+              loginDataValidationFromDB.value("id").toString().toStdString());
+
+          teacherModuleWindow = new TeacherModule();
+          teacherModuleWindow->show();
+
+#ifdef TEACHER_CACHE_ENABLE
+          qDebug() << "call inserting Login Cache ";
+          cacheDbInstance_ = SQliteDB::instance();
+          cacheDbInstance_->insertLoginCache(
+              loginDataValidationFromDB.value("user_id").toInt(),
+              loginDataValidationFromDB.value("identity")
+                  .toString()
+                  .toStdString(),
+              loginDataValidationFromDB.value("id").toString().toStdString(),
+              loginDataValidationFromDB.value("email").toString().toStdString(),
+              QDateTime::currentDateTime().toString(Qt::ISODate).toStdString());
+#endif
+
+        } else {
+          QMessageBox::critical(
+              this, "Email & Password does not match",
+              "Your inputted email and password does not match with local "
+              "server database.\n\nPlease ensure local server has fetched "
+              "latest data from remote server. If system fails again and "
+              "again, "
+              "contact "
+              "an admin/maintainer of the system.");
+        }
+      } else if (inputtedEmail.contains("@ku.ac.bd")) { // student login; use local server data
+        if (client->sendLoginInfoToServer(inputtedEmail.toStdString(), inputtedPass.toStdString())) {
+          close();
+          studentModuleV2Window = new StudentModuleV2();
+          studentModuleV2Window->show();
+        } else {
+          QMessageBox::critical(
+              this, "Email & Password does not match",
+              "Your inputted email and password does not match with local "
+              "server database.\n\nPlease ensure local server has fetched "
+              "latest data from remote server and you have inputted latest "
+              "email & password set in the remote server. Otherwise, contact "
+              "an admin/maintainer of the system.");
+        }
+      } else {
+        QMessageBox::critical(
+            this, "Invalid Email",
+            "Only '@ku.ac.bd'(for students) and '@cse.ku.ac.bd'(for teachers) "
+            "emails are allowed. To register or for any support, contact an "
+            "admin/maintainer of the system.");
+      }
+#ifdef LOGIN_DEBUG
     }
-  } else if (inputtedEmail.contains("@ku.ac.bd")) {
-    if (client->sendLoginInfoToServer()) {
-      close();
-      studentModuleV2Window = new StudentModuleV2();
-      studentModuleV2Window->show();
-    } else {
-      QMessageBox::critical(
-          this, "Email & Password does not match",
-          "Your inputted email and password does not match with local "
-          "server database.\n\nPlease ensure local server has fetched "
-          "latest data from remote server and you have inputted latest "
-          "email & password set in the remote server. Otherwise, contact "
-          "an admin/maintainer of the system.");
-    }
-  } else {
-    QMessageBox::critical(
-        this, "Invalid Email",
-        "Only '@ku.ac.bd'(for students) and '@cse.ku.ac.bd'(for teachers) "
-        "emails are allowed. To register or for any support, contact an "
-        "admin/maintainer of the system.");
   }
 #endif
 }
