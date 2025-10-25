@@ -409,7 +409,7 @@ FileMeta Server::receiveFileFromClient(int client_sock) {
 }
 
 #include <db_xampp.h>
-bool checkLogin(std::string str){
+bool Server::checkLogin(std::string str){
     size_t pos = str.find(':');
     std::string e = "";
     std::string p = "";
