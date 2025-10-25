@@ -113,7 +113,7 @@ void file_receive_loop(int sock_fd) {
       /* ------------ HELLO ------------ */
 
       if (meta.title == "HELLO") {
-        save_name = "./examResources/helloFromServer." + meta.extension;
+        save_name = "./cache/helloFromServer." + meta.extension;
 #ifdef DEBUG_ON
         std::cout << "[FileReceiver] Saving as Hello." << meta.extension
                   << " for TESTING" << std::endl;
