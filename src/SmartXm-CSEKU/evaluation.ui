@@ -98,32 +98,6 @@
            <string>Topic:</string>
           </property>
          </widget>
-         <widget class="QLabel" name="autoEvalStatus_label_10">
-          <property name="geometry">
-           <rect>
-            <x>166</x>
-            <y>460</y>
-            <width>104</width>
-            <height>18</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>0/?? Completed</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_11">
-          <property name="geometry">
-           <rect>
-            <x>9</x>
-            <y>460</y>
-            <width>120</width>
-            <height>36</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Automatic &lt;br/&gt;Evaluation Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
          <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
@@ -152,6 +126,56 @@
             <widget class="QPushButton" name="stopEvaluation">
              <property name="text">
               <string>Stop Evaluation</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QLabel" name="label_11">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>430</y>
+            <width>224</width>
+            <height>66</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;Evaluation Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="">
+          <property name="geometry">
+           <rect>
+            <x>4</x>
+            <y>437</y>
+            <width>311</width>
+            <height>91</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_9"/>
+         </widget>
+         <widget class="QWidget" name="">
+          <property name="geometry">
+           <rect>
+            <x>166</x>
+            <y>460</y>
+            <width>111</width>
+            <height>44</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLabel" name="autoEvalStatus_label_10">
+             <property name="text">
+              <string>0/?? Completed</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="evaluationStatusLevel">
+             <property name="text">
+              <string>No Evaluation</string>
              </property>
             </widget>
            </item>

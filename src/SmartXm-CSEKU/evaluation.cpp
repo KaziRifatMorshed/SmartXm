@@ -4,6 +4,7 @@
 #include<fstream>
 Evaluation::Evaluation(QWidget* parent) : QMainWindow(parent), ui(new Ui::Evaluation) {
     ui->setupUi(this);
+
     ui->_tabWidget->setCurrentIndex(0);
 }
 
@@ -36,6 +37,52 @@ void Evaluation::on_complete_pushButton_clicked()
 
 }
 
+
+
+unsigned int Evaluation::getPhysicalCoreCount() {
+    unsigned int physicalCores = 0;
+
+#if defined(__linux__)
+    std::ifstream cpuinfo("/proc/cpuinfo");
+    if (!cpuinfo.is_open()) return 0;
+
+    std::string line;
+    std::set<std::pair<int,int>> cores; // (physical_id, core_id)
+    int physicalId = -1;
+    int coreId = -1;
+
+    while (std::getline(cpuinfo, line)) {
+        if (line.substr(0, 10) == "physical id") {
+            physicalId = std::stoi(line.substr(line.find(":") + 1));
+        }
+        if (line.substr(0, 7) == "core id") {
+            coreId = std::stoi(line.substr(line.find(":") + 1));
+            cores.insert({physicalId, coreId});
+        }
+    }
+    physicalCores = static_cast<unsigned int>(cores.size());
+
+#elif defined(_WIN32) || defined(_WIN64)
+    int cpuInfo[4] = {0};
+    unsigned int coresCount = 0;
+    int index = 0;
+
+           // CPUID leaf 4 enumerates cores
+    do {
+        __cpuidex(cpuInfo, 4, index++);
+        unsigned int coresInThisCache = ((cpuInfo[0] >> 26) & 0x3F) + 1;
+        coresCount += coresInThisCache;
+    } while ((cpuInfo[0] & 0x1F) != 0);
+
+    physicalCores = coresCount;
+
+#else
+    // Unsupported platform
+    physicalCores = 0;
+#endif
+
+    return physicalCores;
+}
 
 bool Evaluation::readStudentInfo(const std::string &studentInfoFile, std::vector<std::string> &studentInformation)
 {
@@ -139,7 +186,7 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
             return false;
         }
 
-        judgeInformation.clear();
+        judgeInformation[i].clear();
         for (int j = 0; j < 14; j++)
         {
             double d;
@@ -176,7 +223,7 @@ void Evaluation::on_evaluate_clicked()
             evaluating=false;
             return;
         }
-        int numOfStudents=studentInformation.size();
+        static int numOfStudents=studentInformation.size();
         std::vector<int> testCaseInformation;
         std::string testCaseInfoFile = systemDirPath.toStdString()  + "testCaseInfo.txt";
 
@@ -216,73 +263,295 @@ void Evaluation::on_evaluate_clicked()
 
         }
 
-        std::vector<std::pair<std::string,std::vector<std::vector<Verdict>>>>verdicts;
-        int runMaxThread=4;
+        int runMaxThread=1;
+        int p_core=getPhysicalCoreCount();
+        runMaxThread=fmin(6,p_core-1);
+        runMaxThread=fmax(1,runMaxThread);
 
 
-        for(i=0;i<numOfStudents;i++)
+
+               // for(i=0;i<numOfStudents;i++)
+               // {
+               //     std::string stID=submissionInformation[i].first;
+               //     std::vector<std::string> submissionsFile=submissionInformation[i].second;
+
+
+               //     char ch='A';
+
+               //     int j;
+               //     int m=submissionsFile.size();
+               //     std::vector<std::vector<Verdict>>verdict(m);
+               //     for(j=0;j<m;j++)
+               //     {
+               //         if(submissionsFile[j].back()=='/')
+               //         {
+               //             std::vector<Verdict> v;
+               //             for(int k=0;k<testCaseInformation[j];k++)
+               //             {
+               //                 v.push_back(Verdict("Not Submitted",0,0));
+               //             }
+               //             verdict[j]=v;
+               //         }
+               //         else
+               //         {
+               //             std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+ch+"/";
+
+               //             Judge *judge=new Judge();
+               //             judge->setJudgeInfo(judgeInformation[j]);
+               //             judge->setCurrentFile(submissionsFile[j]);
+               //             judge->setCurrentProblem(std::to_string(ch));
+               //             judge->setNumberOfTotalTestCase(testCaseInformation[j]);
+               //             judge->setPretestCasesPath(testCasePath);
+
+               //             std::vector<Verdict>v;
+               //             v=judge->runOnTestCases();
+               //             verdict[j]=v;
+
+               //         }
+               //         ch++;
+               //     }
+
+               //     verdicts.push_back({stID,verdict});
+               // }
+
+
+               // for(int i=0;i<verdicts.size();i++)
+               // {
+               //     std::cout<<verdicts[i].first<<std::endl;
+               //     char ch='A';
+               //     for(int j=0;j<verdicts[i].second.size();j++)
+               //     {
+               //         std::cout<<"          "<<ch<<" : \n";
+               //         for(int k=0;k<verdicts[i].second[j].size();k++)
+               //         {
+               //             Verdict v=verdicts[i].second[j][k];
+               //             std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
+               //         }
+               //         ch++;
+               //     }
+
+               // }
+
+
+
+        static std::vector<std::thread> threads;
+        static std::mutex queueMutex;
+        static std::mutex verdictMutex;
+        static std::condition_variable cv;
+        static std::atomic<bool> stopFlag(false);
+        static std::atomic<int> activeWorkers(0);
+        static std::atomic<bool> completionMessageShown(false);
+        static int counter;
+
+
+        struct Task {
+            std::string studentID;
+            std::vector<std::string> submission;
+        };
+
+        static std::queue<Task> taskQueue;
+
+               // Store copies to avoid dangling references
+        static std::vector<int> testCaseInfoCopy;
+        static std::vector<std::vector<double>> judgeInfoCopy;
+        static QString systemDirPathCopy;
+        static std::vector<std::pair<std::string, std::vector<std::vector<Verdict>>>> verdicts; // Add this
+
+
+               // Clear previous state
+        stopFlag = false;
+        activeWorkers = 0;
+        completionMessageShown = false;
+        while(!taskQueue.empty()) taskQueue.pop();
+        verdicts.clear(); // Clear previous verdicts
+
+               // Copy data to static storage
+        testCaseInfoCopy = testCaseInformation;
+        judgeInfoCopy = judgeInformation;
+        systemDirPathCopy = systemDirPath;
+        counter=0;
+
+               // Detach any previous threads
+        for(auto &thread : threads)
         {
-            std::string stID=submissionInformation[i].first;
-            std::vector<std::string> submissionsFile=submissionInformation[i].second;
+            if(thread.joinable())
+                thread.detach();
+        }
+        threads.clear();
+
+               // Fill task queue
+        for(const auto &info : submissionInformation)
+        {
+            taskQueue.push({info.first, info.second});
+        }
 
 
-            char ch='A';
 
-            int j;
-            int m=submissionsFile.size();
-            std::vector<std::vector<Verdict>>verdict(m);
-            for(j=0;j<m;j++)
-            {
-                if(submissionsFile[j].back()=='/')
+
+               // Create worker threads
+        for(int i = 0; i < runMaxThread; ++i)
+        {
+            threads.emplace_back([this,threadID = i]() {
+                while(!stopFlag)
                 {
-                    std::vector<Verdict> v;
-                    for(int k=0;k<testCaseInformation[j];k++)
+                    Task task;
+                    bool hasTask = false;
+
                     {
-                        v.push_back(Verdict("Not Submitted",0,0));
+                        std::unique_lock<std::mutex> lock(queueMutex);
+
+                               // Wait for task or stop signal
+                        cv.wait(lock, []() {
+                            return !taskQueue.empty() || stopFlag;
+                        });
+
+                        if(stopFlag && taskQueue.empty())
+                            break;
+
+                        if(!taskQueue.empty())
+                        {
+                            task = taskQueue.front();
+                            taskQueue.pop();
+                            hasTask = true;
+                            activeWorkers++;
+                        }
                     }
-                    verdict[j]=v;
+
+                    if(hasTask)
+                    {
+
+
+                          // JUDGING LOGIC
+                        char ch = 'A';
+                        int m = task.submission.size();
+                        std::vector<std::vector<Verdict>> verdict(m);
+
+                        for(int j = 0; j < m; j++)
+                        {
+                            if(termination)
+                            {
+                                std::vector<Verdict> v;
+                                for(int k = 0; k < testCaseInfoCopy[j]; k++)
+                                {
+                                    v.push_back(Verdict("Judge Terminated", 0, 0));
+                                }
+                                verdict[j] = v;
+                            }
+                            else if(task.submission[j].back() == '/')
+                            {
+                                std::vector<Verdict> v;
+                                for(int k = 0; k < testCaseInfoCopy[j]; k++)
+                                {
+                                    v.push_back(Verdict("Not Submitted", 0, 0));
+                                }
+                                verdict[j] = v;
+
+                            }
+                            else
+                            {
+
+                                std::string testCasePath = systemDirPathCopy.toStdString() + "Test-Cases/" + ch + "/";
+
+                                Judge *judge = new Judge();
+
+                                judges.insert(judge);
+                                judge->setJudgeInfo(judgeInfoCopy[j]);
+
+
+                                judge->setCurrentFile(task.submission[j]);
+                                judge->setCurrentProblem(std::to_string(ch));
+                                judge->setNumberOfTotalTestCase(testCaseInfoCopy[j]);
+                                judge->setPretestCasesPath(testCasePath);
+                                judge->setStudentID(task.studentID);
+
+                                std::vector<Verdict> v = judge->runOnTestCases();
+                                verdict[j] = v;
+                                judges.erase(judge);
+                                delete judge;
+
+
+
+                            }
+                            ch++;
+                        }
+
+                               // Store the result in static verdicts
+                        {
+                            std::lock_guard<std::mutex> lock(verdictMutex);
+                            verdicts.push_back({task.studentID, verdict});
+                        }
+
+                               // Print completion info
+                        if(!termination)counter++;
+
+                        ui->autoEvalStatus_label_10->setText(QString::number(counter)+" / "+QString::number(numOfStudents)+" Completed");
+
+
+                        // here complete one thread
+
+                        activeWorkers--;
+
+                               // Check if all done
+
+
+
+                               //show verdict from here
+
+
+
+                        {
+                            std::lock_guard<std::mutex> lock(queueMutex);
+                            if(taskQueue.empty() && activeWorkers == 0 && !completionMessageShown)
+                            {
+                                completionMessageShown = true;
+
+                                for(int i=0;i<verdicts.size();i++)
+                                {
+                                    std::cout<<verdicts[i].first<<std::endl;
+                                    char ch='A';
+                                    for(int j=0;j<verdicts[i].second.size();j++)
+                                    {
+                                        std::cout<<"          "<<ch<<" : \n";
+                                        for(int k=0;k<verdicts[i].second[j].size();k++)
+                                        {
+                                            Verdict v=verdicts[i].second[j][k];
+                                            std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
+                                        }
+                                        ch++;
+                                    }
+
+                                }
+                                if(!termination)
+                                ui->evaluationStatusLevel->setText("Success");
+                                else ui->evaluationStatusLevel->setText("Terminated");
+
+                                stopFlag = true;
+                                cv.notify_all();
+                                evaluating=false;
+                                termination=false;
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+ch+"/";
 
-                    Judge *judge=new Judge();
-                    judge->setJudgeInfo(judgeInformation[j]);
-                    judge->setCurrentFile(submissionsFile[j]);
-                    judge->setCurrentProblem(std::to_string(ch));
-                    judge->setNumberOfTotalTestCase(testCaseInformation[j]);
-                    judge->setPretestCasesPath(testCasePath);
 
-                    std::vector<Verdict>v;
-                    v=judge->runOnTestCases();
-                    verdict[j]=v;
-
-                }
-                ch++;
-            }
-
-            verdicts.push_back({stID,verdict});
+            });
         }
 
-
-        for(int i=0;i<verdicts.size();i++)
+               // Detach threads so they run independently
+        for(auto &thread : threads)
         {
-            std::cout<<verdicts[i].first<<std::endl;
-            char ch='A';
-            for(int j=0;j<verdicts[i].second.size();j++)
-            {
-                std::cout<<"          "<<ch<<" : \n";
-                for(int k=0;k<verdicts[i].second[j].size();k++)
-                {
-                    Verdict v=verdicts[i].second[j][k];
-                    std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
-                }
-                ch++;
-            }
-
+            thread.detach();
         }
 
-        evaluating=false;
+               // Notify threads to start
+        cv.notify_all();
+        ui->evaluationStatusLevel->setText("Running");
+        ui->autoEvalStatus_label_10->setText(QString::number(0)+" / "+QString::number(studentInformation.size())+" Completed");
+
+
+
+
 
     }
 
@@ -299,7 +568,17 @@ void Evaluation::on_stopEvaluation_clicked()
 {
     if(evaluating)
     {
-        std::cout<<"Nothing is evalutaing"<<std::endl;
+        termination=true;
+        for(auto judge:judges)judge->stopJudge();
+
+    }
+    else
+
+    {
+        QMessageBox::warning(this, "Warning",
+                             "Nothing is evaluating.");
+        evaluating=false;
+        return;
     }
 }
 
