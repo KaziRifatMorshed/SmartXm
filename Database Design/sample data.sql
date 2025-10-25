@@ -1,16 +1,14 @@
 -- Sample data for Users table
 -- user_id (INT) is auto-incremented (1, 2, 3, 4, 5, 6)
 -- id (VARCHAR) is the public university ID
+
 INSERT INTO Users (name, email, password, identity, id) VALUES
 ('Alice Smith', '230201@ku.ac.bd', 'hashed_pass_123', 'student', '230201'),
 ('Bob Johnson', '210236@ku.ac.bd', 'hashed_pass_abc', 'student', '210236'),
 ('Carol Williams', '220215@ku.ac.bd', 'hashed_pass_xyz', 'student', '220215'),
 ('Dr. David Brown', 'david.brown@cse.ku.ac.bd', 'teacher_pass_1', 'teacher', 'T20001'),
 ('Dr. Frank Miller', 'frank.miller@cse.ku.ac.bd', 'teacher_pass_2', 'teacher', 'T20002'),
-('Eve Davis', '230202@ku.ac.bd', 'hashed_pass_789', 'student', '230202');
-
--- Additional students for 23-batch (230203 to 230240)
-INSERT INTO Users (name, email, password, identity, id) VALUES
+('Eve Davis', '230202@ku.ac.bd', 'hashed_pass_789', 'student', '230202'),
 ('Charlie Brown', '230203@ku.ac.bd', 'hashed_pass_230203', 'student', '230203'),
 ('Diana Prince', '230204@ku.ac.bd', 'hashed_pass_230204', 'student', '230204'),
 ('Edward Scissorhands', '230205@ku.ac.bd', 'hashed_pass_230205', 'student', '230205'),
@@ -48,10 +46,7 @@ INSERT INTO Users (name, email, password, identity, id) VALUES
 ('Kate Austen', '230237@ku.ac.bd', 'hashed_pass_230237', 'student', '230237'),
 ('Luke Skywalker', '230238@ku.ac.bd', 'hashed_pass_230238', 'student', '230238'),
 ('Mona Lisa', '230239@ku.ac.bd', 'hashed_pass_230239', 'student', '230239'),
-('Ned Stark', '230240@ku.ac.bd', 'hashed_pass_230240', 'student', '230240');
-
--- Students for 24-batch (240201 to 240242)
-INSERT INTO Users (name, email, password, identity, id) VALUES
+('Ned Stark', '230240@ku.ac.bd', 'hashed_pass_230240', 'student', '230240')
 ('Olivia Rodriguez', '240201@ku.ac.bd', 'hashed_pass_240201', 'student', '240201'),
 ('Peter Parker', '240202@ku.ac.bd', 'hashed_pass_240202', 'student', '240202'),
 ('Quinn Fabray', '240203@ku.ac.bd', 'hashed_pass_240203', 'student', '240203'),
@@ -95,7 +90,6 @@ INSERT INTO Users (name, email, password, identity, id) VALUES
 ('Henry Cavill', '240241@ku.ac.bd', 'hashed_pass_240241', 'student', '240241'),
 ('Jessica Chastain', '240242@ku.ac.bd', 'hashed_pass_240242', 'student', '240242');
 
--- Sample data for Course table, based on sessional/lab courses from the PDF
 INSERT INTO Course (course_code, course_name) VALUES
 ('CSE 1102', 'Structured Programming Laboratory'),
 ('CSE 2102', 'Data Structures Laboratory'),
@@ -103,23 +97,17 @@ INSERT INTO Course (course_code, course_name) VALUES
 ('CSE 3108', 'Operating System and Systems Programming Laboratory/Project'),
 ('CSE 3202', 'Artificial Intelligence Laboratory/Project/Fieldwork');
 
--- Sample data for CourseTeacher table
--- Assigns teachers (by user_id) to courses
 INSERT INTO CourseTeacher (course_code, assigned_teacher) VALUES
 ('CSE 2102', 4), -- Dr. David Brown (user_id 4) teaches Data Structures Lab
 ('CSE 2206', 5), -- Dr. Frank Miller (user_id 5) teaches Database Project
 ('CSE 3108', 4), -- Dr. David Brown (user_id 4) also teaches OS Lab
 ('CSE 3202', 5); -- Dr. Frank Miller (user_id 5) also teaches AI Lab
 
--- Sample data for Exam table
--- exam_id is auto-incremented (1, 2, 3)
 INSERT INTO Exam (status, date, start_time, end_time, full_marks, topic_name, exam_no, course_code, show_marks) VALUES
 ('Evaluated', '2025-05-10', '09:00:00', '12:00:00', 100, 'Final Lab Exam', 1, 'CSE 2102', TRUE),
 ('Evaluating', '2025-05-15', '09:00:00', '17:00:00', 50, 'Project Final Submission', 1, 'CSE 2206', FALSE),
 ('Scheduled', '2025-06-01', '10:00:00', '11:30:00', 40, 'Midterm Lab Test', 2, 'CSE 2102', FALSE);
 
--- Sample data for Participates table
--- Enrolls students (by Users.id) into exams
 INSERT INTO Participates (student_id, exam_id, set_code_no) VALUES
 ('230201', 1, 1), -- Alice in Exam 1 (DS Lab Final), Set 1
 ('210236', 1, 2), -- Bob in Exam 1 (DS Lab Final), Set 2
@@ -130,50 +118,38 @@ INSERT INTO Participates (student_id, exam_id, set_code_no) VALUES
 ('230201', 3, 1), -- Alice in Exam 3 (DS Midterm)
 ('230202', 3, 2); -- Eve in Exam 3 (DS Midterm)
 
--- Sample data for PreviousCode table
--- code_id is auto-incremented (1, 2)
 INSERT INTO PreviousCode (submitted_by, code, is_allowed) VALUES
 ('210236', 'public static int binarySearch(int[] arr, int target) { ... }', TRUE),
 ('220215', 'private void connectDB() { ... }', FALSE);
 
--- Adding 10 more entries to PreviousCode table
 INSERT INTO PreviousCode (submitted_by, code, is_allowed) VALUES
 ('230205',
 'function calculateArea(radius) {\n  return Math.PI * radius * radius;\n}',
 TRUE),
-
 ('240210',
 'SELECT student_id, COUNT(exam_id) AS exams_taken\nFROM Participates\nGROUP BY student_id\nHAVING COUNT(exam_id) > 2;',
 TRUE),
-
 ('210236',
 'for i in range(10):\n    print(f"Iteration {i+1}")',
 FALSE),
-
 ('230215',
 'class Node {\n  int data;\n  Node next;\n  Node(int d) { data = d; next = NULL; }\n}',
 TRUE),
-
 ('230215',
 'public int factorial(int n) {\n  if (n == 0) return 1;\n  else return n * factorial(n-1);\n}',
 FALSE),
-
 ('240201',
 'UPDATE Exam SET status = ''Finished'' WHERE end_time < NOW();',
 TRUE),
-
 ('230230',
 '#include <iostream>\nint main() {\n  std::cout << "Hello World!";\n  return 0;\n}',
 FALSE),
-
 ('220215',
 'const fetchData = async (url) => {\n  const response = await fetch(url);\n  return await response.json();\n}',
 TRUE),
-
 ('240222',
 'CREATE INDEX idx_student_exam ON Participates (student_id, exam_id);',
 TRUE),
-
 ('230208',
 'while (current != null) {\n  process(current.data);\n  current = current.next;\n}',
 FALSE);
