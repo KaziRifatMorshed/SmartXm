@@ -425,6 +425,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
                           bool inFlag)
 {
     usedTimeMS=30;
+
     double factor=getNormalizeFactor();
     timeLimitMS=round(timeLimitMS*factor);
 
@@ -992,6 +993,8 @@ Verdict Judge::runOnSingleTestCase()
     long long memorySize=0;
     std::string inputFile = pretestCasesPath + currentTestCaseNo + ".in";
     std::string expectedFile = pretestCasesPath + currentTestCaseNo + ".out";
+
+
     if(ext=="c"||ext=="cpp"||ext=="c++")
     {
 
@@ -1011,12 +1014,17 @@ Verdict Judge::runOnSingleTestCase()
         {
             if (compileOutput.find("error") != std::string::npos)
             {
-
+                exeFile.pop_back();
+                exeFile.erase(exeFile.begin());
+                std::remove(exeFile.c_str());
                 return Verdict("Compilation Error",0,0);
             }
         }
         if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Compilation Failed",0,0);
         }
     }
@@ -1040,26 +1048,41 @@ Verdict Judge::runOnSingleTestCase()
     }
     else if(status==1)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Runtime Error";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else if(status==2)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Time Limit Exceeded";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else if(status==3)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Memory Limit Exceeded";
         return Verdict(verdict,cpuTime,memorySize+effectiveMemoryLimit);
     }
     else if(status==5)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Judge Terminated";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="I/O Error";
         return Verdict(verdict,cpuTime,memorySize);
     }
@@ -1069,6 +1092,9 @@ Verdict Judge::runOnSingleTestCase()
         std::ifstream out(outputFile), exp(expectedFile);
         if (!out || !exp)
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
 
             return Verdict("Error",cpuTime,memorySize);
         }
@@ -1078,19 +1104,24 @@ Verdict Judge::runOnSingleTestCase()
 
         if (normalize(s1) == normalize(s2))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Accepted",cpuTime,memorySize);
         }
         else
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Wrong Answer",cpuTime,memorySize);
         }
 
 
     }
-
-
-
-
+    exeFile.pop_back();
+    exeFile.erase(exeFile.begin());
+    std::remove(exeFile.c_str());
     return Verdict("",0,0);
 
 }
@@ -1141,12 +1172,18 @@ std::vector<Verdict> Judge::runOnTestCases()
         {
             if (compileOutput.find("error") != std::string::npos)
             {
+                exeFile.pop_back();
+                exeFile.erase(exeFile.begin());
+                std::remove(exeFile.c_str());
 
                 return generateVerdicts("Compilation Error",numberOfTotalTestCase);
             }
         }
         if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return generateVerdicts("Compilation Failed",0);
         }
     }
@@ -1253,6 +1290,10 @@ std::vector<Verdict> Judge::runOnTestCases()
         std::string outputFile = pretestCasesPath + testCaseNo + ".output";
         std::remove(outputFile.c_str());
     }
+    exeFile.pop_back();
+    exeFile.erase(exeFile.begin());
+    std::remove(exeFile.c_str());
+
     return verdicts;
 }
 

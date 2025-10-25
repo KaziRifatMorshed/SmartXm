@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <filesystem>
 #include<QString>
+#include<verdict.h>
+#include<Judge.h>
 namespace Ui
 {
     class Evaluation;

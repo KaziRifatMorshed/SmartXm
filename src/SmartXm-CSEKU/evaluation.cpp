@@ -140,7 +140,7 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
         }
 
         judgeInformation.clear();
-        for (int i = 0; i < n; i++)
+        for (int j = 0; j < 14; j++)
         {
             double d;
             if (!(judgeInfoIn >> d))
@@ -149,6 +149,7 @@ bool Evaluation::readJudgeInfo(const std::string &judgeInfoPath, std::vector<std
 
                 return false;
             }
+
 
             judgeInformation[i].push_back(d);
         }
@@ -214,15 +215,73 @@ void Evaluation::on_evaluate_clicked()
             submissionInformation.push_back({stID,submissionsFile});
 
         }
+
+        std::vector<std::pair<std::string,std::vector<std::vector<Verdict>>>>verdicts;
+        int runMaxThread=4;
+
+
         for(i=0;i<numOfStudents;i++)
         {
-            std::cout<<submissionInformation[i].first<<std::endl;
-            for(auto it:submissionInformation[i].second)
+            std::string stID=submissionInformation[i].first;
+            std::vector<std::string> submissionsFile=submissionInformation[i].second;
+
+
+            char ch='A';
+
+            int j;
+            int m=submissionsFile.size();
+            std::vector<std::vector<Verdict>>verdict(m);
+            for(j=0;j<m;j++)
             {
-                std::cout<<"        "<<it<<std::endl;
+                if(submissionsFile[j].back()=='/')
+                {
+                    std::vector<Verdict> v;
+                    for(int k=0;k<testCaseInformation[j];k++)
+                    {
+                        v.push_back(Verdict("Not Submitted",0,0));
+                    }
+                    verdict[j]=v;
+                }
+                else
+                {
+                    std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+ch+"/";
+
+                    Judge *judge=new Judge();
+                    judge->setJudgeInfo(judgeInformation[j]);
+                    judge->setCurrentFile(submissionsFile[j]);
+                    judge->setCurrentProblem(std::to_string(ch));
+                    judge->setNumberOfTotalTestCase(testCaseInformation[j]);
+                    judge->setPretestCasesPath(testCasePath);
+
+                    std::vector<Verdict>v;
+                    v=judge->runOnTestCases();
+                    verdict[j]=v;
+
+                }
+                ch++;
+            }
+
+            verdicts.push_back({stID,verdict});
+        }
+
+
+        for(int i=0;i<verdicts.size();i++)
+        {
+            std::cout<<verdicts[i].first<<std::endl;
+            char ch='A';
+            for(int j=0;j<verdicts[i].second.size();j++)
+            {
+                std::cout<<"          "<<ch<<" : \n";
+                for(int k=0;k<verdicts[i].second[j].size();k++)
+                {
+                    Verdict v=verdicts[i].second[j][k];
+                    std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
+                }
+                ch++;
             }
 
         }
+
         evaluating=false;
 
     }
