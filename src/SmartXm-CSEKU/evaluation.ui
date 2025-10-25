@@ -27,7 +27,7 @@
       <item>
        <widget class="QTabWidget" name="_tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="dashboardTab">
          <attribute name="title">
@@ -237,6 +237,9 @@
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_5">
                 <item>
+                 <widget class="QComboBox" name="selectPrevCode_comboBox"/>
+                </item>
+                <item>
                  <widget class="QTextEdit" name="prevCode_textEdit">
                   <property name="readOnly">
                    <bool>true</bool>
@@ -250,6 +253,9 @@
                 <string>Exam Code</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="QComboBox" name="selectExamCode_comboBox_2"/>
+                </item>
                 <item>
                  <widget class="QTextEdit" name="examCode_textEdit">
                   <property name="readOnly">
@@ -498,7 +504,7 @@
      <x>0</x>
      <y>0</y>
      <width>1092</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
