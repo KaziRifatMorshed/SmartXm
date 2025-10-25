@@ -145,10 +145,9 @@ void TeacherModule::showConnectedStudentInfo() {
     ui->connectedPCwithServer_tableWidget->setItem(row, 0,
                                                    new QTableWidgetItem(name));
 
-    // Column 1: Stu ID (ClientInfo does not have explicit student id; use
-    // socket fd as identifier)
+    // Column 1: Stu ID
     ui->connectedPCwithServer_tableWidget->setItem(
-        row, 1, new QTableWidgetItem(QString::number(00)));
+        row, 1, new QTableWidgetItem(QString::fromStdString(ci.studentID)));
 
     // Column 2: Local IP
     ui->connectedPCwithServer_tableWidget->setItem(
