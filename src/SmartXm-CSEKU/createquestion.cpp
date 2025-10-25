@@ -5,22 +5,25 @@
 #include <QFile>
 #include <QMessageBox>
 #include <toast.h>
-#include<iostream>
-// #include <QWebEnginePage>
+#include <QWebEnginePage>
 #include <string>
 
-CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) { ui->setupUi(this); }
+CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) {
+    ui->setupUi(this);
+
+    ui->sampleTestCase_radioButton6->setChecked(true);
+}
 
 CreateQuestion::~CreateQuestion() { delete ui; }
 
-void CreateQuestion::createFolder()
+bool CreateQuestion::createFolder()
 {
     QString questionName = ui->quesTitle_lineEdit->text().replace(' ', '_');
 
     if (questionName.isEmpty()) {
         QMessageBox::warning(this, "Error", "Please write question name first.");
 
-        return;
+        return false;
     }
 
     qDebug() << questionName << "\n";
@@ -36,6 +39,8 @@ void CreateQuestion::createFolder()
     }
 
     qDebug() << path << "\n";
+
+    return true;
 }
 
 void CreateQuestion::writeQuestionToHTML()
@@ -83,31 +88,33 @@ void CreateQuestion::writeQuestionToHTML()
 
 void CreateQuestion::convertHtmlToPdf(QString source, QString destination)
 {
-  // QWebEnginePage *page = new QWebEnginePage;
+    QWebEnginePage *page = new QWebEnginePage;
 
-           // QFile htmlFile(source);
-           // if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-           //     qDebug() << "Failed to open HTML file:" << source;
-           //     return;
-           // }
+   QFile htmlFile(source);
+   if (!htmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+       qDebug() << "Failed to open HTML file:" << source;
+       return;
+   }
 
-           // QString htmlContent = htmlFile.readAll();
+   QString htmlContent = htmlFile.readAll();
 
-           // page->setHtml(htmlContent);
+   page->setHtml(htmlContent);
 
-           // QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
-           //     if (ok) {
-           //         page->printToPdf(destination);
-           //     } else {
-           //         qDebug() << "Failed to load HTML content from file:" << source;
-           //     }
-           // });
+   QObject::connect(page, &QWebEnginePage::loadFinished, [=](bool ok) {
+       if (ok) {
+           page->printToPdf(destination);
+       } else {
+           qDebug() << "Failed to load HTML content from file:" << source;
+       }
+   });
 }
 
 void CreateQuestion::on_save_pushButton_clicked()
 {
     // Create Folder with Question Name
-    createFolder();
+    if (!createFolder()) {
+        return;
+    }
 
            // Write complete question to a HTML
 
@@ -165,7 +172,9 @@ void CreateQuestion::saveToFile(QString path, QString& textToSave) {
 
 void CreateQuestion::on_soluSrcCodeSaveBtn_pushButton_2_clicked()
 {
-    createFolder();
+    if (!createFolder()) {
+        return;
+    }
 
     QString fileName = "Solution";
 
@@ -189,7 +198,9 @@ void CreateQuestion::on_soluSrcCodeSaveBtn_pushButton_2_clicked()
 
 void CreateQuestion::on_saveEditorial_pushButton_2_clicked()
 {
-    createFolder();
+    if (!createFolder()) {
+        return;
+    }
 
     QString fileName = "Editorial.html";
     QString outFileName = "Editorial.pdf";
@@ -377,5 +388,74 @@ void CreateQuestion::on_testcaseOutput_comboBox_currentIndexChanged(int index)
     }
 }
 
+void CreateQuestion::updateTestCaseTable()
+{
+    ui->tableWidget->setRowCount(test_cases.size());
 
+    for (size_t i = 0; i < test_cases.size(); ++i) {
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(test_cases[i].getTestCaseName())));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(test_cases[i].getCategory())));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(test_cases[i].getInputFileSize()) + " bytes"));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(test_cases[i].getOutputFileSize()) + " bytes"));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(test_cases[i].getWeight())));
+    }
+}
+
+void CreateQuestion::on_saveCurrentTestCase_pushButton_2_clicked()
+{
+    if (!createFolder()) {
+        return;
+    }
+
+    int test_case_no = ui->tableWidget->rowCount();
+    std::string test_case_name = ui->testCaseTitle_lineEdit->text().toStdString();
+    std::string category = "";
+
+    if (ui->preTestCase_radioButton_4->isChecked()) {
+        category = "Pre Test";
+    }
+    else if (ui->systemTestCase_radioButton_5->isChecked()) {
+        category = "System";
+    }
+    else {
+        category = "Sample";
+    }
+
+    std::string test_case_folder_path = path.toStdString() + "Test-Cases/";
+
+    if (!std::filesystem::is_directory(test_case_folder_path)) {
+        std::filesystem::create_directory(test_case_folder_path);
+    }
+    else {
+        qDebug() << path << " already exists\n";
+    }
+
+    std::string input_file_path = test_case_folder_path + "in_" + std::to_string(test_case_no) + ".txt";
+    std::string output_file_path = test_case_folder_path + "out_" + std::to_string(test_case_no) + ".txt";
+
+    QString input_text = ui->inputOfTestCase___textEdit->toPlainText();
+    QString output_text = ui->outputOfTestCase__textEdit->toPlainText();
+
+    saveToFile(QString::fromStdString(input_file_path), input_text);
+    saveToFile(QString::fromStdString(output_file_path), output_text);
+
+    test_cases.push_back(test_case(test_case_no, test_case_name, category, 1, input_file_path, output_file_path));
+
+    updateTestCaseTable();
+
+    QString test_case_infos;
+
+    for (auto &tc : test_cases) {
+        test_case_infos += QString::number(tc.getTestCaseNumber()) + "," +
+                           QString::fromStdString(tc.getTestCaseName()) + "," +
+                           QString::fromStdString(tc.getCategory()) + "," +
+                           QString::number(tc.getInputFileSize()) + "," +
+                           QString::number(tc.getOutputFileSize()) + "," +
+                           QString::number(tc.getWeight()) + "," +
+                           QString::fromStdString(tc.getInputFilePath()) + "," +
+                           QString::fromStdString(tc.getOutputFilePath()) + "\n";
+    }
+
+    saveToFile(QString::fromStdString(test_case_folder_path + "test_cases_info.txt"), test_case_infos);
+}
 

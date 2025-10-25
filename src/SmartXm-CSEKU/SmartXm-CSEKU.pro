@@ -1,4 +1,4 @@
-QT       += core gui sql network concurrent pdfwidgets
+QT       += core gui sql network concurrent pdfwidgets webenginecore
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -64,6 +64,7 @@ HEADERS += \
     studentmodulev2.h \
     runtestcases.h \
     teachermodule.h \
+    test_case.h \
     toast.h \
     verdict.h \
     welcomewindow.h \

@@ -5,6 +5,7 @@
 #include<QThread>
 #include<JudgeWorker3.h>
 #include<verdict.h>
+#include "test_case.h"
 
 namespace Ui
 {
@@ -44,10 +45,12 @@ private slots:
 
     void on_stopExecution_clicked();
 
+    void on_saveCurrentTestCase_pushButton_2_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
-    void createFolder();
+    bool createFolder();
     void writeQuestionToHTML();
     void convertHtmlToPdf(QString source, QString destination);
     QString getFileContent(QString path);
@@ -56,6 +59,8 @@ private:
     JudgeWorker3 *judgeWorker;
     QThread *judgeThread;
     bool judging =false;
+    std::vector <test_case> test_cases;
+    void updateTestCaseTable();
 };
 
 #endif // CREATEQUESTION_H

@@ -27,7 +27,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="attribute_tab">
       <attribute name="title">
@@ -315,6 +315,13 @@
                <widget class="QRadioButton" name="systemTestCase_radioButton_5">
                 <property name="text">
                  <string>system testcase</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="sampleTestCase_radioButton6">
+                <property name="text">
+                 <string>sample testcase</string>
                 </property>
                </widget>
               </item>
