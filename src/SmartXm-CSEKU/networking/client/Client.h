@@ -56,9 +56,9 @@ public:
         oss << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
         return oss.str();
     };
-    bool sendLoginInfoToServer();
-    void storeLoginInfoToCache(); // client will be login for 3 hours; exceeding 3 hour will clear cache
-    bool checkLoginInfoInCache(); //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
+    bool sendLoginInfoToServer(std::string email, std::string password);
+    // client will be login for 3 hours; exceeding 3 hour will clear cache
+    //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later
 
     FileMeta receive_file_from_server();

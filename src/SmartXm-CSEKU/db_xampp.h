@@ -11,7 +11,6 @@ const QString DB_NAME = "SmartXmRemoteServer";
 
 class localDB {
 public:
-  static localDB* _dbInstance;
   static localDB *DB() {
     if (_dbInstance == nullptr) {
       _dbInstance = new localDB();
@@ -44,6 +43,7 @@ protected:
   }
 
 private:
+    static localDB* _dbInstance;
   localDB() { startDB(); }
   ~localDB() {
     if (qSqlDB.isOpen())

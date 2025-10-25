@@ -130,14 +130,17 @@ void file_receive_loop(int sock_fd) {
                 << std::endl;
 #endif
             // Notify UI (in main thread)
-//             if (studentModuleV2Pointer)
-//               QMetaObject::invokeMethod(studentModuleV2Pointer,
-//                                         "HelloFileArrived", // signal, not slot! // DOES NOT EXISTS CURRENTLY
-//                                         Qt::QueuedConnection);
-// #ifdef DEBUG_ON
-//             std::cout << "[FileReceiver] HelloFileArrived signal sent."
-//                       << std::endl;
-// #endif
+            //             if (studentModuleV2Pointer)
+            //               QMetaObject::invokeMethod(studentModuleV2Pointer,
+            //                                         "HelloFileArrived", //
+            //                                         signal, not slot! // DOES
+            //                                         NOT EXISTS CURRENTLY
+            //                                         Qt::QueuedConnection);
+            // #ifdef DEBUG_ON
+            //             std::cout << "[FileReceiver] HelloFileArrived signal
+            //             sent."
+            //                       << std::endl;
+            // #endif
           }
         }
       }
@@ -168,7 +171,6 @@ void file_receive_loop(int sock_fd) {
       //     save_name = meta.filename; // fallback to original filename
       // }
 
-
       /* ------------ FILE SAVE LOGIC ------------ */
 
       std::ofstream ofs(save_name, std::ios::binary);
@@ -195,8 +197,6 @@ void file_receive_loop(int sock_fd) {
               << std::endl;
   }
 }
-
-
 
 // Send file to server
 bool Client::send_file_to_server(const std::string &path,
@@ -250,16 +250,14 @@ void Client::updateAccountInfo() { // kivabe implement korbo ???
   // Add implementation for sending updated info as needed
 }
 
-bool Client::sendLoginInfoToServer() {
+bool Client::sendLoginInfoToServer(std::string email, std::string password) {
   if (!connected)
     return false;
-  std::string email, password;
-  // ... get email and password from GUI ...
-  std::string login_data = email + ":" + password; // You should encrypt this!
+  std::string login_data = email + ":" + password; //  should encrypt this!
 
   // Create an empty FileMeta object to act as a command packet
   FileMeta meta;
-  meta.title = "LOGIN";
+  meta.title = "LOGIN_REQ";
   meta.message = login_data;
   meta.sent_time = std::time(nullptr);
 
@@ -272,59 +270,24 @@ bool Client::sendLoginInfoToServer() {
             << std::endl;
 #endif
 
-  char buffer[CLIENT_BUFFER_SIZE]{};
-  ssize_t valread = recv(sock_fd, buffer, CLIENT_BUFFER_SIZE, 0);
-  std::string response(buffer, valread);
+  // Call the static function and assign its return value
+  FileMeta response = FileMeta::recv_from_socket(sock_fd);
 
-  if (response == "LOGIN_SUCCESS") {
-    // ... (rest of your logic is fine)
+  if (response.title == "LS") {
     clientName = email;
     lastLoginTime = getCurrentTime();
-    storeLoginInfoToCache();
-#ifdef DEBUG_ON
     std::cout << "[Client::sendLoginInfoToServer] Login successful!"
               << std::endl;
-#endif
     return true;
-  }
-// ... (rest of your logic is fine)
-#ifdef DEBUG_ON
-  std::cout << "[Client::sendLoginInfoToServer] Login failed." << std::endl;
-#endif
-  return false;
-}
-
-void Client::storeLoginInfoToCache() {
-  std::ofstream ofs("login_cache.txt");
-  ofs << clientName << "\n" << lastLoginTime << "\n";
-  ofs.close();
-#ifdef DEBUG_ON
-  std::cout << "[Client::storeLoginInfoToCache] Login info stored to cache."
-            << std::endl;
-#endif
-}
-
-bool Client::checkLoginInfoInCache() { // CHECK LATER
-  std::ifstream ifs("login_cache.txt");
-  if (!ifs)
+  } else if (response.title == "LF") {
+    std::cout << "[Client::sendLoginInfoToServer] Login failed." << std::endl;
     return false;
-  std::string cached_name;
-  std::time_t cached_time;
-  ifs >> cached_name >> cached_time;
-  ifs.close();
-  std::time_t now = getCurrentTime();
-  if (cached_name == clientName && (now - cached_time) < 3 * 60 * 60) {
-    lastLoginTime = cached_time;
-#ifdef DEBUG_ON
-    std::cout << "[Client::checkLoginInfoInCache] Login info valid in cache."
-              << std::endl;
-#endif
-    return true;
   }
-#ifdef DEBUG_ON
-  std::cout << "[Client::checkLoginInfoInCache] Login info not valid in cache."
-            << std::endl;
-#endif
+
+  // Add a fallback for unexpected responses
+  std::cerr
+      << "[Client::sendLoginInfoToServer] Received unknown login response: "
+      << response.title << std::endl;
   return false;
 }
 

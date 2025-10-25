@@ -52,6 +52,7 @@ private:
   std::string secretKey;
   std::string localIP;
   static Server *serverInstance; // instance private e thake
+  bool checkLogin(std::string str);
 
   int start();
 
