@@ -83,7 +83,7 @@ Client* client_instance = Client::createClient(); // i want client instance here
 
 void StudentModuleV2::on_sendHello_pushButton_clicked()
 {
-    bool t = client_instance->send_file_to_server("./resources/Hello1.pdf", "hello", "hello file for network test");
+    bool t = client_instance->send_file_to_server("./resources/Hello1.pdf", "HELLO", "hello file for network test");
     if (t) {
         QMessageBox::information(this, "Success",
                                  "Hello sent to server.");

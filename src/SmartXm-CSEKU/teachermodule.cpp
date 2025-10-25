@@ -179,7 +179,7 @@ void TeacherModule::showConnectedStudentInfo() {
     });
 
     // Create Button 2: Test Connection
-    QPushButton *testClientConnectionBtn = new QPushButton("Test");
+    QPushButton *testClientConnectionBtn = new QPushButton("Test Connection");
     testClientConnectionBtn->setToolTip(
         "Test Connection"); // Tooltip for clarity
     testClientConnectionBtn->setProperty("client_name", name);

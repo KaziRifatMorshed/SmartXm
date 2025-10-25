@@ -252,9 +252,9 @@ void Server::handleClient(int client_socket, ClientInfo ci) {
         // This is a connection test request
         std::cout << "[Server] Received HELLO FILE for testing." << std::endl;
 
-        std::string save_path = "./cache/" + meta.filename + "_" +
+        std::string save_path = "./cache/"  +
                                 ci.clientName + "_" +
-                                ci.ip; // You need a better name
+                                ci.ip + "_" + meta.filename; // You need a better name
         std::ofstream ofs(save_path, std::ios::binary);
         if (ofs) {
           ofs.write(meta.file_data.data(), meta.file_data.size());
