@@ -17,7 +17,7 @@
 #include <iostream>        // For std::cout, std::cerr
 #include<set>
 #if defined(_WIN32) || defined(_WIN64)
-#include <intrin.h>
+
 #include <windows.h>
 #endif
 

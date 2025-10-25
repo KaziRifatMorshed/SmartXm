@@ -63,18 +63,30 @@ unsigned int Evaluation::getPhysicalCoreCount() {
     physicalCores = static_cast<unsigned int>(cores.size());
 
 #elif defined(_WIN32) || defined(_WIN64)
-    int cpuInfo[4] = {0};
-    unsigned int coresCount = 0;
-    int index = 0;
+    DWORD len = 0;
+    if (!GetLogicalProcessorInformation(nullptr, &len) &&
+        GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+        std::cerr << "Failed to query processor info." << std::endl;
+        return 1;
+    }
 
-           // CPUID leaf 4 enumerates cores
-    do {
-        __cpuidex(cpuInfo, 4, index++);
-        unsigned int coresInThisCache = ((cpuInfo[0] >> 26) & 0x3F) + 1;
-        coresCount += coresInThisCache;
-    } while ((cpuInfo[0] & 0x1F) != 0);
+    std::vector<uint8_t> buf(len);
+    auto info = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(buf.data());
 
-    physicalCores = coresCount;
+    if (!GetLogicalProcessorInformation(info, &len)) {
+        std::cerr << "Failed to get processor info." << std::endl;
+        return 1;
+    }
+
+    unsigned int cores = 0;
+    size_t count = len / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+    for (size_t i = 0; i < count; ++i) {
+        if (info[i].Relationship == RelationProcessorCore) {
+            ++cores;
+        }
+    }
+    physicalCores=cores;
 
 #else
     // Unsupported platform
