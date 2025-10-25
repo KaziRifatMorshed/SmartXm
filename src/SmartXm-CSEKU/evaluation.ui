@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1092</width>
-    <height>708</height>
+    <height>834</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
       <item>
        <widget class="QTabWidget" name="_tabWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="dashboardTab">
          <attribute name="title">
@@ -144,7 +144,7 @@
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;Evaluation Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
             <x>4</x>
@@ -155,7 +155,7 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_9"/>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
             <x>166</x>
@@ -210,6 +210,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Student ID:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QComboBox" name="stuListcomboBox"/>
             </item>
             <item>
@@ -249,6 +256,9 @@
            </widget>
           </item>
           <item>
+           <widget class="QComboBox" name="selectProblem_comboBox"/>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="2,0,1">
             <item>
              <widget class="QTabWidget" name="CodeViewer_tabWidget">
@@ -284,6 +294,13 @@
                  <widget class="QTextEdit" name="examCode_textEdit">
                   <property name="readOnly">
                    <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="runThisFile_pushButton_2">
+                  <property name="text">
+                   <string>Run</string>
                   </property>
                  </widget>
                 </item>
@@ -404,6 +421,34 @@
          <attribute name="title">
           <string>Detect</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QComboBox" name="detect_comboBox"/>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="detect_textEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="leaderboardTab">
+         <attribute name="title">
+          <string>Leaderboard</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QTableWidget" name="tableWidget">
+            <column>
+             <property name="text">
+              <string>Student ID</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="summaryTab">
          <attribute name="title">
