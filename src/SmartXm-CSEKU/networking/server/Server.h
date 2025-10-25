@@ -31,8 +31,8 @@ public:
   // clients.
   std::vector<ClientInfo> getClients();
 
-  bool sendFileToClient(int client_sock, std::string path,
-                        std::string msg);          // bad, need FileMeta
+  bool sendFileToClient(int client_sock, const std::string path,
+                        const std::string title, const std::string msg);          // bad, need FileMeta
   bool sendFileToAllClients(const FileMeta &meta); // build successful
   FileMeta receiveFileFromClient(int client_sock);
   void printClientsLoop(int intervalSeconds = 5);
@@ -56,7 +56,7 @@ private:
   int start();
 
   void acceptLoop();
-  void handleClient(int client_socket);
+  void handleClient(int client_socket, ClientInfo ci);
 
   std::vector<ClientInfo> clients;
   std::mutex clientsMutex;

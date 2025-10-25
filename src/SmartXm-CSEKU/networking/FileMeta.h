@@ -29,11 +29,11 @@
 
 #include <iostream>
 
-// Rest of your FileMeta class...
 
 
 class FileMeta {
 public:
+    std::string title;
     std::string filename;
     std::string extension;
     std::time_t sent_time;
@@ -41,9 +41,9 @@ public:
     std::string message;
 
     FileMeta() = default;
-    FileMeta(const std::string& fname, const std::string& ext, std::time_t t,
+    FileMeta(const std::string& _title, const std::string& fname, const std::string& ext, std::time_t t,
              std::vector<char>&& data, const std::string& msg = "")
-        : filename(fname), extension(ext), sent_time(t),
+        : title(_title), filename(fname), extension(ext), sent_time(t),
         file_data(std::move(data)), message(msg) {
 #ifdef DEBUG_ON
         std::cout << "[FileMeta] FileMeta object created." << std::endl;
@@ -59,6 +59,10 @@ public:
             out.insert(out.end(), s.begin(), s.end());
         };
 
+        write_string(title);
+#ifdef DEBUG_ON
+        std::cout << "[FileMeta::serialize] Title written: " << title << std::endl;
+#endif
         write_string(filename);
 #ifdef DEBUG_ON
         std::cout << "[FileMeta::serialize] Filename written: " << filename << std::endl;
@@ -102,6 +106,10 @@ public:
             offset += len;
         };
 
+        read_string(m.title);
+#ifdef DEBUG_ON
+        std::cout << "[FileMeta::deserialize] Title read: " << m.title << std::endl;
+#endif
         read_string(m.filename);
 #ifdef DEBUG_ON
         std::cout << "[FileMeta::deserialize] Filename read: " << m.filename << std::endl;

@@ -25,6 +25,10 @@ private slots:
 
     void on_exit_profileTab_pushButton_clicked();
 
+    void on_sendHello_pushButton_clicked();
+
+    void on_dummySolution_pushButton_clicked();
+
 private:
     Ui::StudentModuleV2* ui;
     IDE *ideEditor;

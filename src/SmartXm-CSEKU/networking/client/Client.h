@@ -61,8 +61,9 @@ public:
     bool checkLoginInfoInCache(); //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later
 
-    // FileMeta receive_file_from_server(int sock_fd);
-    // bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg);
+    FileMeta receive_file_from_server();
+    bool send_file_to_server(const std::string& path, const std::string& title, const std::string& msg);
+    bool send_to_server();
 
 protected:
     Client();
@@ -70,7 +71,7 @@ protected:
 
 
 private:
-    void receiveFileLoop();
+    // void receiveFileLoop();
 
     int sock_fd;
     std::string clientName;

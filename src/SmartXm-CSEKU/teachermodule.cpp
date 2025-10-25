@@ -154,13 +154,19 @@ void TeacherModule::showConnectedStudentInfo() {
     ui->connectedPCwithServer_tableWidget->setItem(
         row, 2, new QTableWidgetItem(QString::fromStdString(ci.ip)));
 
-    // Column 3: Action - provide a small Info button that shows details.
+    // Column 3: Action - Create a container widget and a layout
+    QWidget *actionWidget = new QWidget();
+    QHBoxLayout *actionLayout = new QHBoxLayout(actionWidget);
+    actionLayout->setContentsMargins(0, 0, 0, 0); // Remove padding
+    actionLayout->setSpacing(5);                  // Space between buttons
+
+    // Create Button 1: Info
     QPushButton *infoBtn = new QPushButton("Info");
     infoBtn->setProperty("client_name", name);
     infoBtn->setProperty("client_ip", QString::fromStdString(ci.ip));
     infoBtn->setProperty("client_socfd", ci.socfd);
 
-    // When clicked, show a simple info dialog. (Disconnect requires server API)
+    // When clicked, show a simple info dialog.
     connect(infoBtn, &QPushButton::clicked, this, [this, infoBtn]() {
       QString n = infoBtn->property("client_name").toString();
       QString ip = infoBtn->property("client_ip").toString();
@@ -172,7 +178,54 @@ void TeacherModule::showConnectedStudentInfo() {
                                    .arg(fd));
     });
 
-    ui->connectedPCwithServer_tableWidget->setCellWidget(row, 3, infoBtn);
+    // Create Button 2: Test Connection
+    QPushButton *testClientConnectionBtn = new QPushButton("Test");
+    testClientConnectionBtn->setToolTip(
+        "Test Connection"); // Tooltip for clarity
+    testClientConnectionBtn->setProperty("client_name", name);
+    testClientConnectionBtn->setProperty("client_ip",
+                                         QString::fromStdString(ci.ip));
+    testClientConnectionBtn->setProperty("client_socfd", ci.socfd);
+
+    // When clicked, send a test file.
+    connect(
+        testClientConnectionBtn, &QPushButton::clicked, this,
+        [this, testClientConnectionBtn]() {
+          QString n =
+              testClientConnectionBtn->property("client_name").toString();
+          QString ip =
+              testClientConnectionBtn->property("client_ip").toString();
+          int fd = testClientConnectionBtn->property("client_socfd").toInt();
+          bool t =
+              server->sendFileToClient(fd, "./resources/Hello2.pdf", "HELLO",
+                                       "Hello packet sent from server");
+          if (t) {
+            QMessageBox::information(
+                this, "Test Connection with Client",
+                QString(
+                    "Name: %1\nLocal IP: %2\nSocket FD: %3\nHello file sent...")
+                    .arg(n)
+                    .arg(ip)
+                    .arg(fd));
+          } else {
+            QMessageBox::warning(
+                this, "Test Failed",
+                QString("Failed to send HELLO file to %1 (Socket: %2)")
+                    .arg(n)
+                    .arg(fd));
+          }
+        });
+
+    // Add buttons to the layout
+    actionLayout->addWidget(infoBtn);
+    actionLayout->addWidget(testClientConnectionBtn);
+    // You could add more buttons here
+    // actionLayout->addWidget(new QPushButton("Kick"));
+
+    // Set the container widget (which holds the layout) into the cell
+    ui->connectedPCwithServer_tableWidget->setCellWidget(row, 3, actionWidget);
+
+    // --- MODIFICATION END ---
   }
 
   ui->connectedPCwithServer_tableWidget->resizeColumnsToContents();
@@ -213,9 +266,11 @@ void TeacherModule::on_instruction_send_pushButton_clicked() {
 
     std::string fname = QFileInfo(instructionFileName).fileName().toStdString();
     std::string ext = QFileInfo(instructionFileName).suffix().toStdString();
-    std::string msg = "rulebook"; // or "question", etc.
+    std::string msg = "rulebook";
+    std::string title = "rulebook";
 
-    FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+    FileMeta meta(title, fname, ext, std::time(nullptr), std::move(filedata),
+                  msg);
     bool t = server->sendFileToAllClients(meta);
     if (t) {
       QMessageBox::information(this, "Success",
@@ -248,8 +303,10 @@ void TeacherModule::on_testExam_pushButton_3_clicked() {
   std::string fname = QFileInfo(quesFilePath).fileName().toStdString();
   std::string ext = QFileInfo(quesFilePath).suffix().toStdString();
   std::string msg = "questions.tar"; // or "question", etc.
+  std::string title = "QUESTIONS";   // or "question", etc.
 
-  FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+  FileMeta meta(title, fname, ext, std::time(nullptr), std::move(filedata),
+                msg);
   bool t = server->sendFileToAllClients(meta);
   if (t) {
     QMessageBox::information(this, "Success",

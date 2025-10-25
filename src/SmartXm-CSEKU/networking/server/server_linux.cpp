@@ -191,29 +191,106 @@ void Server::acceptLoop() { // accept new connections
     std::cout << "Client '" << client_name << "' connected from " << ci.ip
               << ":" << ci.port << std::endl;
 
-    std::thread client_thread(&Server::handleClient, this, client_socket);
+    std::thread client_thread(&Server::handleClient, this, client_socket, ci);
     client_thread.detach();
   }
 }
 
-void Server::handleClient(
-    int client_socket) { // after client is accepted, this needs
-  Message msg;
-  while (running) {
-    // while (serverInstance != nullptr) {
-    ssize_t valread = recv(client_socket, &msg, sizeof(msg), 0);
-    if (valread <= 0) {
-      std::cout << "Client (socket_id=" << client_socket << ") disconnected!"
-                << std::endl;
-      break;
-    } else {
-      std::cout << "Received msg from '" << msg.sender_name << "': " << msg.text
-                << std::endl;
-    }
-  }
-  close(client_socket);
+void Server::handleClient(int client_socket, ClientInfo ci) {
+  try {
+    while (running) {
+      // 1. THIS IS THE LOOP: Wait for and receive one FileMeta object.
+      // This call will block until a full FileMeta is received.
+      FileMeta meta = FileMeta::recv_from_socket(client_socket);
 
-  // Remove client from list
+#ifdef DEBUG_ON
+      std::cout << "[Server::handleClient] Received packet from socket "
+                << client_socket << " with title: " << meta.title << std::endl;
+#endif
+
+      // 2. Use the 'title' as a command to decide what to do.
+      if (meta.title == "SUBMISSION") {
+        // This is a student's submission
+        std::cout << "[Server] Received submission: " << meta.filename
+                  << " from client " << client_socket << std::endl;
+
+        // --- TODO: Implement submission saving logic ---
+        // You need to decide where to save this.
+        // For example, create a "submissions" folder.
+        // You should use the client's name (from ClientInfo) to name the file.
+        // e.g., "submissions/student_email_filename.ext"
+        std::string save_path =
+            "./submissions/" + meta.filename; // You need a better name
+        std::ofstream ofs(save_path, std::ios::binary);
+        if (ofs) {
+          ofs.write(meta.file_data.data(), meta.file_data.size());
+          ofs.close();
+          std::cout << "[Server] Saved submission to " << save_path
+                    << std::endl;
+        } else {
+          std::cerr << "[Server] Failed to save submission: " << save_path
+                    << std::endl;
+        }
+      }
+
+      else if (meta.title == "LOGIN") {
+        // This is a login request
+        std::cout << "[Server] Received LOGIN request." << std::endl;
+        // meta.message probably contains "email:password"
+        // --- TODO: Implement login logic ---
+        // e.g., bool success = checkCredentials(meta.message);
+        // if (success) {
+        //   send(client_socket, "LOGIN_SUCCESS", ...);
+        //   // You also need to find this client in the 'clients' list
+        //   // and update its 'clientName' from "IP_ADDRESS" to the email.
+        // } else {
+        //   send(client_socket, "LOGIN_FAILED", ...);
+        // }
+      }
+
+      else if (meta.title == "HELLO") {
+        // This is a connection test request
+        std::cout << "[Server] Received HELLO FILE for testing." << std::endl;
+
+        std::string save_path = "./cache/" + meta.filename + "_" +
+                                ci.clientName + "_" +
+                                ci.ip; // You need a better name
+        std::ofstream ofs(save_path, std::ios::binary);
+        if (ofs) {
+          ofs.write(meta.file_data.data(), meta.file_data.size());
+          ofs.close();
+          std::cout << "[Server] Saved hello file to " << save_path
+                    << std::endl;
+        } else {
+          std::cerr << "[Server] Failed to save hello file: " << save_path
+                    << std::endl;
+        }
+      }
+
+      else if (meta.title == "GET_LEADERBOARD") {
+        std::cout << "[Server] Received GET_LEADERBOARD request." << std::endl;
+        // --- TODO: Implement leaderboard logic ---
+        // std::string leaderboard_data = getLeaderboard();
+        // send(client_socket, leaderboard_data.c_str(), ...);
+      }
+
+      else if (meta.title == "UPDATE_ACCOUNT") { // UNNECESSARY
+        std::cout << "[Server] Received UPDATE_ACCOUNT request." << std::endl;
+        // --- TODO: Implement account update logic ---
+      }
+
+      else {
+        std::cerr << "[Server] Received unknown command: " << meta.title
+                  << std::endl;
+      }
+    }
+  } catch (const std::exception &e) {
+    std::cout << "[Server] Client (socket_id=" << client_socket
+              << ") disconnected: " << e.what() << std::endl;
+  }
+
+  // --- Client disconnect and cleanup logic (this was already here) ---
+  close(client_socket);
   {
     std::lock_guard<std::mutex> lock(clientsMutex);
     auto before = clients.size();
@@ -227,12 +304,13 @@ void Server::handleClient(
               << ", clients before=" << before << ", after=" << after
               << std::endl;
   }
-
   std::cout << "Client Handler Thread Terminated!! socket id = "
             << client_socket << std::endl;
 }
 
-void Server::printClientsLoop(int intervalSeconds) {
+
+
+void Server::printClientsLoop(int intervalSeconds) { // LESS IMPORTANT
   while (running) {
     // while (serverInstance != nullptr) {
     {
@@ -274,51 +352,10 @@ std::string Server::fetchLocalIP() {
   return found;
 }
 
-/*
-bool Server::sendFileToAllClients(std::string path) { // might depricate later
-    std::ifstream file(path, std::ios::binary);
-    if (!file.is_open()) {
-        std::cerr << "Could not open file: " << path << std::endl;
-        return false;
-    }
-
-std::stringstream buffer;
-buffer << file.rdbuf();
-std::string fileContent = buffer.str();
-size_t fileSize = fileContent.size();
-
-std::lock_guard<std::mutex> lock(clientsMutex);
-for (auto& client : clients) {
-  int client_socket = client.socfd;
-
-  // 1. Send file size
-  size_t bytesSent = send(client_socket, &fileSize, sizeof(fileSize), 0);
-  if (bytesSent != sizeof(fileSize)) {
-      std::cerr << "Failed to send file size to client " << client.clientName <<
-std::endl; continue;
-  }
-
-  // 2. Send file content
-  bytesSent = send(client_socket, fileContent.c_str(), fileSize, 0);
-  if (bytesSent != fileSize) {
-      std::cerr << "Failed to send file content to client " << client.clientName
-<< std::endl; continue;
-  }
-
-  std::cout << "File '" << path << "' sent to client " << client.clientName <<
-std::endl;
-}
-
-return true;
-}
-*/
-
-// new
-
 // send to specific client
 // kivabe button e implement korbo bujhtesi na
 bool Server::sendFileToClient(int client_sock, const std::string path,
-                              const std::string msg) {
+                              const std::string title, const std::string msg) {
   std::ifstream file(path, std::ios::binary);
   if (!file.is_open())
     return false;
@@ -333,7 +370,8 @@ bool Server::sendFileToClient(int client_sock, const std::string path,
   if (ext.size() && ext[0] == '.')
     ext = ext.substr(1);
 
-  FileMeta meta(fname, ext, std::time(nullptr), std::move(filedata), msg);
+  FileMeta meta(title, fname, ext, std::time(nullptr), std::move(filedata),
+                msg);
   return meta.send_on_socket(client_sock);
 }
 
