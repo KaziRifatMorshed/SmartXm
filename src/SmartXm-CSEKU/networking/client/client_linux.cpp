@@ -233,6 +233,9 @@ bool Client::send_file_to_server(const std::string &path,
   return meta.send_on_socket(sock_fd);
 }
 
+
+
+
 // Receive file from server
 FileMeta Client::receive_file_from_server() {
 #ifdef DEBUG_ON
@@ -242,6 +245,9 @@ FileMeta Client::receive_file_from_server() {
   return FileMeta::recv_from_socket(sock_fd);
 }
 
+
+
+
 void Client::updateAccountInfo() { // kivabe implement korbo ???
   if (!connected)
     return;
@@ -250,9 +256,12 @@ void Client::updateAccountInfo() { // kivabe implement korbo ???
   // Add implementation for sending updated info as needed
 }
 
-bool Client::sendLoginInfoToServer(std::string email, std::string password) {
+
+
+
+QString Client::sendLoginInfoToServer(std::string email, std::string password) {
   if (!connected)
-    return false;
+        return nullptr;
   std::string login_data = email + ":" + password; //  should encrypt this!
 
   // Create an empty FileMeta object to act as a command packet
@@ -263,7 +272,7 @@ bool Client::sendLoginInfoToServer(std::string email, std::string password) {
 
   if (!meta.send_on_socket(sock_fd)) {
     std::cerr << "[Client] Failed to send LOGIN request." << std::endl;
-    return false;
+    return nullptr;
   }
 #ifdef DEBUG_ON
   std::cout << "[Client::sendLoginInfoToServer] Login data sent via FileMeta."
@@ -278,18 +287,21 @@ bool Client::sendLoginInfoToServer(std::string email, std::string password) {
     lastLoginTime = getCurrentTime();
     std::cout << "[Client::sendLoginInfoToServer] Login successful!"
               << std::endl;
-    return true;
+    return QString::fromStdString(response.message);
   } else if (response.title == "LF") {
     std::cout << "[Client::sendLoginInfoToServer] Login failed." << std::endl;
-    return false;
+    return nullptr;
   }
 
   // Add a fallback for unexpected responses
   std::cerr
       << "[Client::sendLoginInfoToServer] Received unknown login response: "
       << response.title << std::endl;
-  return false;
+  return nullptr;
 }
+
+
+
 
 void Client::getLeaderboardDataFromServer() {
   if (!connected)

@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <thread>
 #include <vector>
+#include <QString>
 
 class Server {
 public:
@@ -52,7 +53,7 @@ private:
   std::string secretKey;
   std::string localIP;
   static Server *serverInstance; // instance private e thake
-  bool checkLogin(std::string str);
+  QString checkLogin(std::string str);
 
   int start();
 

@@ -14,7 +14,7 @@
 #include <studentmodulev2.h>
 
 // #define LOGIN_CACHE_ENABLE
-#define TEACHER_CACHE_ENABLE
+#define CACHE_ENABLE
 #define LOGIN_DEBUG
 
 Client *client;
@@ -287,7 +287,7 @@ void WelcomeWindow::on_pushButton_clicked() {
         teacherModuleWindow = new TeacherModule();
         teacherModuleWindow->show();
 
-#ifdef TEACHER_CACHE_ENABLE
+#ifdef CACHE_ENABLE
         qDebug() << "call inserting Login Cache ";
         cacheDbInstance_ = SQliteDB::instance();
         cacheDbInstance_->insertLoginCache(
@@ -312,9 +312,26 @@ void WelcomeWindow::on_pushButton_clicked() {
       }
     } else if (inputtedEmail.contains(
                    "@ku.ac.bd")) { // student login; use local server data
-      if (client->sendLoginInfoToServer(inputtedEmail.toStdString(),
-                                        inputtedPass.toStdString())) {
+      QString tt = client->sendLoginInfoToServer(inputtedEmail.toStdString(),
+                                                 inputtedPass.toStdString());
+      if (tt != nullptr) {
         close();
+
+        std::string nameNdId = tt.toStdString();
+          int pos = nameNdId.find(':');
+          std::string n = "";
+          std::string i = "";
+
+          if (pos >= 0) {
+              n = nameNdId.substr(0, pos);
+              i = nameNdId.substr(pos + 1);
+          }
+        Users &currentUser = Users::getInstance();
+        currentUser.setName(n);
+        currentUser.setEmail(inputtedEmail.toStdString());
+        currentUser.setIdentity(Users::Identity::Student);
+        currentUser.setId(i);
+
         studentModuleV2Window = new StudentModuleV2();
         studentModuleV2Window->show();
       } else {

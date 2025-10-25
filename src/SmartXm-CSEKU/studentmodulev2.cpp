@@ -7,9 +7,17 @@
 #include <networking/client/client.cpp>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <Users.h>
+
+Users &currentStuUser = Users::getInstance();
+
 
 StudentModuleV2::StudentModuleV2(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModuleV2) {
     ui->setupUi(this);
+
+    ui->welcomeStudent_label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Welcome, " + QString::fromStdString(currentStuUser.getName()) + "</span></p></body></html>");
+    ui->stuName_label_2->setText(QString::fromStdString(currentStuUser.getName()));
+    ui->stuName_label_2->setText(QString::fromStdString(currentStuUser.getId()));
 }
 
 StudentModuleV2::~StudentModuleV2() { delete ui; }

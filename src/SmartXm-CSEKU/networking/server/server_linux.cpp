@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <Users.h>
 
 bool Server::running = false;
 Server *Server::serverInstance = nullptr;
@@ -233,17 +234,17 @@ void Server::handleClient(int client_socket, ClientInfo ci) {
         }
       }
 
-      else if (meta.title == "LOGIN_REQ") {
+      else if (meta.title == "LOGIN_REQ") { // student login
         // This is a login request
         std::cout << "[Server] Received LOGIN request." << std::endl;
 
         // meta.message probably contains "email:password"
         // --- TODO: Implement login logic ---
-        bool L = checkLogin(meta.message);
+        QString L = checkLogin(meta.message);
         FileMeta LL;
-        if (L) {
+        if (L != nullptr) {
             LL.title = "LS"; // Login Succcess
-          // and update its 'clientName' from "IP_ADDRESS" to the email.
+            LL.message = L.toStdString(); // name and student id
         } else {
             LL.title = "LF"; // Login Failure
         }
@@ -409,7 +410,7 @@ FileMeta Server::receiveFileFromClient(int client_sock) {
 }
 
 #include <db_xampp.h>
-bool Server::checkLogin(std::string str){
+QString Server::checkLogin(std::string str){
     size_t pos = str.find(':');
     std::string e = "";
     std::string p = "";
@@ -427,10 +428,12 @@ bool Server::checkLogin(std::string str){
                 q.value("email").toString().toStdString();
             std::string pass =
                 q.value("password").toString().toStdString();
+            std::string id =
+                q.value("id").toString().toStdString();
             if (email == e && pass == p) {
-                return true;
+                return QString(q.value("name").toString()+":"+q.value("id").toString());
             } else {
-                return false;
+                return nullptr;
             }
         }
     }    else if (q.isActive() && q.size() == 0) {
@@ -441,7 +444,7 @@ bool Server::checkLogin(std::string str){
         std::cout << "No data found or query was inactive." << std::endl;
     }
     std::cout << "[Server:checkLogin] ERROR" << std::endl;
-    return false;
+    return nullptr;
 }
 
 #endif

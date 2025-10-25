@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <sstream>
 #include <networking/FileMeta.h>
+#include <QString>
 
 #define CLIENT_PORT 8080
 #define CLIENT_BUFFER_SIZE 1024
@@ -56,7 +57,7 @@ public:
         oss << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
         return oss.str();
     };
-    bool sendLoginInfoToServer(std::string email, std::string password);
+    QString sendLoginInfoToServer(std::string email, std::string password);
     // client will be login for 3 hours; exceeding 3 hour will clear cache
     //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later

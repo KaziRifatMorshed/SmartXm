@@ -29,7 +29,7 @@
     <item>
      <widget class="QTabWidget" name="stuModuVII_tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="profile_tab">
        <attribute name="title">
@@ -53,6 +53,20 @@
             <widget class="QLabel" name="stuName_label_2">
              <property name="text">
               <string>Student name xyz</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Student ID:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="stuID_label_3">
+             <property name="text">
+              <string>stu id TextLabel</string>
              </property>
             </widget>
            </item>
