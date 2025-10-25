@@ -94,10 +94,10 @@ void StudentModuleV2::on_sendHello_pushButton_clicked()
 {
     bool t = client_instance->send_file_to_server("./resources/Hello1.pdf", "HELLO", "hello file for network test");
     if (t) {
-        QMessageBox::information(this, "Success",
-                                 "Hello sent to server.");
+        QMessageBox::information(this, "Network Test",
+                                 "Hello file sent to server for network testing.");
     } else {
-        QMessageBox::warning(this, "failed!", "Hello file send Failed!!!");
+        QMessageBox::warning(this, "Test failed!", "Hello file send Failed!!!");
     }
 }
 
