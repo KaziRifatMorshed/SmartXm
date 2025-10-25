@@ -256,7 +256,7 @@ void WelcomeWindow::on_pushButton_clicked() {
       close();
       studentModuleV2Window = new StudentModuleV2();
       studentModuleV2Window->show();
-    } else {
+    } else
 #endif
 
       if (inputtedEmail.contains("@cse.ku.ac.bd")) { // TEACHER LOGIN; use local data
