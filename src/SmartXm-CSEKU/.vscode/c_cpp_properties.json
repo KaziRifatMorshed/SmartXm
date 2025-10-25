@@ -4,13 +4,18 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/x86_64-linux-gnu/qt6/QtWidgets"
+                "/usr/include/x86_64-linux-gnu/qt6/QtWidgets",
+                "/usr/include/x86_64-linux-gnu/qt6",
+                "/usr/include/x86_64-linux-gnu/qt6/QtCore",
+                "/opt/Qt/6.9.3/gcc_64/include",
+                "/opt/Qt/6.9.3/gcc_64/include/QtWebEngineCore",
+                "/opt/Qt/6.9.3/gcc_64/include/QtGui"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++-13",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "linux-clang-x64"
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

@@ -27,7 +27,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="attribute_tab">
       <attribute name="title">
@@ -110,7 +110,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_typeQuestionManually">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="title">
           <string>Type question manually</string>
@@ -915,14 +915,18 @@
        <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="title">
           <string>Editorial Content:</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QTextEdit" name="editorialTextBox_textEdit"/>
+           <widget class="QTextEdit" name="editorialTextBox_textEdit">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -954,7 +958,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="statementTab">
           <attribute name="title">

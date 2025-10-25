@@ -47,6 +47,14 @@ private slots:
 
     void on_saveCurrentTestCase_pushButton_2_clicked();
 
+    void on_saveLimits_pushButton_2_clicked();
+
+    void on_tabWidget_2_currentChanged(int index);
+
+    void on_typeEditManually_radioButton_3_clicked();
+
+    void on_radioButton_3_clicked();
+
 private:
     Ui::CreateQuestion* ui;
     QString path;
@@ -61,6 +69,7 @@ private:
     bool judging =false;
     std::vector <test_case> test_cases;
     void updateTestCaseTable();
+    void loadPdf(QWidget* tab, std::string pdfFilePath);
 };
 
 #endif // CREATEQUESTION_H

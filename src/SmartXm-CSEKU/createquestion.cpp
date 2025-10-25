@@ -7,11 +7,19 @@
 #include <toast.h>
 #include <QWebEnginePage>
 #include <string>
+#include <QWheelEvent>
+#include <QtPdf/QPdfDocument>
+#include <QtPdf/QPdfPageNavigator>
+#include <QtPdfWidgets/QPdfView>
 
 CreateQuestion::CreateQuestion(QWidget* parent) : QWidget(parent), ui(new Ui::CreateQuestion) {
     ui->setupUi(this);
 
     ui->sampleTestCase_radioButton6->setChecked(true);
+
+    ui->typeEditManually_radioButton_3->setChecked(true);
+
+    ui->typeQuestionManually_radioButton->setChecked(true);
 }
 
 CreateQuestion::~CreateQuestion() { delete ui; }
@@ -116,12 +124,11 @@ void CreateQuestion::on_save_pushButton_clicked()
         return;
     }
 
-           // Write complete question to a HTML
-
+    // Write complete question to a HTML
     if (ui->typeQuestionManually_radioButton->isChecked()) {
         writeQuestionToHTML();
 
-               // Convert html to pdf
+        // Convert html to pdf
         QString questionName = ui->quesTitle_lineEdit->text();
 
         convertHtmlToPdf(path + questionName + ".html", path + questionName + ".pdf");
@@ -129,13 +136,15 @@ void CreateQuestion::on_save_pushButton_clicked()
     else {
         QMessageBox::warning(this, "Warning", "Saving pdf is not implemented yet");
     }
-    // Save the testcases
+    
     // Save checker
     // Save limits
+    on_saveLimits_pushButton_2_clicked();
+
     // Save solutions
     on_soluSrcCodeSaveBtn_pushButton_2_clicked();
 
-           // Save editorial
+    // Save editorial
     on_saveEditorial_pushButton_2_clicked();
 }
 
@@ -457,5 +466,106 @@ void CreateQuestion::on_saveCurrentTestCase_pushButton_2_clicked()
     }
 
     saveToFile(QString::fromStdString(test_case_folder_path + "test_cases_info.txt"), test_case_infos);
+}
+
+
+void CreateQuestion::on_saveLimits_pushButton_2_clicked()
+{
+    if (!createFolder()) {
+        return;
+    }
+
+    QString limits;
+
+    limits += QString::number(ui->BaseMultiplier_lineEdit->text().toInt() * 1000) + "\n";
+    limits += QString::number(ui->cpp_multiplier_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->py_multiplier_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->java_multiplier_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->baseMemoryLimit_lineEdit_2->text().toInt() * 1024) + "\n";
+    limits += QString::number(ui->cpp_mem_limit_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->py_mem_limit_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->java_mem_limit_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->baseSourceLimit_lineEdit_3->text().toInt()) + "\n";
+    limits += QString::number(ui->cpp_source_limit_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->py_source_limit_lineEdit->text().toInt()) + "\n";
+    limits += QString::number(ui->java_source_limit_lineEdit->text().toInt()) + "\n";
+
+    saveToFile(path + "limits.txt", limits);
+
+    ToastManager::showMessage(this, "Limits saved.");
+
+    qDebug() << limits << "\n";
+}
+
+void CreateQuestion::loadPdf(QWidget *tab, std::string pdfFilePath) {
+    if (tab->layout()) {
+        QLayoutItem *item;
+        while ((item = tab->layout()->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item;
+        }
+        delete tab->layout();
+    }
+
+    QPdfDocument *pdfDocument = new QPdfDocument(tab);
+    QPdfView *pdfView = new QPdfView(tab);
+
+    pdfDocument->load(QString(pdfFilePath.c_str()));
+    pdfView->setDocument(pdfDocument);
+
+    pdfView->setPageMode(QPdfView::PageMode::MultiPage);
+
+    QPushButton *zoomInButton = new QPushButton("Zoom In");
+    QPushButton *zoomOutButton = new QPushButton("Zoom Out");
+
+    QObject::connect(zoomInButton, &QPushButton::clicked, [pdfView]() {
+        qreal zoom = pdfView->zoomFactor();
+        pdfView->setZoomFactor(zoom + 0.1);
+    });
+
+    QObject::connect(zoomOutButton, &QPushButton::clicked, [pdfView]() {
+        qreal zoom = pdfView->zoomFactor();
+        if (zoom > 0.2)
+            pdfView->setZoomFactor(zoom - 0.1);
+    });
+
+    QHBoxLayout *navigationLayout = new QHBoxLayout();
+    navigationLayout->addStretch();
+    navigationLayout->addWidget(zoomOutButton);
+    navigationLayout->addWidget(zoomInButton);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(tab);
+    mainLayout->addWidget(pdfView);
+    mainLayout->addLayout(navigationLayout);
+
+    tab->setLayout(mainLayout);
+}
+
+void CreateQuestion::on_tabWidget_2_currentChanged(int index)
+{
+    if (index == 0) {
+        QString questionName = ui->quesTitle_lineEdit->text();
+        std::string pdfFilePath = path.toStdString() + questionName.toStdString() + ".pdf";
+
+        loadPdf(ui->statementTab, pdfFilePath);
+    }
+    else if (index == 1) {
+        std::string pdfFilePath = path.toStdString() + "Editorial.pdf";
+
+        loadPdf(ui->editorialTab, pdfFilePath);
+    }
+}
+
+void CreateQuestion::on_typeEditManually_radioButton_3_clicked()
+{
+    ui->editorialTextBox_textEdit->setEnabled(true);
+    ui->editorialUploadPDF_pushButton_2->setEnabled(false);
+}
+
+
+void CreateQuestion::on_radioButton_3_clicked()
+{
+    ui->editorialTextBox_textEdit->setEnabled(false);
+    ui->editorialUploadPDF_pushButton_2->setEnabled(true);
 }
 
