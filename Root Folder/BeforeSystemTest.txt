@@ -1,12 +1,13 @@
 Windows:
-
-
-
+"C:/SmartXm/System/"
 
 
 
 Linux:
-"/SmartXm/System/" inside of this directory 
+"/SmartXm/System/"
+
+inside of this directory 
+
 must have a directory "Judge/" , a dirctory "Submissions/" , a directory "Test-Cases"
 
 Judge contains A.txt, B.txt, etc
@@ -40,7 +41,7 @@ Test-Cases contains A,B,C,.. directory
 every contains it's test cases
 
 
-in "/SmartXm/System/" must have more 2 text files
+in "SmartXm/System/" must have more 2 text files
 "studentInfo.txt" and "testCaseInfo.txt"
 
 studentInfo.txt must contains the total student number in first lines and then contains students id 
