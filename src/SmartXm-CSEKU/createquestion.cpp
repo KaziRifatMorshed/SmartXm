@@ -416,7 +416,7 @@ void CreateQuestion::on_saveCurrentTestCase_pushButton_2_clicked()
         return;
     }
 
-    int test_case_no = ui->tableWidget->rowCount();
+    int test_case_no = ui->tableWidget->rowCount() + 1;
     std::string test_case_name = ui->testCaseTitle_lineEdit->text().toStdString();
     std::string category = "";
 
@@ -439,8 +439,8 @@ void CreateQuestion::on_saveCurrentTestCase_pushButton_2_clicked()
         qDebug() << path << " already exists\n";
     }
 
-    std::string input_file_path = test_case_folder_path + "in_" + std::to_string(test_case_no) + ".txt";
-    std::string output_file_path = test_case_folder_path + "out_" + std::to_string(test_case_no) + ".txt";
+    std::string input_file_path = test_case_folder_path + std::to_string(test_case_no) + ".in";
+    std::string output_file_path = test_case_folder_path + std::to_string(test_case_no) + ".out";
 
     QString input_text = ui->inputOfTestCase___textEdit->toPlainText();
     QString output_text = ui->outputOfTestCase__textEdit->toPlainText();
