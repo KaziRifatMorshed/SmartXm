@@ -204,9 +204,8 @@ void runTestcases::on_runThisTestcase_pushButton_clicked()
 
                     if(verdict.verdict=="Accepted"||verdict.verdict=="Wrong Answer")
                     {
-                        QString studentOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1]+".000000" + ".output").c_str(),1024*1024);
+                        QString studentOutput = getFileContent((systemDirPath.toStdString() + "Pretest/" + testcaseData[0][0] + "/" + testcaseData[1] + ".output").c_str(),1024*1024);
                         ui->studentOutput_textEdit_3->setPlainText(studentOutput);
-
                     }
                     ui->testcaseExpectedOutput_textEdit->setPlainText(expectedOutput);
 

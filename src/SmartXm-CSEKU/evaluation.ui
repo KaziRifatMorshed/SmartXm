@@ -304,13 +304,6 @@
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QPushButton" name="stopSingleJudge">
-                  <property name="text">
-                   <string>Stop</string>
-                  </property>
-                 </widget>
-                </item>
                </layout>
               </widget>
              </widget>
@@ -337,12 +330,6 @@
                </item>
                <item>
                 <widget class="QTableWidget" name="testcasesStatus_tableWidget">
-                 <property name="maximumSize">
-                  <size>
-                   <width>320</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
                  <property name="selectionBehavior">
                   <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
                  </property>
@@ -353,7 +340,7 @@
                  </column>
                  <column>
                   <property name="text">
-                   <string>Verdict</string>
+                   <string>Status</string>
                   </property>
                  </column>
                  <column>
@@ -363,7 +350,7 @@
                  </column>
                  <column>
                   <property name="text">
-                   <string>Memory</string>
+                   <string>RAM</string>
                   </property>
                  </column>
                 </widget>
@@ -586,7 +573,7 @@
      <x>0</x>
      <y>0</y>
      <width>1092</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
