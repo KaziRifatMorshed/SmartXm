@@ -16,6 +16,7 @@
 #include <string>          // For std::string
 #include <iostream>        // For std::cout, std::cerr
 #include<set>
+#include<JudgeWorker4.h>
 #if defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
@@ -48,16 +49,25 @@ private slots:
 
     void on_stopEvaluation_clicked();
 
+    void on_runThisFile_pushButton_2_clicked();
+
+    void on_stopSingleJudge_clicked();
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;
+    bool evaluating2=false;
+
     bool termination=false;
+
     std::set<Judge *>judges;
     bool readStudentInfo(const std::string &submissionInfoFile, std::vector<std::string> &submissionInformation);
     bool readJudgeInfo(const std::string &judgeInfoPath, std::vector<std::vector<double>> &judgeInformation);
     bool readTestCaseInfo(const std::string &testCaseInfoFile, std::vector<int> &testCaseInformation);
     bool readSubmissionFileInfo(const std::string &submissionFilePath, std::vector<std::string> &submissionFiles);
     unsigned int getPhysicalCoreCount();
+    JudgeWorker4 *judgeWorker4;
+    QThread *threadJudge;
 
 #ifdef _WIN32
     QString dirPath = "C:/SmartXm/Editor/";
