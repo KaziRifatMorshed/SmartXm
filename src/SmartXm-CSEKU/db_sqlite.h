@@ -38,7 +38,7 @@ public:
     qDebug() << "opening db sqlite...";
 
     QList listOfDrivers = QSqlDatabase::drivers();
-    qDebug() << listOfDrivers;
+    // qDebug() << listOfDrivers;
 
     const QString connectionName = "cache_connection";
     if (QSqlDatabase::contains(connectionName)) {
@@ -67,7 +67,7 @@ public:
     pragmaQuery.exec("PRAGMA cipher_compatibility = 4;");
     */
 
-    printAllData();
+    // printAllData();
 
     return true;
   }

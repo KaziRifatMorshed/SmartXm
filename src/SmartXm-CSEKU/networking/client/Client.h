@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <sstream>
 #include <networking/FileMeta.h>
+#include <QString>
 
 #define CLIENT_PORT 8080
 #define CLIENT_BUFFER_SIZE 1024
@@ -56,13 +57,14 @@ public:
         oss << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
         return oss.str();
     };
-    bool sendLoginInfoToServer();
-    void storeLoginInfoToCache(); // client will be login for 3 hours; exceeding 3 hour will clear cache
-    bool checkLoginInfoInCache(); //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
+    QString sendLoginInfoToServer(std::string email, std::string password);
+    // client will be login for 3 hours; exceeding 3 hour will clear cache
+    //  each time GUI is opened, login info cache (stored in secondary memory) will be checked with lastLoginTime
     void getLeaderboardDataFromServer(); // data type may be changed later
 
-    // FileMeta receive_file_from_server(int sock_fd);
-    // bool send_file_to_server(int sock_fd, const std::string& path, const std::string& msg);
+    FileMeta receive_file_from_server();
+    bool send_file_to_server(const std::string& path, const std::string& title, const std::string& msg);
+    bool send_to_server();
 
 protected:
     Client();
@@ -70,7 +72,7 @@ protected:
 
 
 private:
-    void receiveFileLoop();
+    // void receiveFileLoop();
 
     int sock_fd;
     std::string clientName;

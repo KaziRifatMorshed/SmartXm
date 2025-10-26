@@ -4,10 +4,21 @@
 #include <iostream>
 #include <stdlib.h>
 #include <QTime>
-// #include <QMessageBox>
+#include <networking/client/client.cpp>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <Users.h>
+
+Users &currentStuUser = Users::getInstance();
+
 
 StudentModuleV2::StudentModuleV2(QWidget* parent) : QMainWindow(parent), ui(new Ui::StudentModuleV2) {
     ui->setupUi(this);
+    ui->stuModuVII_tabWidget->setCurrentIndex(0);
+
+    ui->welcomeStudent_label->setText("<html><head/><body><p align=\"center\"><span style=\" font-size:18pt;\">Welcome, " + QString::fromStdString(currentStuUser.getName()) + "</span></p></body></html>");
+    ui->stuName_label_2->setText(QString::fromStdString(currentStuUser.getName()));
+    ui->stuID_label_3->setText(QString::fromStdString(currentStuUser.getId()));
 }
 
 StudentModuleV2::~StudentModuleV2() { delete ui; }
@@ -75,5 +86,28 @@ void StudentModuleV2::ruleBookReceived() {
 void StudentModuleV2::on_exit_profileTab_pushButton_clicked()
 {
     close();
+}
+
+Client* client_instance = Client::createClient(); // i want client instance here for using the following buttons to function
+
+void StudentModuleV2::on_sendHello_pushButton_clicked()
+{
+    bool t = client_instance->send_file_to_server("./resources/Hello1.pdf", "HELLO", "hello file for network test");
+    if (t) {
+        QMessageBox::information(this, "Network Test",
+                                 "Hello file sent to server for network testing.");
+    } else {
+        QMessageBox::warning(this, "Test failed!", "Hello file send Failed!!!");
+    }
+}
+
+
+void StudentModuleV2::on_dummySolution_pushButton_clicked()
+{
+    std::string path_to_submission = "/path/to/submission.zip";
+    std::string title = "SUBMISSION"; // This is the command
+    std::string msg = "Dummy submission from student X";
+
+    client_instance->send_file_to_server(path_to_submission, title, msg);
 }
 

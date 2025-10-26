@@ -29,7 +29,7 @@
     <item>
      <widget class="QTabWidget" name="stuModuVII_tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="profile_tab">
        <attribute name="title">
@@ -53,6 +53,20 @@
             <widget class="QLabel" name="stuName_label_2">
              <property name="text">
               <string>Student name xyz</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Student ID:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="stuID_label_3">
+             <property name="text">
+              <string>stu id TextLabel</string>
              </property>
             </widget>
            </item>
@@ -164,6 +178,27 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="networkTestTab">
+       <attribute name="title">
+        <string>Network Testing</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QPushButton" name="sendHello_pushButton">
+          <property name="text">
+           <string>Send hello to server</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="dummySolution_pushButton">
+          <property name="text">
+           <string>Send dummy solution to server</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -181,7 +216,7 @@
      <x>0</x>
      <y>0</y>
      <width>986</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
