@@ -48,6 +48,16 @@ private slots:
 
     void on_stopEvaluation_clicked();
 
+    void on_prevStu_pushButton_clicked();
+
+    void on_nextDttu_pushButton_clicked();
+
+    void on_selectProblem_comboBox_currentIndexChanged(int index);
+
+    void on_stuListcomboBox_currentIndexChanged(int index);
+
+    void on_selectExamCode_comboBox_2_currentTextChanged(const QString &arg1);
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;
@@ -58,13 +68,19 @@ private:
     bool readTestCaseInfo(const std::string &testCaseInfoFile, std::vector<int> &testCaseInformation);
     bool readSubmissionFileInfo(const std::string &submissionFilePath, std::vector<std::string> &submissionFiles);
     unsigned int getPhysicalCoreCount();
+    std::vector <std::string> listFilesInDirectory(std::filesystem::path directoryPath);
+    std::vector <std::string> listOfFiles;
+    QString getFileContent(QString path);
+    std::vector <std::string> getTestcaseData();
+    std::vector <std::string> splitStringByChar(std::string s, char delimiter);
+    std::vector <std::string> studentIDs;
 
 #ifdef _WIN32
     QString dirPath = "C:/SmartXm/Editor/";
     QString systemDirPath = "C:/SmartXm/System/";
 #else
-    QString dirPath = "/SmartXm/Editor/";
-    QString systemDirPath = "/SmartXm/System/";
+    QString dirPath = "/SmartXm/DS/";
+    QString systemDirPath = "/SmartXm/DS/System/";
 #endif
 };
 
