@@ -246,9 +246,11 @@ bool Evaluation::readJudgeInfo(const std::string& judgeInfoPath, std::vector<std
 }
 
 
-void Evaluation::on_evaluate_clicked() {
-    if (!evaluating) {
-        evaluating = true;
+void Evaluation::on_evaluate_clicked()
+{
+    if(!evaluating&&!evaluating2)
+    {
+        evaluating=true;
 
         std::vector<std::string> studentInformation;
         std::string studentInfoFile = systemDirPath.toStdString() + "studentInfo.txt";
@@ -499,7 +501,7 @@ void Evaluation::on_evaluate_clicked() {
                                                                  QString::number(numOfStudents) + " Completed");
 
 
-                            // here complete one thread
+                               // here complete one thread
 
                             activeWorkers--;
 
@@ -514,23 +516,25 @@ void Evaluation::on_evaluate_clicked() {
                                 if (taskQueue.empty() && activeWorkers == 0 && !completionMessageShown) {
                                     completionMessageShown = true;
 
-                                    for (int i = 0; i < verdicts.size(); i++) {
-                                        std::cout << verdicts[i].first << std::endl;
-                                        char ch = 'A';
-                                        for (int j = 0; j < verdicts[i].second.size(); j++) {
-                                            std::cout << "          " << ch << " : \n";
-                                            for (int k = 0; k < verdicts[i].second[j].size(); k++) {
-                                                Verdict v = verdicts[i].second[j][k];
-                                                std::cout << "               " << v.verdict << " " << v.cpu_time << " "
-                                                          << v.memory_size << std::endl;
-                                            }
-                                            ch++;
+                                for(int i=0;i<verdicts.size();i++)
+                                {
+                                    std::cout<<verdicts[i].first<<std::endl;
+                                    char ch='A';
+                                    for(int j=0;j<verdicts[i].second.size();j++)
+                                    {
+                                        std::cout<<"          "<<ch<<" : \n";
+                                        for(int k=0;k<verdicts[i].second[j].size();k++)
+                                        {
+                                            Verdict v=verdicts[i].second[j][k];
+                                            std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
                                         }
+                                        ch++;
                                     }
-                                    if (!termination)
-                                        ui->evaluationStatusLevel->setText("Success");
-                                    else
-                                        ui->evaluationStatusLevel->setText("Terminated");
+
+                                }
+                                if(!termination)
+                                    ui->evaluationStatusLevel->setText("Success");
+                                else ui->evaluationStatusLevel->setText("Terminated");
 
                                     stopFlag = true;
                                     cv.notify_all();
@@ -551,9 +555,28 @@ void Evaluation::on_evaluate_clicked() {
         // Notify threads to start
         cv.notify_all();
         ui->evaluationStatusLevel->setText("Running");
-        ui->autoEvalStatus_label_10->setText(QString::number(0) + " / " + QString::number(studentInformation.size()) +
-                                             " Completed");
+        ui->autoEvalStatus_label_10->setText(QString::number(0)+" / "+QString::number(studentInformation.size())+" Completed");
+
+
+
+
+
     }
+    else if(evaluating2)
+    {
+        QMessageBox::warning(this, "Warning",
+                             "Another Judge is running.");
+
+        return;
+    }
+    else
+    {
+        QMessageBox::warning(this, "Warning",
+                             "This Judge is running.");
+
+        return;
+    }
+
 }
 
 
@@ -599,62 +622,142 @@ std::vector <std::string> Evaluation::listFilesInDirectory(std::filesystem::path
     }
     catch (const std::filesystem::filesystem_error &e) {
         QMessageBox::warning(this, "Warning",
-                             ("Cannot access directory. " + std::string(e.what())).c_str());
-    }
+                             "This judge is not running.");
 
-    return files;
+        return;
+    }
 }
 
-void Evaluation::on_selectProblem_comboBox_currentIndexChanged(int index)
+
+void Evaluation::on_runThisFile_pushButton_2_clicked()
 {
-    if (index < 0) {
-        return;
-    }
+    if(!evaluating&&!evaluating2)
+    {
+        evaluating2=true;
 
-    ui->selectExamCode_comboBox_2->clear();
 
-    std::string student_id = ui->stuListcomboBox->currentText().toStdString();
-    std::string problem_id = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
+        //assuming
 
-    for (auto &filePath : listOfFiles) {
-        if (filePath.find("/" + student_id + "/") != std::string::npos &&
-            filePath.find("/" + problem_id + "/") != std::string::npos &&
-            filePath.find("/Submissions/") != std::string::npos) {
-            ui->selectExamCode_comboBox_2->addItem(filePath.c_str());
+        std::string studentID="230202";
+        std::string problem="A";
+
+
+
+        //now all okay
+        ui->testcasesStatus_tableWidget->clear();
+        ui->testcasesStatus_tableWidget->setRowCount(0);
+        std::string submissionFile=systemDirPath.toStdString()+"Submissions/"+studentID+"/"+problem+".txt";
+
+        std::ifstream submissionFileIn(submissionFile);
+        std::string fileName;
+        submissionFileIn>>fileName;
+        std::string SolutionFile=systemDirPath.toStdString()+"Submissions/"+studentID+"/"+problem+"/"+fileName;
+
+        std::vector<int> testCaseInformation;
+        std::string testCaseInfoFile = systemDirPath.toStdString()  + "testCaseInfo.txt";
+
+        if(!readTestCaseInfo(testCaseInfoFile,testCaseInformation))
+        {
+            QMessageBox::warning(this, "Warning",
+                                 "Test Case information not found for evaluation.");
+            evaluating=false;
+            return;
         }
-    }
+        int index=problem[0]-'A';
 
-    if (ui->selectExamCode_comboBox_2->count() == 0) {
-        ui->examCode_textEdit->setPlainText("");
+        int totalTestCases=testCaseInformation[index];
+
+        int numberOfProblem=testCaseInformation.size();
+        std::vector<std::vector<double>> judgeInformation(numberOfProblem);
+        std::string judgeInfoPath = systemDirPath.toStdString()  + "Judge/";
+        if(!readJudgeInfo(judgeInfoPath,judgeInformation))
+        {
+            QMessageBox::warning(this, "Warning",
+                                 "Judge information not found for evaluation.");
+            evaluating=false;
+            return;
+        }
+        std::vector<double>judgeInfo=judgeInformation[index];
+
+        std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+problem+"/";
+        std::vector<std::string>testCaseData;
+        testCaseData.push_back(SolutionFile);
+        testCaseData.push_back(testCasePath);
+
+
+        QThread* thread = new QThread();
+        JudgeWorker4* worker = new JudgeWorker4(testCaseData, judgeInfo,totalTestCases);
+        threadJudge=thread;
+        judgeWorker4=worker;
+        worker->moveToThread(thread);
+
+        connect(thread, &QThread::started, worker, &JudgeWorker4::process);
+        connect(worker, &JudgeWorker4::finished, this, [=](std::vector<Verdict> verdicts){
+
+                    int counter=1;
+                    for (auto &verdict : verdicts)
+                    {
+
+                        ui->testcasesStatus_tableWidget->setRowCount(ui->testcasesStatus_tableWidget->rowCount() + 1);
+
+                            ui->testcasesStatus_tableWidget->setItem(ui->testcasesStatus_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(("Testcase #" + std::to_string(counter)).c_str()));
+
+
+                        counter++;
+
+                        ui->testcasesStatus_tableWidget->setItem(ui->testcasesStatus_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(verdict.verdict.c_str()));
+                        ui->testcasesStatus_tableWidget->setItem(ui->testcasesStatus_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(std::to_string(verdict.cpu_time).c_str()));
+                        ui->testcasesStatus_tableWidget->setItem(ui->testcasesStatus_tableWidget->rowCount() - 1, 3, new QTableWidgetItem(std::to_string(verdict.memory_size).c_str()));
+                    }
+
+
+                    evaluating2 = false;
+
+
+                    thread->quit();
+                    thread->wait();
+                    worker->deleteLater();
+                    thread->deleteLater();
+                });
+
+        thread->start();
+
+
+    }
+    else if(evaluating)
+    {
+        QMessageBox::warning(this, "Warning",
+                             "Another Judge is running.");
+
+        return;
+    }
+    else
+    {
+        QMessageBox::warning(this, "Warning",
+                             "This Judge is running.");
+
         return;
     }
 
-    QString content = getFileContent(ui->selectExamCode_comboBox_2->currentText());
 
-    ui->examCode_textEdit->setPlainText(content);
 }
 
-void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
+
+void Evaluation::on_stopSingleJudge_clicked()
 {
-    if (index < 0) {
-        return;
+
+    if(evaluating2)
+    {
+
+        judgeWorker4->killJudge();
+
     }
+    else
 
-    ui->selectExamCode_comboBox_2->clear();
+    {
+        QMessageBox::warning(this, "Warning",
+                             "This judge is not running.");
 
-    std::string student_id = ui->stuListcomboBox->currentText().toStdString();
-    std::string problem_id = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
-
-    for (auto &filePath : listOfFiles) {
-        if (filePath.find("/" + student_id + "/") != std::string::npos &&
-            filePath.find("/" + problem_id + "/") != std::string::npos &&
-            filePath.find("/Submissions/") != std::string::npos) {
-            ui->selectExamCode_comboBox_2->addItem(filePath.c_str());
-        }
-    }
-
-    if (ui->selectExamCode_comboBox_2->count() == 0) {
-        ui->examCode_textEdit->setPlainText("");
         return;
     }
 
