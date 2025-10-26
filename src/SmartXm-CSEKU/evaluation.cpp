@@ -24,6 +24,12 @@ Evaluation::Evaluation(QWidget* parent) : QMainWindow(parent), ui(new Ui::Evalua
     for (int i = 0; i < problemCount; i++) {
         ui->selectProblem_comboBox->addItem(("Problem " + std::string(1, 'A' + i)).c_str());
     }
+
+    for (auto &file : listOfFiles) {
+        if (file.find("/Logs/") != std::string::npos) {
+            ui->detect_comboBox->addItem(splitStringByChar(file, '/').back().c_str());
+        }
+    }
 }
 
 Evaluation::~Evaluation() { delete ui; }
@@ -667,5 +673,17 @@ void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
 void Evaluation::on_selectExamCode_comboBox_2_currentTextChanged(const QString &arg1)
 {
     
+}
+
+
+void Evaluation::on_detect_comboBox_currentIndexChanged(int index)
+{
+    if (index < 0) {
+        return;
+    }
+
+    QString content = getFileContent(systemDirPath + "Submissions/" + ui->stuListcomboBox->currentText() + "/Logs/" + ui->detect_comboBox->currentText());
+
+    ui->detect_textEdit->setPlainText(content);
 }
 

@@ -58,6 +58,8 @@ private slots:
 
     void on_selectExamCode_comboBox_2_currentTextChanged(const QString &arg1);
 
+    void on_detect_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;
