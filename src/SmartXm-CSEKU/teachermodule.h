@@ -53,7 +53,6 @@ private:
     CreateQuestion* createQuesWidgetWindow = nullptr;
 
     QTimer* clientsUpdateTimer = nullptr;
-    Ui::TeacherModule* ui;
 
     Evaluation* evaluationWindow = nullptr;
 };
