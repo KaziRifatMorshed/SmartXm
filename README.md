@@ -3,7 +3,8 @@ Cross-Platform Desktop Exam Management with Integrated Judge for University Lab 
 
 # Quick Links  
 [Proposal](https://docs.google.com/document/d/1xnETgCx5zEXDHXcuzr8aD2x-dCQ5DRArx1Pf98WG93c/edit?usp=sharing  )  
-[Requirement Analysis](https://docs.google.com/document/d/1q2CVK-hvW1qHoh-0eT47mwepx-WefDn5U6LIcBONDUk/edit?usp=sharing)
+[Requirement Analysis](https://docs.google.com/document/d/1q2CVK-hvW1qHoh-0eT47mwepx-WefDn5U6LIcBONDUk/edit?usp=sharing)  
+[Presentation](https://kuacbd-my.sharepoint.com/:p:/g/personal/230220_ku_ac_bd/EakO4mVrOxFArmBYmVVazfcBE4gQI7LzkxSDcqykh4ASPg?e=k1YOyP)
 
 # Course Information
 Course: 0714 02 CSE 3104  
