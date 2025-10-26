@@ -1,0 +1,5 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Notelock</title></head><body>
+<pre>Hint 1: If there is a subarray containing k−1 zeros, then the next element cannot be prevented from being hit. So any time we see k−1 zeros follwed by a one then the one must be protected. 
+
+From Hint 1, lets protect every 1 that fits the pattern. Furthermore we should always protect the first 1 in the string so lets do that. It turns out that this is all that we need to do, to prove this think inductively: every element that is not protected will always have a 1 in the last k−1 elements and so it will be unchanged. So to solve the problem we can check the distance between each consecutive 1, if the gap is at least k then add 1 to the answer. Final time complexity O(n).</pre>
+</body></html>
