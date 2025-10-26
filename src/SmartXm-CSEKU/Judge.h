@@ -11,7 +11,9 @@
 #include <filesystem>
 #include <atomic>
 #include<chrono>
-
+#include <QFile>
+#include <QTextStream>
+#include<cstdio>
 #include "verdict.h"
 
 #ifdef _WIN32
@@ -57,6 +59,7 @@ private:
     std::string currentFile;
     std::string currentProblem;
     std::string pretestCasesPath;
+    std::string studentID="000000";
 
 
 
@@ -66,6 +69,8 @@ private:
     bool checkCompiler(const std::string& ext);
     std::string executeCommand(std::string& command);
     std::string runHiddenCommand(const std::string &cmd);
+    double getNormalizeFactor();
+
 
     int runWithTimeout(const std::string &exeFile,
                                std::string &inputFile,
@@ -78,6 +83,7 @@ private:
     Verdict isReadyForJudge(int &effectiveTimeLimit,
                                    int &effectiveMemoryLimit,
                             int &effectiveSourceCodeLimit);
+
     std::vector<Verdict> generateVerdicts(std::string verdict,int n);
     std::string normalize(const std::string &s);
 
@@ -90,6 +96,7 @@ public:
     void setCurrentFile(const std::string &cFile);
     void setCurrentProblem(const std::string &cProblem);
     void setPretestCasesPath(const std::string &path);
+    void setStudentID(const std::string &stID);
     void stopJudge(); // 🚀 new function to terminate current process
 
 
@@ -101,7 +108,7 @@ public:
 private:
     long long getProcessMemoryUsageFast(pid_t pid);
     long long getProcessMemoryUsage(pid_t pid);
-
+    long long getChildCpuTimeMS(pid_t pid);
     std::mutex processControlMutex;
     std::atomic<pid_t> currentProcessPid{0};
 private:

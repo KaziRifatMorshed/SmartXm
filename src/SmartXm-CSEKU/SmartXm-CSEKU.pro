@@ -24,6 +24,7 @@ SOURCES += \
     db_sqlite.cpp \
     db_xampp.cpp \
     dependencies/TarHandler/tarhandler.cpp \
+    evaluation.cpp \
     ide.cpp \
     main.cpp \
     networking/client/client.cpp \
@@ -57,6 +58,7 @@ HEADERS += \
     db_sqlite.h \
     db_xampp.h \
     dependencies/TarHandler/tarhandler.h \
+    evaluation.h \
     ide.h \
     networking/FileMeta.h \
     networking/client/Client.h \
@@ -72,6 +74,7 @@ HEADERS += \
 FORMS += \
     createormodifyexam.ui \
     createquestion.ui \
+    evaluation.ui \
     ide.ui \
     studentmodulev2.ui \
     runtestcases.ui \

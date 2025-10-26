@@ -438,7 +438,7 @@ void CodeRunner::runCppOrCFile()
 
 #ifdef _WIN32
     exeFile = "\"" + directoryPath + filename + ".exe" + "\"";
-     compileCmd = "g++ -O2  -march=x86-64 -mtune=generic -pipe -s -static -DONLINE_JUDGE -fno-asm \"" + currentFile + "\" -o " + exeFile + " -Wall";
+    compileCmd = "g++ -O2  -march=x86-64 -mtune=generic -pipe -s -static -DONLINE_JUDGE -fno-asm \"" + currentFile + "\" -o " + exeFile + " -Wall";
 #else
     exeFile = "\"" + directoryPath + "./" + filename + "\"";
     compileCmd = "g++ -O2 -fsanitize=address -g \"" + currentFile + "\" -o " + exeFile + " -Wall";
@@ -451,7 +451,12 @@ void CodeRunner::runCppOrCFile()
         fout  << compileOutput << std::endl;
         fout.close();
         if (compileOutput.find("error") != std::string::npos)
+        {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return;
+        }
     }
 
     if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
@@ -459,11 +464,17 @@ void CodeRunner::runCppOrCFile()
         std::ofstream fout("error.txt", std::ios::app);
         fout<< "Compilation Failed!\n";
         fout.close();
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         return;
     }
 
     int exitCode;
     std::string error = executeExeFile(exeFile, exitCode);
+    exeFile.pop_back();
+    exeFile.erase(exeFile.begin());
+    std::remove(exeFile.c_str());
 
     if (exitCode)
     {

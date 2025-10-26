@@ -258,7 +258,7 @@ void CreateQuestion::on_RunSolution_execute_pushButton_2_clicked()
 
 
         on_soluSrcCodeSaveBtn_pushButton_2_clicked();
-        double cpuTime = ui->RunSolution_CPUtime_lineEdit->text().toInt();
+        double cpuTime = ui->RunSolution_CPUtime_lineEdit->text().toDouble();
         int memoryLimit = ui->RunSolution_Memory_lineEdit->text().toInt();
         QString solutionPath = path + "Solution";
         QString testCasePath = path + "Testcases/";

@@ -1,0 +1,11 @@
+checkerFlag
+inputFlag
+timeLimit
+c/cpp
+python
+java
+memoryLimit
+c/cpp
+python
+java
+sourceCodeLimit

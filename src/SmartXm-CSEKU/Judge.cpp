@@ -15,7 +15,10 @@ void Judge::setPretestCasesPath(const std::string &path)
 {
     pretestCasesPath = path;
 }
-
+void Judge::setStudentID(const std::string &stID)
+{
+    studentID=stID;
+}
 void Judge::setJudgeInfo(const std::vector<double> &judgeInfo)
 {
     if (judgeInfo.size() < 14)
@@ -80,7 +83,7 @@ Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
         return Verdict("Unsupported File Type",0,0);
     }
 
-
+    sourceCodeLimit*=1024;
 
     if (ext == "c"||ext=="cpp"||ext=="c++")
     {
@@ -296,6 +299,125 @@ std::string Judge::executeCommand(std::string &command)
     return result;
 }
 
+#ifdef _WIN32
+
+DWORD WINAPI ThreadFunction(LPVOID lpParam)
+{
+    int n = 100000;
+    const char* filename = "normalizeFactorCal.txt";
+    std::ofstream outFile(filename);
+    if (!outFile) {
+
+        return 0;
+    }
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum = (sum + i) % 10000007;
+        outFile << sum << std::endl;
+    }
+
+
+    outFile.close();
+
+
+    if (std::remove(filename) == 0) {
+        return 0;
+    } else {
+        return 0;
+    }
+    return 0;
+}
+#endif
+
+double Judge::getNormalizeFactor()
+{
+    double factor=1;
+#ifdef _WIN32
+    HANDLE hThread;
+    DWORD threadId;
+
+           // Create the thread
+    hThread = CreateThread(
+        NULL,              // default security
+        0,                 // default stack size
+        ThreadFunction,    // thread function
+        NULL,              // parameter
+        0,                 // default creation flags
+        &threadId          // thread ID
+        );
+
+    if (hThread == NULL) {
+
+        return 1;
+    }
+
+           // Wait for the thread to finish
+    WaitForSingleObject(hThread, INFINITE);
+
+           // Get thread CPU times
+    FILETIME createTime, exitTime, kernelTime, userTime;
+    if (!GetThreadTimes(hThread, &createTime, &exitTime, &kernelTime, &userTime)) {
+
+        return 1;
+    }
+
+           // Convert FILETIME to milliseconds
+    ULARGE_INTEGER k, u;
+    k.LowPart = kernelTime.dwLowDateTime;
+    k.HighPart = kernelTime.dwHighDateTime;
+    u.LowPart = userTime.dwLowDateTime;
+    u.HighPart = userTime.dwHighDateTime;
+
+    long long cpuTimeMS = (k.QuadPart + u.QuadPart) / 10000;
+     factor =cpuTimeMS/110.0;
+
+    CloseHandle(hThread);
+
+#else
+    const int n = 200000;
+    const char* filename = "normalizeFactorCal.txt";
+
+    long long cpuTimeMS = 0;
+
+           // Create and run the thread using a lambda
+    QThread* thread = QThread::create([n, filename, &cpuTimeMS,&factor]() {
+        // Measure CPU time at thread start
+        struct timespec startTime, endTime;
+        clock_gettime(CLOCK_THREAD_CPUTIME_ID, &startTime);
+
+        QFile file(filename);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            int sum = 0;
+            for (int i = 0; i < n; ++i) {
+                sum = (sum + i) % 10000007;
+                out << sum << Qt::endl;
+            }
+            file.close();
+        }
+
+        std::remove(filename);  // delete file
+
+               // Measure CPU time at thread end
+        clock_gettime(CLOCK_THREAD_CPUTIME_ID, &endTime);
+
+        cpuTimeMS = (endTime.tv_sec - startTime.tv_sec) * 1000 +
+            (endTime.tv_nsec - startTime.tv_nsec) / 1000000;
+
+         factor = cpuTimeMS / 170.0;
+    });
+
+    thread->start();
+    thread->wait();  // wait for thread to finish
+    delete thread;
+
+
+
+#endif
+      return factor;
+}
+
+
 int Judge::runWithTimeout(const std::string &runCommand,
                           std::string &inputFile,
                           std::string &outputFile,
@@ -305,7 +427,15 @@ int Judge::runWithTimeout(const std::string &runCommand,
                           long long &usedMemoryKB,
                           bool inFlag)
 {
+    usedTimeMS=30;
+
+    double factor=getNormalizeFactor();
+    timeLimitMS=round(timeLimitMS*factor);
+
 #ifdef _WIN32
+
+
+
     STARTUPINFOA si = {sizeof(si)};
     si.dwFlags = STARTF_USESTDHANDLES;
     HANDLE hInput = INVALID_HANDLE_VALUE;
@@ -377,7 +507,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
            // Resume the process
     ResumeThread(pi.hThread);
 
-    auto start = std::chrono::steady_clock::now();
+
 
            // Track peak memory usage during execution
     SIZE_T peakMemoryBytes = 0;
@@ -409,7 +539,7 @@ int Judge::runWithTimeout(const std::string &runCommand,
                 peakMemoryBytes = pmcEx.PrivateUsage;
             }
 
-            // Check if memory limit exceeded (in case job object didn't catch it)
+                   // Check if memory limit exceeded (in case job object didn't catch it)
             SIZE_T currentMemoryKB = pmcEx.PrivateUsage / 1024;
             if (currentMemoryKB > memoryLimitKB) {
                 TerminateProcess(pi.hProcess, 1);
@@ -437,11 +567,22 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
 
                // Calculate remaining time
-        auto now = std::chrono::steady_clock::now();
-        long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
 
+        FILETIME createTime, exitTime, kernelTime, userTime;
+        GetProcessTimes(currentProcessHandle, &createTime, &exitTime, &kernelTime, &userTime);
+
+        ULARGE_INTEGER k, u;
+        k.LowPart = kernelTime.dwLowDateTime;
+        k.HighPart = kernelTime.dwHighDateTime;
+        u.LowPart = userTime.dwLowDateTime;
+        u.HighPart = userTime.dwHighDateTime;
+
+               // Convert from 100-nanosecond units to milliseconds
+        long long elapsed = (k.QuadPart + u.QuadPart) / 10000;
+        usedTimeMS=fmax(elapsed/(1.0*factor),usedTimeMS);
         if (elapsed >= timeLimitMS) {
             // Time limit exceeded
+
             TerminateProcess(pi.hProcess, 1);
             WaitForSingleObject(pi.hProcess, 500);
             verdict = 2; // TLE
@@ -460,8 +601,6 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
     }
 
-    auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
            // Use the peak memory we tracked during execution
     usedMemoryKB = peakMemoryBytes / 1024;
@@ -580,10 +719,10 @@ int Judge::runWithTimeout(const std::string &runCommand,
 
     pid_t pid = process.processId();
 
-    // Store only the PID atomically - no pointers
+           // Store only the PID atomically - no pointers
     currentProcessPid.store(pid);
 
-    auto start = std::chrono::steady_clock::now();
+
 
            // Monitoring loop with precise timing
     while (true) {
@@ -604,8 +743,9 @@ int Judge::runWithTimeout(const std::string &runCommand,
         }
 
                // Calculate elapsed time
-        auto now = std::chrono::steady_clock::now();
-        long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+
+        long long elapsed =getChildCpuTimeMS(pid);
+        usedTimeMS=fmax(usedTimeMS,elapsed/(1.0*factor));
 
                // Check memory usage
         long long currentMemoryKB = getProcessMemoryUsage(pid);
@@ -633,8 +773,9 @@ int Judge::runWithTimeout(const std::string &runCommand,
         process.waitForFinished(waitTime);
     }
 
-    auto end = std::chrono::steady_clock::now();
-    usedTimeMS = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    long long elapsed =getChildCpuTimeMS(pid);
+    usedTimeMS=fmax(usedTimeMS,elapsed/(1.0*factor));
 
            // Get final memory usage
     //usedMemoryKB = getProcessMemoryUsage(pid);
@@ -707,12 +848,40 @@ void Judge::stopJudge() {
 }
 
 #ifndef _WIN32
+
+long long Judge::getChildCpuTimeMS(pid_t pid)
+{
+    std::ifstream statFile("/proc/" + std::to_string(pid) + "/stat");
+    if (!statFile.is_open())
+        return 0;
+
+    std::string content;
+    std::getline(statFile, content);
+    statFile.close();
+
+    std::istringstream iss(content);
+    std::string token;
+    int i = 0;
+    long utime = 0, stime = 0;
+
+    while (iss >> token) {
+        ++i;
+        if (i == 14) utime = std::stol(token);   // user CPU time
+        if (i == 15) { stime = std::stol(token); break; } // kernel CPU time
+    }
+
+    long ticksPerSec = sysconf(_SC_CLK_TCK); // usually 100
+    long long cpuMS = (utime + stime) * 1000 / ticksPerSec;
+    return cpuMS;
+}
+
+
 bool Judge::isProcessRunning(pid_t pid)
 {
     if (pid <= 0) return false;
 
-    // Use kill with signal 0 to check if process exists
-    // Returns 0 if process exists, -1 if not
+           // Use kill with signal 0 to check if process exists
+           // Returns 0 if process exists, -1 if not
     return (kill(pid, 0) == 0);
 }
 
@@ -722,20 +891,20 @@ void Judge::killProcessSafely(pid_t pid)
         return; // Invalid PID, do nothing
     }
 
-    // Double-check this is the exact PID we stored
+           // Double-check this is the exact PID we stored
     if (pid != currentProcessPid.load()) {
         return; // Safety check - don't kill if PID doesn't match
     }
 
-    // Verify process exists before killing
+           // Verify process exists before killing
     if (!isProcessRunning(pid)) {
         return; // Process already dead
     }
 
-    // Send SIGTERM for graceful shutdown
+           // Send SIGTERM for graceful shutdown
     kill(pid, SIGTERM);
 
-    // If still running, send SIGKILL
+           // If still running, send SIGKILL
     if (isProcessRunning(pid)) {
 
         kill(pid, SIGKILL);
@@ -807,7 +976,7 @@ long long Judge::getProcessMemoryUsageFast(pid_t pid)
 Verdict Judge::runOnSingleTestCase()
 {
 
-    std::string outputFile = pretestCasesPath + currentTestCaseNo + ".output";
+    std::string outputFile = pretestCasesPath + currentTestCaseNo +'.'+studentID+ ".output";
 
     std::ofstream output(outputFile);
     output.close();
@@ -827,6 +996,8 @@ Verdict Judge::runOnSingleTestCase()
     long long memorySize=0;
     std::string inputFile = pretestCasesPath + currentTestCaseNo + ".in";
     std::string expectedFile = pretestCasesPath + currentTestCaseNo + ".out";
+
+
     if(ext=="c"||ext=="cpp"||ext=="c++")
     {
 
@@ -846,12 +1017,17 @@ Verdict Judge::runOnSingleTestCase()
         {
             if (compileOutput.find("error") != std::string::npos)
             {
-
+                exeFile.pop_back();
+                exeFile.erase(exeFile.begin());
+                std::remove(exeFile.c_str());
                 return Verdict("Compilation Error",0,0);
             }
         }
         if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Compilation Failed",0,0);
         }
     }
@@ -875,26 +1051,41 @@ Verdict Judge::runOnSingleTestCase()
     }
     else if(status==1)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Runtime Error";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else if(status==2)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Time Limit Exceeded";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else if(status==3)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Memory Limit Exceeded";
         return Verdict(verdict,cpuTime,memorySize+effectiveMemoryLimit);
     }
     else if(status==5)
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="Judge Terminated";
         return Verdict(verdict,cpuTime,memorySize);
     }
     else
     {
+        exeFile.pop_back();
+        exeFile.erase(exeFile.begin());
+        std::remove(exeFile.c_str());
         verdict="I/O Error";
         return Verdict(verdict,cpuTime,memorySize);
     }
@@ -904,6 +1095,9 @@ Verdict Judge::runOnSingleTestCase()
         std::ifstream out(outputFile), exp(expectedFile);
         if (!out || !exp)
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
 
             return Verdict("Error",cpuTime,memorySize);
         }
@@ -913,19 +1107,24 @@ Verdict Judge::runOnSingleTestCase()
 
         if (normalize(s1) == normalize(s2))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Accepted",cpuTime,memorySize);
         }
         else
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return Verdict("Wrong Answer",cpuTime,memorySize);
         }
 
 
     }
-
-
-
-
+    exeFile.pop_back();
+    exeFile.erase(exeFile.begin());
+    std::remove(exeFile.c_str());
     return Verdict("",0,0);
 
 }
@@ -976,12 +1175,18 @@ std::vector<Verdict> Judge::runOnTestCases()
         {
             if (compileOutput.find("error") != std::string::npos)
             {
+                exeFile.pop_back();
+                exeFile.erase(exeFile.begin());
+                std::remove(exeFile.c_str());
 
                 return generateVerdicts("Compilation Error",numberOfTotalTestCase);
             }
         }
         if (!std::filesystem::exists(exeFile.substr(1, exeFile.size() - 2)))
         {
+            exeFile.pop_back();
+            exeFile.erase(exeFile.begin());
+            std::remove(exeFile.c_str());
             return generateVerdicts("Compilation Failed",0);
         }
     }
@@ -1011,7 +1216,7 @@ std::vector<Verdict> Judge::runOnTestCases()
         long long memorySize=0;
         std::string inputFile = pretestCasesPath + testCaseNo + ".in";
         std::string expectedFile = pretestCasesPath + testCaseNo + ".out";
-        std::string outputFile = pretestCasesPath + testCaseNo + ".output";
+        std::string outputFile = pretestCasesPath + testCaseNo +'.'+studentID+ ".output";
 
 
         int status=runWithTimeout(exeFile,inputFile,outputFile,effectiveTimeLimit,effectiveMemoryLimit,
@@ -1085,9 +1290,13 @@ std::vector<Verdict> Judge::runOnTestCases()
     for(int i=1;i<=numberOfTotalTestCase;i++)
     {
         std::string testCaseNo=std::to_string(i);
-        std::string outputFile = pretestCasesPath + testCaseNo + ".output";
+        std::string outputFile = pretestCasesPath + testCaseNo +'.'+studentID+ ".output";
         std::remove(outputFile.c_str());
     }
+    exeFile.pop_back();
+    exeFile.erase(exeFile.begin());
+    std::remove(exeFile.c_str());
+
     return verdicts;
 }
 

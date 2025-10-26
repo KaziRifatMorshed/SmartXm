@@ -96,6 +96,7 @@ QString runTestcases::getFileContent(QString path) {
 
     return text;
 }
+
 QString runTestcases::getFileContent(QString path, long long readSizeByte) {
     QFile file(path);
 
