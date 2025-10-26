@@ -723,3 +723,15 @@ void Evaluation::on_detect_stuSelect_comboBox_currentIndexChanged(int index)
     ui->detect_textEdit->setPlainText(content);
 }
 
+
+void Evaluation::on_runThisFile_pushButton_2_clicked()
+{
+
+}
+
+
+void Evaluation::on_stopSingleJudge_clicked()
+{
+
+}
+

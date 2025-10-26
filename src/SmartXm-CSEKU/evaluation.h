@@ -66,6 +66,10 @@ private slots:
 
     void on_detect_stuSelect_comboBox_currentIndexChanged(int index);
 
+    void on_runThisFile_pushButton_2_clicked();
+
+    void on_stopSingleJudge_clicked();
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;

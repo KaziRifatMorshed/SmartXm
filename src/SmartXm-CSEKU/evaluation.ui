@@ -27,7 +27,7 @@
       <item>
        <widget class="QTabWidget" name="_tabWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="dashboardTab">
          <attribute name="title">
@@ -298,11 +298,22 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="runThisFile_pushButton_2">
-                  <property name="text">
-                   <string>Run</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <item>
+                   <widget class="QPushButton" name="runThisFile_pushButton_2">
+                    <property name="text">
+                     <string>Run</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="stopSingleJudge">
+                    <property name="text">
+                     <string>Stop</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -627,7 +638,7 @@
      <x>0</x>
      <y>0</y>
      <width>1092</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
