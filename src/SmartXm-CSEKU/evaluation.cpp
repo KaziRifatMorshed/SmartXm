@@ -15,6 +15,7 @@ Evaluation::Evaluation(QWidget* parent) : QMainWindow(parent), ui(new Ui::Evalua
         qDebug() << "Student ID: " << QString(s_ID.c_str()) << "\n";
 
         ui->stuListcomboBox->addItem(QString(s_ID.c_str()));
+        ui->detect_stuSelect_comboBox->addItem(QString(s_ID.c_str()));
     }
 
     ui->selectProblem_comboBox->setToolTip("Select Problem");
@@ -23,12 +24,6 @@ Evaluation::Evaluation(QWidget* parent) : QMainWindow(parent), ui(new Ui::Evalua
 
     for (int i = 0; i < problemCount; i++) {
         ui->selectProblem_comboBox->addItem(("Problem " + std::string(1, 'A' + i)).c_str());
-    }
-
-    for (auto &file : listOfFiles) {
-        if (file.find("/Logs/") != std::string::npos) {
-            ui->detect_comboBox->addItem(splitStringByChar(file, '/').back().c_str());
-        }
     }
 }
 
@@ -542,6 +537,8 @@ void Evaluation::on_evaluate_clicked() {
                                     cv.notify_all();
                                     evaluating = false;
                                     termination = false;
+
+                                    
                                 }
                             }
                         }
@@ -682,7 +679,46 @@ void Evaluation::on_detect_comboBox_currentIndexChanged(int index)
         return;
     }
 
-    QString content = getFileContent(systemDirPath + "Submissions/" + ui->stuListcomboBox->currentText() + "/Logs/" + ui->detect_comboBox->currentText());
+    QString content = getFileContent(systemDirPath + "Submissions/" + ui->detect_stuSelect_comboBox->currentText() + "/Logs/" + ui->detect_comboBox->currentText());
+
+    ui->detect_textEdit->setPlainText(content);
+}
+
+
+void Evaluation::on_detect_left_pushButton_2_clicked()
+{
+    ui->detect_stuSelect_comboBox->setCurrentIndex((ui->detect_stuSelect_comboBox->currentIndex()-1) % ui->detect_stuSelect_comboBox->count());
+}
+
+
+void Evaluation::on_detect_right_pushButton_2_clicked()
+{
+    ui->detect_stuSelect_comboBox->setCurrentIndex((ui->detect_stuSelect_comboBox->currentIndex()+1) % ui->detect_stuSelect_comboBox->count());
+}
+
+void Evaluation::on_detect_stuSelect_comboBox_currentIndexChanged(int index)
+{
+    if (index < 0) {
+        return;
+    }
+
+    ui->detect_comboBox->clear();
+
+    std::string student_id = ui->detect_stuSelect_comboBox->currentText().toStdString();
+
+    for (auto &filePath : listOfFiles) {
+        if (filePath.find("/" + student_id + "/") != std::string::npos &&
+            filePath.find("/Logs/") != std::string::npos) {
+            ui->detect_comboBox->addItem(splitStringByChar(filePath, '/').back().c_str());
+        }
+    }
+
+    if (ui->detect_comboBox->count() == 0) {
+        ui->detect_textEdit->setPlainText("");
+        return;
+    }
+
+    QString content = getFileContent(systemDirPath + "/Submissions/" + ui->detect_stuSelect_comboBox->currentText() + "/Logs/" + ui->detect_comboBox->currentText());
 
     ui->detect_textEdit->setPlainText(content);
 }

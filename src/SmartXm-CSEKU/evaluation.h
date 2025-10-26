@@ -60,6 +60,12 @@ private slots:
 
     void on_detect_comboBox_currentIndexChanged(int index);
 
+    void on_detect_left_pushButton_2_clicked();
+
+    void on_detect_right_pushButton_2_clicked();
+
+    void on_detect_stuSelect_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;
