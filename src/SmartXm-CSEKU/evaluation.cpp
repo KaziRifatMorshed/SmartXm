@@ -775,24 +775,39 @@ void Evaluation::on_runThisFile_pushButton_2_clicked()
     if(!evaluating&&!evaluating2)
     {
         evaluating2=true;
-
-
-               //assuming
-
-        std::string studentID="230202";
-        std::string problem="A";
-
-
-
-               //now all okay
         ui->testcasesStatus_tableWidget->clear();
         ui->testcasesStatus_tableWidget->setRowCount(0);
+
+
+
+
+        std::string studentID = ui->stuListcomboBox->currentText().toStdString();
+        std::string problem = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
+
+        std::string filePath2;
+
+        for (auto &filePath : listOfFiles) {
+            if (filePath.find("/Submissions/") != std::string::npos) {
+
+
+                filePath2=filePath;
+                break;
+            }
+        }
+
+        std::string selectedFile=filePath2.substr(0,int(filePath2.find("Submissions"))+std::string("Submissions").size())+"/"+studentID+"/"+problem+"/"+ui->selectExamCode_comboBox_2->currentText().toStdString();
+
+
+
+
         std::string submissionFile=systemDirPath.toStdString()+"Submissions/"+studentID+"/"+problem+".txt";
 
         std::ifstream submissionFileIn(submissionFile);
         std::string fileName;
         submissionFileIn>>fileName;
         std::string SolutionFile=systemDirPath.toStdString()+"Submissions/"+studentID+"/"+problem+"/"+fileName;
+
+        SolutionFile=selectedFile;
 
         std::vector<int> testCaseInformation;
         std::string testCaseInfoFile = systemDirPath.toStdString()  + "testCaseInfo.txt";
