@@ -80,7 +80,7 @@ Verdict Judge::isReadyForJudge(int &effectiveTimeLimit,
     }
     else
     {
-        return Verdict("Unsupported File Type",0,0);
+        return Verdict("Invalid Source File",0,0);
     }
 
     sourceCodeLimit*=1024;
