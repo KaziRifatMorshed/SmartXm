@@ -297,67 +297,67 @@ void Evaluation::on_evaluate_clicked() {
         runMaxThread = fmax(1, runMaxThread);
 
 
-        // for(i=0;i<numOfStudents;i++)
-        // {
-        //     std::string stID=submissionInformation[i].first;
-        //     std::vector<std::string> submissionsFile=submissionInformation[i].second;
+               // for(i=0;i<numOfStudents;i++)
+               // {
+               //     std::string stID=submissionInformation[i].first;
+               //     std::vector<std::string> submissionsFile=submissionInformation[i].second;
 
 
-        //     char ch='A';
+               //     char ch='A';
 
-        //     int j;
-        //     int m=submissionsFile.size();
-        //     std::vector<std::vector<Verdict>>verdict(m);
-        //     for(j=0;j<m;j++)
-        //     {
-        //         if(submissionsFile[j].back()=='/')
-        //         {
-        //             std::vector<Verdict> v;
-        //             for(int k=0;k<testCaseInformation[j];k++)
-        //             {
-        //                 v.push_back(Verdict("Not Submitted",0,0));
-        //             }
-        //             verdict[j]=v;
-        //         }
-        //         else
-        //         {
-        //             std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+ch+"/";
+               //     int j;
+               //     int m=submissionsFile.size();
+               //     std::vector<std::vector<Verdict>>verdict(m);
+               //     for(j=0;j<m;j++)
+               //     {
+               //         if(submissionsFile[j].back()=='/')
+               //         {
+               //             std::vector<Verdict> v;
+               //             for(int k=0;k<testCaseInformation[j];k++)
+               //             {
+               //                 v.push_back(Verdict("Not Submitted",0,0));
+               //             }
+               //             verdict[j]=v;
+               //         }
+               //         else
+               //         {
+               //             std::string testCasePath=systemDirPath.toStdString()+"Test-Cases/"+ch+"/";
 
-        //             Judge *judge=new Judge();
-        //             judge->setJudgeInfo(judgeInformation[j]);
-        //             judge->setCurrentFile(submissionsFile[j]);
-        //             judge->setCurrentProblem(std::to_string(ch));
-        //             judge->setNumberOfTotalTestCase(testCaseInformation[j]);
-        //             judge->setPretestCasesPath(testCasePath);
+               //             Judge *judge=new Judge();
+               //             judge->setJudgeInfo(judgeInformation[j]);
+               //             judge->setCurrentFile(submissionsFile[j]);
+               //             judge->setCurrentProblem(std::to_string(ch));
+               //             judge->setNumberOfTotalTestCase(testCaseInformation[j]);
+               //             judge->setPretestCasesPath(testCasePath);
 
-        //             std::vector<Verdict>v;
-        //             v=judge->runOnTestCases();
-        //             verdict[j]=v;
+               //             std::vector<Verdict>v;
+               //             v=judge->runOnTestCases();
+               //             verdict[j]=v;
 
-        //         }
-        //         ch++;
-        //     }
+               //         }
+               //         ch++;
+               //     }
 
-        //     verdicts.push_back({stID,verdict});
-        // }
+               //     verdicts.push_back({stID,verdict});
+               // }
 
 
-        // for(int i=0;i<verdicts.size();i++)
-        // {
-        //     std::cout<<verdicts[i].first<<std::endl;
-        //     char ch='A';
-        //     for(int j=0;j<verdicts[i].second.size();j++)
-        //     {
-        //         std::cout<<"          "<<ch<<" : \n";
-        //         for(int k=0;k<verdicts[i].second[j].size();k++)
-        //         {
-        //             Verdict v=verdicts[i].second[j][k];
-        //             std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
-        //         }
-        //         ch++;
-        //     }
+               // for(int i=0;i<verdicts.size();i++)
+               // {
+               //     std::cout<<verdicts[i].first<<std::endl;
+               //     char ch='A';
+               //     for(int j=0;j<verdicts[i].second.size();j++)
+               //     {
+               //         std::cout<<"          "<<ch<<" : \n";
+               //         for(int k=0;k<verdicts[i].second[j].size();k++)
+               //         {
+               //             Verdict v=verdicts[i].second[j][k];
+               //             std::cout<<"               "<<v.verdict<<" "<<v.cpu_time<<" "<<v.memory_size<<std::endl;
+               //         }
+               //         ch++;
+               //     }
 
-        // }
+               // }
 
 
         static std::vector<std::thread> threads;
@@ -378,14 +378,14 @@ void Evaluation::on_evaluate_clicked() {
 
         static std::queue<Task> taskQueue;
 
-        // Store copies to avoid dangling references
+               // Store copies to avoid dangling references
         static std::vector<int> testCaseInfoCopy;
         static std::vector<std::vector<double>> judgeInfoCopy;
         static QString systemDirPathCopy;
         static std::vector<std::pair<std::string, std::vector<std::vector<Verdict>>>> verdicts; // Add this
 
 
-        // Clear previous state
+               // Clear previous state
         stopFlag = false;
         activeWorkers = 0;
         completionMessageShown = false;
@@ -393,26 +393,26 @@ void Evaluation::on_evaluate_clicked() {
             taskQueue.pop();
         verdicts.clear(); // Clear previous verdicts
 
-        // Copy data to static storage
+               // Copy data to static storage
         testCaseInfoCopy = testCaseInformation;
         judgeInfoCopy = judgeInformation;
         systemDirPathCopy = systemDirPath;
         counter = 0;
 
-        // Detach any previous threads
+               // Detach any previous threads
         for (auto& thread : threads) {
             if (thread.joinable())
                 thread.detach();
         }
         threads.clear();
 
-        // Fill task queue
+               // Fill task queue
         for (const auto& info : submissionInformation) {
             taskQueue.push({info.first, info.second});
         }
 
 
-        // Create worker threads
+               // Create worker threads
         for (int i = 0; i < runMaxThread; ++i) {
             threads.emplace_back(
                 [this, threadID = i]()
@@ -424,7 +424,7 @@ void Evaluation::on_evaluate_clicked() {
                         {
                             std::unique_lock<std::mutex> lock(queueMutex);
 
-                            // Wait for task or stop signal
+                                   // Wait for task or stop signal
                             cv.wait(lock, []() { return !taskQueue.empty() || stopFlag; });
 
                             if (stopFlag && taskQueue.empty())
@@ -486,13 +486,13 @@ void Evaluation::on_evaluate_clicked() {
                                 ch++;
                             }
 
-                            // Store the result in static verdicts
+                                   // Store the result in static verdicts
                             {
                                 std::lock_guard<std::mutex> lock(verdictMutex);
                                 verdicts.push_back({task.studentID, verdict});
                             }
 
-                            // Print completion info
+                                   // Print completion info
                             if (!termination)
                                 counter++;
 
@@ -500,14 +500,14 @@ void Evaluation::on_evaluate_clicked() {
                                                                  QString::number(numOfStudents) + " Completed");
 
 
-                            // here complete one thread
+                                   // here complete one thread
 
                             activeWorkers--;
 
-                            // Check if all done
+                                   // Check if all done
 
 
-                            // show verdict from here
+                                   // show verdict from here
 
 
                             {
@@ -538,7 +538,7 @@ void Evaluation::on_evaluate_clicked() {
                                     evaluating = false;
                                     termination = false;
 
-                                    
+
                                 }
                             }
                         }
@@ -546,12 +546,12 @@ void Evaluation::on_evaluate_clicked() {
                 });
         }
 
-        // Detach threads so they run independently
+               // Detach threads so they run independently
         for (auto& thread : threads) {
             thread.detach();
         }
 
-        // Notify threads to start
+               // Notify threads to start
         cv.notify_all();
         ui->evaluationStatusLevel->setText("Running");
         ui->autoEvalStatus_label_10->setText(QString::number(0) + " / " + QString::number(studentInformation.size()) +
@@ -633,21 +633,28 @@ void Evaluation::on_selectProblem_comboBox_currentIndexChanged(int index)
 
     std::string student_id = ui->stuListcomboBox->currentText().toStdString();
     std::string problem_id = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
+    std::string filePath2;
 
     for (auto &filePath : listOfFiles) {
         if (filePath.find("/" + student_id + "/") != std::string::npos &&
             filePath.find("/" + problem_id + "/") != std::string::npos &&
             filePath.find("/Submissions/") != std::string::npos) {
-            ui->selectExamCode_comboBox_2->addItem(filePath.c_str());
+
+            size_t pos = filePath.find_last_of("/\\");
+            std::string fileName = (pos == std::string::npos) ? filePath : filePath.substr(pos + 1);
+            filePath2=filePath;
+            ui->selectExamCode_comboBox_2->addItem(fileName.c_str());
         }
     }
 
     if (ui->selectExamCode_comboBox_2->count() == 0) {
         ui->examCode_textEdit->setPlainText("");
         return;
+
     }
 
-    QString content = getFileContent(ui->selectExamCode_comboBox_2->currentText());
+    std::string filePath=filePath2.substr(0,int(filePath2.find("Submissions"))+std::string("Submissions").size())+"/"+student_id+"/"+problem_id+"/"+ui->selectExamCode_comboBox_2->currentText().toStdString();
+    QString content = getFileContent(filePath.c_str());
 
     ui->examCode_textEdit->setPlainText(content);
 }
@@ -662,12 +669,17 @@ void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
 
     std::string student_id = ui->stuListcomboBox->currentText().toStdString();
     std::string problem_id = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
+    std::string filePath2;
 
     for (auto &filePath : listOfFiles) {
         if (filePath.find("/" + student_id + "/") != std::string::npos &&
             filePath.find("/" + problem_id + "/") != std::string::npos &&
             filePath.find("/Submissions/") != std::string::npos) {
-            ui->selectExamCode_comboBox_2->addItem(filePath.c_str());
+
+            size_t pos = filePath.find_last_of("/\\");
+            std::string fileName = (pos == std::string::npos) ? filePath : filePath.substr(pos + 1);
+            filePath2=filePath;
+            ui->selectExamCode_comboBox_2->addItem(fileName.c_str());
         }
     }
 
@@ -676,7 +688,8 @@ void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
         return;
     }
 
-    QString content = getFileContent(ui->selectExamCode_comboBox_2->currentText());
+    std::string filePath=filePath2.substr(0,int(filePath2.find("Submissions"))+std::string("Submissions").size())+"/"+student_id+"/"+problem_id+"/"+ui->selectExamCode_comboBox_2->currentText().toStdString();
+    QString content = getFileContent(filePath.c_str());
 
     ui->examCode_textEdit->setPlainText(content);
 }
@@ -684,7 +697,25 @@ void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
 
 void Evaluation::on_selectExamCode_comboBox_2_currentTextChanged(const QString &arg1)
 {
+    if(arg1.isEmpty())return;
 
+    std::string student_id = ui->stuListcomboBox->currentText().toStdString();
+    std::string problem_id = ui->selectProblem_comboBox->currentText().toStdString().back() + std::string("");
+    std::string filePath2;
+
+    for (auto &filePath : listOfFiles) {
+        if (filePath.find("/Submissions/") != std::string::npos) {
+
+
+            filePath2=filePath;
+            break;
+        }
+    }
+
+    std::string filePath=filePath2.substr(0,int(filePath2.find("Submissions"))+std::string("Submissions").size())+"/"+student_id+"/"+problem_id+"/"+ui->selectExamCode_comboBox_2->currentText().toStdString();
+    QString content = getFileContent(filePath.c_str());
+
+    ui->examCode_textEdit->setPlainText(content);
 }
 
 
@@ -702,7 +733,7 @@ void Evaluation::on_detect_comboBox_currentIndexChanged(int index)
 
 void Evaluation::on_detect_left_pushButton_2_clicked()
 {
-    ui->detect_stuSelect_comboBox->setCurrentIndex((ui->detect_stuSelect_comboBox->currentIndex()-1) % ui->detect_stuSelect_comboBox->count());
+    ui->detect_stuSelect_comboBox->setCurrentIndex((ui->detect_stuSelect_comboBox->currentIndex()-1+ui->detect_stuSelect_comboBox->count()) % ui->detect_stuSelect_comboBox->count());
 }
 
 
