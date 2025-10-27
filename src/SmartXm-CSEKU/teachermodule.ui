@@ -307,32 +307,36 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="createXm_pushButton">
-             <property name="text">
-              <string>Create Exam</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="editExam_pushButon_2">
-             <property name="text">
-              <string>Edit Exam</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="testExam_pushButton_3">
-             <property name="text">
-              <string>Send Questions</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton">
-             <property name="text">
-              <string>Evaluate</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QPushButton" name="createXm_pushButton">
+               <property name="text">
+                <string>Create Exam</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="editExam_pushButon_2">
+               <property name="text">
+                <string>Edit Exam</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="testExam_pushButton_3">
+               <property name="text">
+                <string>Send Questions</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>Evaluate</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -379,7 +383,7 @@
      <x>0</x>
      <y>0</y>
      <width>901</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

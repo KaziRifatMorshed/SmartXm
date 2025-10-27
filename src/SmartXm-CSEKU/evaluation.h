@@ -16,6 +16,7 @@
 #include <string>          // For std::string
 #include <iostream>        // For std::cout, std::cerr
 #include<set>
+#include<JudgeWorkerManualEvaluation.h>
 #if defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
@@ -66,10 +67,16 @@ private slots:
 
     void on_detect_stuSelect_comboBox_currentIndexChanged(int index);
 
+    void on_stopSingleJudge_clicked();
+
+    void on_runThisFile_pushButton_2_clicked();
+
 private:
     Ui::Evaluation* ui;
     bool evaluating=false;
     bool termination=false;
+    bool evaluating2=false;
+    JudgeWorkerManualEvaluation *judgeWorkerManualEvaluation;
     std::set<Judge *>judges;
     bool readStudentInfo(const std::string &submissionInfoFile, std::vector<std::string> &submissionInformation);
     bool readJudgeInfo(const std::string &judgeInfoPath, std::vector<std::vector<double>> &judgeInformation);
@@ -84,7 +91,7 @@ private:
     std::vector <std::string> studentIDs;
 
 #ifdef _WIN32
-    QString dirPath = "C:/SmartXm/Editor/";
+    QString dirPath = "C:/SmartXm/DS/";
     QString systemDirPath = "C:/SmartXm/System/";
 #else
     QString dirPath = "/SmartXm/DS/";

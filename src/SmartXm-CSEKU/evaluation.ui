@@ -27,7 +27,7 @@
       <item>
        <widget class="QTabWidget" name="_tabWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="dashboardTab">
          <attribute name="title">
@@ -101,28 +101,28 @@
          <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
-            <x>360</x>
+            <x>6</x>
             <y>390</y>
-            <width>307</width>
+            <width>1051</width>
             <height>28</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <item>
+           <item alignment="Qt::AlignmentFlag::AlignLeft">
             <widget class="QPushButton" name="evaluate">
              <property name="text">
               <string>Evaluate</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item alignment="Qt::AlignmentFlag::AlignHCenter">
             <widget class="QPushButton" name="reEvaluate">
              <property name="text">
               <string>Re-Evaluate</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item alignment="Qt::AlignmentFlag::AlignRight">
             <widget class="QPushButton" name="stopEvaluation">
              <property name="text">
               <string>Stop Evaluation</string>
@@ -298,11 +298,22 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="runThisFile_pushButton_2">
-                  <property name="text">
-                   <string>Run</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <item alignment="Qt::AlignmentFlag::AlignLeft">
+                   <widget class="QPushButton" name="runThisFile_pushButton_2">
+                    <property name="text">
+                     <string>Run</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item alignment="Qt::AlignmentFlag::AlignRight">
+                   <widget class="QPushButton" name="stopSingleJudge">
+                    <property name="text">
+                     <string>Stop</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
