@@ -684,7 +684,7 @@ void Evaluation::on_stuListcomboBox_currentIndexChanged(int index)
 
 void Evaluation::on_selectExamCode_comboBox_2_currentTextChanged(const QString &arg1)
 {
-    
+
 }
 
 
@@ -738,6 +738,8 @@ void Evaluation::on_detect_stuSelect_comboBox_currentIndexChanged(int index)
     ui->detect_textEdit->setPlainText(content);
 }
 
+
+void Evaluation::on_runThisFile_pushButton_2_clicked()
 {
     if(!evaluating&&!evaluating2)
     {
